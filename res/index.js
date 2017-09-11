@@ -463,10 +463,9 @@
     }
 
     function createResultTableHtml(result, sql, rowUpdateReady) {
-        var table = '<table class="executionSummary"><tr><td>time</td><td>cost</td><td>sql</td><td>error</td></tr>'
-            + '<tr><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td>' + sql + '</td><td'
-            + (result.Error && (' class="error">' + result.Error) || '>OK')
-            + '</td><tr></table><br/>'
+        var table = '<table class="executionSummary"><tr><td>time</td><td>cost</td><td>error</td><td>sql</td></tr>'
+            + '<tr><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td'
+            + (result.Error && (' class="error">' + result.Error) || '>OK') + '</td><td>' + sql + '</td><tr></table><br/>'
 
 
         table += '<div id="divTranspose' + queryResultId + '" class="divTranspose"></div>'
