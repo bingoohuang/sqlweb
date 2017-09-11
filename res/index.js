@@ -202,8 +202,9 @@
     }
 
     function attachSaveUpdatesEvent(result) {
-        $('#saveUpdates' + queryResultId).click(function (event) {
-            var table = $('#queryResult' + queryResultId)
+        var thisQueryResult = queryResultId
+        $('#saveUpdates' + thisQueryResult).click(function (event) {
+            var table = $('#queryResult' + thisQueryResult)
             var headRow = table.find('tr.headRow').first().find('td')
 
             var sqls = []
@@ -440,15 +441,17 @@
     }
 
     function attachRowTransposesEvent() {
-        $('#rowTranspose' + queryResultId).click(function () {
-            var checkboxes = $('#queryResult' + queryResultId + ' :checked')
-            transposeRows(queryResultId, checkboxes)
+        var thisQueryResult = queryResultId
+        $('#rowTranspose' + thisQueryResult).click(function () {
+            var checkboxes = $('#queryResult' + thisQueryResult + ' :checked')
+            transposeRows(thisQueryResult, checkboxes)
         })
     }
 
     function attachCopyRowEvent() {
-        $('#copyRow' + queryResultId).click(function () {
-            var checkboxes = $('#queryResult' + queryResultId + ' :checked')
+        var thisQueryResult = queryResultId
+        $('#copyRow' + thisQueryResult).click(function () {
+            var checkboxes = $('#queryResult' + thisQueryResult + ' :checked')
             if (checkboxes.length == 0) {
                 alert('please specify which row to copy')
             } else if (checkboxes.length > 1) {
