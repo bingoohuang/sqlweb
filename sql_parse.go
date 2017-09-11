@@ -8,11 +8,12 @@ import (
 	"time"
 )
 
-func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource string) (string, []string, bool) {
+func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource string) (bool, string, []string, bool) {
 	var tableName string
 	var primaryKeys []string
 	start := time.Now()
 	sqlParseResult, _ := sqlparser.Parse(querySql)
+	isSelect := false
 	switch sqlParseResult.(type) {
 	case *sqlparser.Insert, *sqlparser.Delete, *sqlparser.Update, *sqlparser.Set:
 		if !authOk(r) {
@@ -22,16 +23,19 @@ func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource str
 				CostTime:      time.Since(start).String(),
 			})
 			log.Println("sql", querySql, "is not allowed because of insert/delete/update/set")
-			return "", nil, false
+			return isSelect, "", nil, false
 		}
 	case *sqlparser.Select:
+		isSelect = true
 		tableName = findSingleTableName(sqlParseResult)
 		if tableName != "" {
 			primaryKeys = findTablePrimaryKeys(tableName, dbDataSource)
 		}
+	default:
+		isSelect = true
 	}
 
-	return tableName, primaryKeys, true
+	return isSelect, tableName, primaryKeys, true
 }
 
 func findPrimaryKeysIndex(tableName string, primaryKeys, headers []string) []int {
@@ -54,7 +58,7 @@ func findPrimaryKeysIndex(tableName string, primaryKeys, headers []string) []int
 
 func findTablePrimaryKeys(tableName string, dbDataSource string) []string {
 	primaryKeys := make([]string, 0)
-	_, data, _, _, err := executeQuery("desc "+tableName, dbDataSource)
+	_, data, _, _, err, _ := executeQuery(false, "desc "+tableName, dbDataSource)
 	if err != nil {
 		return primaryKeys
 	}

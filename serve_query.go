@@ -14,6 +14,7 @@ type QueryResult struct {
 	CostTime         string
 	TableName        string
 	PrimaryKeysIndex []int
+	Msg              string
 }
 
 func serveQuery(w http.ResponseWriter, req *http.Request) {
@@ -27,12 +28,12 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	tableName, primaryKeys, sqlAllowed := parseSql(w, req, querySql, dbDataSource)
+	isSelect, tableName, primaryKeys, sqlAllowed := parseSql(w, req, querySql, dbDataSource)
 	if !sqlAllowed {
 		return
 	}
 
-	headers, rows, executionTime, costTime, err := processSqlHistory(querySql, dbDataSource)
+	headers, rows, executionTime, costTime, err, msg := processSql(isSelect, querySql, dbDataSource)
 	primaryKeysIndex := findPrimaryKeysIndex(tableName, primaryKeys, headers)
 
 	queryResult := QueryResult{
@@ -42,18 +43,20 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		ExecutionTime:    executionTime,
 		CostTime:         costTime,
 		TableName:        tableName,
-		PrimaryKeysIndex: primaryKeysIndex}
+		PrimaryKeysIndex: primaryKeysIndex,
+		Msg:              msg,
+	}
 
 	json.NewEncoder(w).Encode(queryResult)
 }
 
-func processSqlHistory(querySql, dbDataSource string) ([]string, [][]string, string, string, error) {
+func processSql(isSelect bool, querySql, dbDataSource string) ([]string, [][]string, string, string, error, string) {
 	isShowHistory := strings.EqualFold("show history", querySql)
 	if isShowHistory {
 		return showHistory()
 	} else {
 		saveHistory(querySql)
-		return executeQuery(querySql, dbDataSource)
+		return executeQuery(isSelect, querySql, dbDataSource)
 	}
 }
 

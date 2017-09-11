@@ -26,7 +26,7 @@ func saveHistory(sql string) {
 	file.Close()
 }
 
-func showHistory() (header []string, data [][]string, executionTime, costTime string, err error) {
+func showHistory() (header []string, data [][]string, executionTime, costTime string, err error, msg string) {
 	header = nil
 	data = nil
 	start := time.Now()
@@ -66,5 +66,6 @@ func showHistory() (header []string, data [][]string, executionTime, costTime st
 
 	costTime = time.Since(start).String()
 	err = nil
+	msg = ""
 	return
 }
