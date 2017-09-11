@@ -1,3 +1,0 @@
-{"SqlTime":"2017-09-11 11:42:33.086","Sql":"show tables"}
-{"SqlTime":"2017-09-11 11:42:35.885","Sql":"select * from tt_c_mbrcard"}
-{"SqlTime":"2017-09-11 11:44:45.040","Sql":"select * from tt_d_config"}
