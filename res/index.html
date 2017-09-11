@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <title>sql web</title>
+    <style>
+        /*.CSS*/
+    </style>
+</head>
+<body>
+<div>
+    <input placeholder="tid/tcode/name" class="searchKey">
+    <button class="searchButton">Find DB</button>
+    <span class="searchResult"></span>
+</div>
+<div>
+    <textarea id="code">-- input sql here</textarea>
+    <div class="resizeHandle"></div>
+    <button class="executeQuery">Run SQL</button>
+    <button class="formatSql">Format SQL</button>
+    &nbsp;
+    <button class="clearSql">Clear SQL</button>
+    <button class="collapseSql">Collapse SQL</button>
+    <button class="clearResult">Clear Result</button>
+
+    <button class="hideTables">Hide Tables</button>
+    <input class="searchTableNames" placeholder="Type to search tables">
+
+    <LOGIN/>
+</div>
+<div class="tablesWrapper">
+    <div class="tables"></div>
+</div>
+<div class="result"></div>
+<script>
+    /*.SCRIPT*/
+</script>
+</body>
+</html>
