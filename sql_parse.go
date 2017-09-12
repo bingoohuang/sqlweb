@@ -12,8 +12,13 @@ func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource str
 	var tableName string
 	var primaryKeys []string
 	start := time.Now()
-	sqlParseResult, _ := sqlparser.Parse(querySql)
 	isSelect := false
+	sqlParseResult, err := sqlparser.Parse(querySql)
+	if err != nil  {
+		log.Println("err:", err.Error())
+		return isSelect, tableName, primaryKeys, true
+	}
+
 	switch sqlParseResult.(type) {
 	case *sqlparser.Insert, *sqlparser.Delete, *sqlparser.Update, *sqlparser.Set:
 		if !authOk(r) {
