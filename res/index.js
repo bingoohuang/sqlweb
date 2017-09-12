@@ -401,7 +401,7 @@
     }
 
     function attachDeleteRowsEvent() {
-        var cssChoser =  '#queryResult' + queryResultId + ' :checked'
+        var cssChoser = '#queryResult' + queryResultId + ' :checked'
         $('#deleteRows' + queryResultId).click(function () {
             $(cssChoser).parents('tr').addClass('deletedRow')
         })
@@ -467,18 +467,23 @@
             + '<tr><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td'
             + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td><td>' + sql + '</td><tr></table>'
 
-
+        var hasRows = result.Rows && result.Rows.length > 0
         table += '<div id="divTranspose' + queryResultId + '" class="divTranspose"></div>'
         table += '<div id="divResult' + queryResultId + '">'
         if (rowUpdateReady) {
-            table += '<div><input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search">'
-                + '<input type="checkbox" id="checkboxEditable' + queryResultId + '" class="checkboxEditable">'
+            table += '<div>'
+            if (hasRows) {
+                table += '<input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search">'
+            }
+            table += '<input type="checkbox" id="checkboxEditable' + queryResultId + '" class="checkboxEditable">'
                 + '<label for="checkboxEditable' + queryResultId + '">Editable?</label>'
                 + '<span class="editButtons"><button id="copyRow' + queryResultId + '" class="copyRow">Copy Row</button>'
                 + '<button id="deleteRows' + queryResultId + '">Tag Rows As Deleted</button>'
                 + '<button id="saveUpdates' + queryResultId + '">Save To DB</button>'
                 + '<button id="rowTranspose' + queryResultId + '">Transpose</button>'
                 + '</span></div>'
+        } else if (hasRows) {
+            table += '<div><input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search"></div>'
         }
 
         table += '<table id="queryResult' + queryResultId + '" class="queryResult">'
@@ -490,7 +495,7 @@
             }
             table += '<td>#</td><td>' + result.Headers.join('</td><td>') + '</td></tr>'
         }
-        if (result.Rows && result.Rows.length > 0) {
+        if (hasRows) {
             for (var i = 0; i < result.Rows.length; i++) {
                 table += '<tr class="dataRow">'
                 if (rowUpdateReady) {
@@ -528,10 +533,10 @@
         $(table).prependTo($('.result'))
 
         alternateRowsColor()
+        attachSearchTableEvent()
 
         if (rowUpdateReady) {
             attachEditableEvent()
-            attachSearchTableEvent()
             attachCopyRowEvent()
             attachDeleteRowsEvent()
             attachRowTransposesEvent()
