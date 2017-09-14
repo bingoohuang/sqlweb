@@ -97,7 +97,7 @@ func query(isSelect bool, db *sql.DB, query string, maxRows int) ([]string, [][]
 
 	data := make([][]string, 0)
 
-	for row := 1; rows.Next() && row <= maxRows; row++ {
+	for row := 1; rows.Next() && (maxRows == 0 || row <= maxRows); row++ {
 		strValues := make([]sql.NullString, columnSize+1)
 		strValues[0] = sql.NullString{String: strconv.Itoa(row), Valid: true}
 		pointers := make([]interface{}, columnSize)
