@@ -463,8 +463,9 @@
     }
 
     function createResultTableHtml(result, sql, rowUpdateReady) {
-        var table = '<table class="executionSummary"><tr><td>time</td><td>cost</td><td>error</td><td>sql</td></tr>'
-            + '<tr><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td'
+        var table = '<div id="executionResultDiv' + queryResultId + '">' +
+            '<table class="executionSummary"><tr><td>Time</td><td>Cost</td><td>Ops</td><td>Error</td><td>SQL</td></tr>'
+            + '<tr><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td><span class="closeResult" id="closeResult' + queryResultId + '">Close</span></td><td'
             + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td><td>' + sql + '</td><tr></table>'
 
         var hasRows = result.Rows && result.Rows.length > 0
@@ -520,9 +521,16 @@
             }
             table += '<td class="dataCell">' + new Array(result.Headers.length + 1).join('</td><td class="dataCell">') + '</td></tr>'
         }
-        table += '</table><br/><div>'
+        table += '</table><br/><div></div>'
 
         return table;
+    }
+
+    function attachCloseExecutionResultDivEvent() {
+        var divId = '#executionResultDiv' + queryResultId
+        $('#closeResult' + queryResultId).click(function () {
+            $(divId).remove()
+        })
     }
 
     function tableCreate(result, sql) {
@@ -534,6 +542,7 @@
 
         alternateRowsColor()
         attachSearchTableEvent()
+        attachCloseExecutionResultDivEvent()
 
         if (rowUpdateReady) {
             attachEditableEvent()

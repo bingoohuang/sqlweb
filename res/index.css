@@ -56,12 +56,21 @@ table tr:first-child {
     background-color: aliceblue;
 }
 
+table.executionSummary tr:first-child {
+    background-color: skyblue;
+}
+
 .tablesWrapper {
     width: 100%;
     max-height: 155px;
     overflow: auto;
     border: 1px solid #f7f7f7;
     background-color: #f7f7f7;
+}
+
+.closeResult {
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 .divTranspose {
