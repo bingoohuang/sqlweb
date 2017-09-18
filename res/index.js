@@ -409,6 +409,8 @@
 
                 fieldRowFilter(dataTable, columnName, result.operator, result.operatorValue)
             }
+        }).focus(function () {
+            $(this).select()
         })
     }
 
@@ -580,6 +582,8 @@
     $('.searchKey').keydown(function (event) {
         var keyCode = event.keyCode || event.which
         if (keyCode == 13) $('.searchButton').click()
+    }).focus(function () {
+        $(this).select()
     })
 
     $('.searchButton').click(function () {
@@ -716,6 +720,8 @@
             var contains = text.indexOf(filter) > -1
             $span.toggle(contains)
         })
+    }).focus(function () {
+        $(this).select()
     })
 
 })
