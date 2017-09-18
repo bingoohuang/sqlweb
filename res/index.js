@@ -483,9 +483,9 @@
     }
 
     function createResultTableHtml(result, sql, rowUpdateReady) {
-        var table = '<div id="executionResultDiv' + queryResultId + '">' +
-            '<table class="executionSummary"><tr><td>Time</td><td>Cost</td><td>Ops</td><td>Error</td><td>SQL</td></tr>'
-            + '<tr><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td><span class="closeResult" id="closeResult' + queryResultId + '">Close</span></td><td'
+        var table = '<div id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
+            '<table class="executionSummary"><tr><td>DB<td>Time</td><td>Cost</td><td>Ops</td><td>Error</td><td>SQL</td></tr>'
+            + '<tr><td>' + activeMerchantName + '</td><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td><span class="closeResult" id="closeResult' + queryResultId + '">Close</span></td><td'
             + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td><td>' + sql + '</td><tr></table>'
 
         var hasRows = result.Rows && result.Rows.length > 0
@@ -656,10 +656,13 @@
     })
 
     var activeMerchantId = null
+    var activeMerchantName = null
     $('.searchResult').on('click', 'span', function () {
         $('.searchResult span').removeClass('active')
-        $(this).addClass('active')
-        activeMerchantId = $(this).attr('tid')
+        var $this = $(this);
+        $this.addClass('active')
+        activeMerchantId = $this.attr('tid')
+        activeMerchantName = $this.text()
         $('.executeQuery').prop("disabled", false)
         showTablesAjax(activeMerchantId)
     })
