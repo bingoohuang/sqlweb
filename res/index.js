@@ -393,11 +393,14 @@
         })
     }
 
-    function copyRow($tr) {
-        $tr.find(':checked').prop("checked", false)
-        var $clone = $tr.clone().addClass('clonedRow')
-        $clone.insertAfter($tr)
-        $clone.find('input[type=checkbox]').click(toggleRowEditable).click()
+    function copyRows($checkboxes) {
+        $checkboxes.each(function (index, checkbox) {
+            var $tr = $(checkbox).parents('tr')
+            $tr.find(':checked').prop("checked", false)
+            var $clone = $tr.clone().addClass('clonedRow')
+            $clone.insertAfter($tr)
+            $clone.find('input[type=checkbox]').click(toggleRowEditable).click()
+        })
     }
 
     function attachDeleteRowsEvent() {
@@ -448,16 +451,14 @@
         })
     }
 
-    function attachCopyRowEvent() {
+    function attachCopyRowsEvent() {
         var thisQueryResult = queryResultId
         $('#copyRow' + thisQueryResult).click(function () {
             var checkboxes = $('#queryResult' + thisQueryResult + ' :checked')
             if (checkboxes.length == 0) {
                 alert('please specify which row to copy')
-            } else if (checkboxes.length > 1) {
-                alert('please specify only one row to copy')
             } else {
-                copyRow($(checkboxes[0]).parents('tr'))
+                copyRows($(checkboxes))
             }
         })
     }
@@ -478,9 +479,9 @@
             }
             table += '<input type="checkbox" id="checkboxEditable' + queryResultId + '" class="checkboxEditable">'
                 + '<label for="checkboxEditable' + queryResultId + '">Editable?</label>'
-                + '<span class="editButtons"><button id="copyRow' + queryResultId + '" class="copyRow">Copy Row</button>'
+                + '<span class="editButtons"><button id="copyRow' + queryResultId + '" class="copyRow">Copy Rows</button>'
                 + '<button id="deleteRows' + queryResultId + '">Tag Rows As Deleted</button>'
-                + '<button id="saveUpdates' + queryResultId + '">Save To DB</button>'
+                + '<button id="saveUpdates' + queryResultId + '">Save Changes To DB</button>'
                 + '<button id="rowTranspose' + queryResultId + '">Transpose</button>'
                 + '</span></div>'
         } else if (hasRows) {
@@ -546,7 +547,7 @@
 
         if (rowUpdateReady) {
             attachEditableEvent()
-            attachCopyRowEvent()
+            attachCopyRowsEvent()
             attachDeleteRowsEvent()
             attachRowTransposesEvent()
             attachSaveUpdatesEvent(result)
