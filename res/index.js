@@ -381,12 +381,31 @@
                 rowFilter(dataTable, filter)
             } else {
                 var columnName = $.trim(filter.substring(0, seperatePos))
-                if (seperatePos == filter.length - 1) return
+                if (seperatePos == filter.length - 1) {
+                    rowFilter(dataTable, filter)
+                    return
+                }
 
                 var operatorValue = $.trim(filter.substring(seperatePos + 1))
-
                 var result = parseOperatorValue(operatorValue)
-                if (result.operatorValue == '') return
+                if (result.operatorValue == '') {
+                    rowFilter(dataTable, filter)
+                    return
+                }
+
+
+                var headRow = dataTable.find('tr.headRow').first().find('td')
+                var foundColumn = false
+                headRow.each(function (index, td) {
+                    if ($(td).text() == columnName) {
+                        foundColumn = true
+                        return false
+                    }
+                })
+                if (!foundColumn) {
+                    rowFilter(dataTable, filter)
+                    return
+                }
 
                 fieldRowFilter(dataTable, columnName, result.operator, result.operatorValue)
             }
@@ -432,9 +451,9 @@
 
         rowHtml += '</table>'
 
-        var $divTranspose = $('#divTranspose' + queryResultId);
+        var $divTranspose = $('#divTranspose' + queryResultId)
         $divTranspose.html(rowHtml).show()
-        var $divResult = $('#divResult' + queryResultId);
+        var $divResult = $('#divResult' + queryResultId)
         $divResult.hide()
 
         $('#returnToNormalView' + queryResultId).click(function () {
@@ -524,7 +543,7 @@
         }
         table += '</table><br/><div></div>'
 
-        return table;
+        return table
     }
 
     function attachCloseExecutionResultDivEvent() {
