@@ -372,7 +372,7 @@
     }
 
     function attachSearchTableEvent() {
-        $('#searchTable' + queryResultId).keyup(function () {
+        $('#searchTable' + queryResultId).on('keyup change', function () {
             var dataTable = $(this).parent().next('table')
 
             var filter = $.trim($(this).val()).toUpperCase()
@@ -728,7 +728,7 @@
         $('.searchTableNames').show()
     }
 
-    $('.searchTableNames').keyup(function () {
+    $('.searchTableNames').on('keyup change', function () {
         var filter = $.trim($(this).val()).toUpperCase()
 
         $('.tables span').each(function (index, span) {
