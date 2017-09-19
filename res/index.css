@@ -141,3 +141,8 @@ table.executionSummary tr:first-child {
 .opsDiv {
     display: none;
 }
+
+.collapseDiv {
+    max-height: 300px;
+    overflow: auto;
+}

@@ -12,6 +12,7 @@ type QueryResult struct {
 	Error            string
 	ExecutionTime    string
 	CostTime         string
+	DatabaseName     string
 	TableName        string
 	PrimaryKeysIndex []int
 	Msg              string
@@ -22,7 +23,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 	querySql := strings.TrimSpace(req.FormValue("sql"))
 	tid := strings.TrimSpace(req.FormValue("tid"))
 
-	dbDataSource, err := selectDb(tid, req)
+	dbDataSource, databaseName, err := selectDb(tid, req)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -42,6 +43,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		Error:            gotErrorMessage(err),
 		ExecutionTime:    executionTime,
 		CostTime:         costTime,
+		DatabaseName:     databaseName,
 		TableName:        tableName,
 		PrimaryKeysIndex: primaryKeysIndex,
 		Msg:              msg,

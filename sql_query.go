@@ -11,10 +11,10 @@ import (
 	"net/http"
 )
 
-func selectDb(tid string, req *http.Request) (string, error) {
+func selectDb(tid string, req *http.Request) (string, string, error) {
 	if tid == "trr" {
 		if authOk(req) {
-			return dataSource, nil
+			return dataSource, "", nil
 		}
 	}
 
@@ -22,19 +22,19 @@ func selectDb(tid string, req *http.Request) (string, error) {
 
 	_, data, _, _, err, _ := executeQuery(true, queryDbSql, dataSource)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	if len(data) == 0 {
-		return "", errors.New("no db found")
+		return "", "", errors.New("no db found")
 	} else if len(data) > 1 {
-		return "", errors.New("more than one db found")
+		return "", "", errors.New("more than one db found")
 	}
 
 	row := data[0]
 
 	// user:pass@tcp(127.0.0.1:3306)/db?charset=utf8
-	return row[1] + ":" + row[2] + "@tcp(" + row[3] + ":" + row[4] + ")/" + row[5] + "?charset=utf8mb4,utf8&timeout=3s", nil
+	return row[1] + ":" + row[2] + "@tcp(" + row[3] + ":" + row[4] + ")/" + row[5] + "?charset=utf8mb4,utf8&timeout=3s", row[5], nil
 }
 
 func executeQuery(isSelect bool, querySql, dataSource string) ([]string /*header*/, [][]string, /*data*/

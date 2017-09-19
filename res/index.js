@@ -485,20 +485,21 @@
     }
 
     function createResultTableHtml(result, sql, rowUpdateReady) {
-        var table = '<div id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
-            '<table class="executionSummary"><tr><td>DB<td>Time</td><td>Cost</td><td>Ops</td><td>Error</td><td>SQL</td></tr>'
-            + '<tr><td>' + activeMerchantName + '</td><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td><span class="closeResult" id="closeResult' + queryResultId + '">Close</span></td><td'
-            + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td><td>' + sql + '</td><tr></table>'
-
         var hasRows = result.Rows && result.Rows.length > 0
+
+        var table = '<div id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
+            '<table class="executionSummary"><tr><td>Tenant</td><td>Database</td><td>Rows</td><td>Time</td><td>Cost</td><td>Ops</td><td>Error</td><td>SQL</td></tr>'
+            + '<tr><td>' + activeMerchantName + '</td><td>' + (result.DatabaseName || '') + '</td><td>' + (hasRows ? result.Rows.length : '') + '</td><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td><span class="closeResult" id="closeResult' + queryResultId + '">Close</span></td><td'
+            + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td><td>' + sql + '</td><tr></table>'
         table += '<div id="divTranspose' + queryResultId + '" class="divTranspose"></div>'
-        table += '<div id="divResult' + queryResultId + '">'
+        table += '<div id="divResult' + queryResultId + '" class="collapseDiv">'
         if (rowUpdateReady) {
             table += '<div>'
             if (hasRows) {
                 table += '<input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search">'
             }
-            table += '<input type="checkbox" id="checkboxEditable' + queryResultId + '" class="checkboxEditable">'
+            table += '<button id="expandRows' + queryResultId + '">Expand Rows</button>'
+                + '<input type="checkbox" id="checkboxEditable' + queryResultId + '" class="checkboxEditable">'
                 + '<label for="checkboxEditable' + queryResultId + '">Editable?</label>'
                 + '<span class="editButtons"><button id="copyRow' + queryResultId + '" class="copyRow">Copy Rows</button>'
                 + '<button id="deleteRows' + queryResultId + '">Tag Rows As Deleted</button>'
@@ -555,6 +556,21 @@
         })
     }
 
+    function attachExpandRowsEvent() {
+        var buttonId = '#expandRows' + queryResultId
+        var divId = '#divResult' + queryResultId
+
+        $(buttonId).click(function () {
+            if ($(this).text() == 'Expand Rows') {
+                $(divId).removeClass('collapseDiv')
+                $(this).text('Collapse Rows')
+            } else {
+                $(divId).addClass('collapseDiv')
+                $(this).text('Expand Rows')
+            }
+        }).toggle($(divId).height() >= 300)
+    }
+
     function tableCreate(result, sql) {
         var rowUpdateReady = result.TableName && result.TableName != ""
 
@@ -564,6 +580,7 @@
 
         alternateRowsColor()
         attachSearchTableEvent()
+        attachExpandRowsEvent()
         attachCloseExecutionResultDivEvent()
 
         if (rowUpdateReady) {

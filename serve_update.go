@@ -30,7 +30,7 @@ func serveUpdate(w http.ResponseWriter, req *http.Request) {
 	sqls := strings.TrimSpace(req.FormValue("sqls"))
 	tid := strings.TrimSpace(req.FormValue("tid"))
 
-	dataSource, err := selectDb(tid, req)
+	dataSource, _, err := selectDb(tid, req)
 	if err != nil {
 		updateResult := UpdateResult{Ok: false, Message: err.Error()}
 		json.NewEncoder(w).Encode(updateResult)

@@ -14,7 +14,7 @@ func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource str
 	start := time.Now()
 	isSelect := false
 	sqlParseResult, err := sqlparser.Parse(querySql)
-	if err != nil  {
+	if err != nil {
 		log.Println("err:", err.Error())
 		return isSelect, tableName, primaryKeys, true
 	}

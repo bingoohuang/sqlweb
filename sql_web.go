@@ -57,7 +57,7 @@ func init() {
 
 func main() {
 	http.HandleFunc(contextPath+"/", gzipWrapper(serveHome))
-	http.HandleFunc(contextPath+"/query", serveQuery)
+	http.HandleFunc(contextPath+"/query", gzipWrapper(serveQuery))
 	http.HandleFunc(contextPath+"/favicon.ico", serveFavicon)
 	http.HandleFunc(contextPath+"/update", serveUpdate)
 	http.HandleFunc(contextPath+"/searchDb", serveSearchDb)
