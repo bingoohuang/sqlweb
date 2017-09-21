@@ -605,6 +605,7 @@
 
     $('.searchButton').click(function () {
         hideTablesDiv()
+        $('#tidtcodeSpan').text('')
         $.ajax({
             type: 'POST',
             url: pathname + "/searchDb",
@@ -614,7 +615,9 @@
                 var searchHtml = ''
                 if (content && content.length) {
                     for (var j = 0; j < content.length; j++) {
-                        searchHtml += '<span tid="' + content[j].MerchantId + '">🌀' + content[j].MerchantName + '</span>'
+                        searchHtml += '<span tid="' + content[j].MerchantId
+                            + '" tcode="' + content[j].MerchantCode + '">🌀'
+                            + content[j].MerchantName + '</span>'
                     }
                 } else {
                     $('.executeQuery').prop("disabled", true)
@@ -677,13 +680,18 @@
     })
 
     var activeMerchantId = null
+    var activeMerchantCode = null
     var activeMerchantName = null
     $('.searchResult').on('click', 'span', function () {
         $('.searchResult span').removeClass('active')
-        var $this = $(this);
+        var $this = $(this)
         $this.addClass('active')
         activeMerchantId = $this.attr('tid')
+        activeMerchantCode = $this.attr('tcode')
         activeMerchantName = $this.text()
+
+        $('#tidtcodeSpan').text('tid:' + activeMerchantId + ', tcode:' + activeMerchantCode)
+
         $('.executeQuery').prop("disabled", false)
         showTablesAjax(activeMerchantId)
     })
