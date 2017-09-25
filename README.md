@@ -41,3 +41,10 @@ Usage of ./go-sql-web:
 # snapshots
 
 ![image](https://user-images.githubusercontent.com/1940588/30257639-1aa0c41e-9679-11e7-8246-3abe87ba5510.png)
+
+# others
+## 如何在Mac上关闭后退和前进触控板手势
+方法1：如果您使用Mac笔记本电脑进行冲浪，您可能已经注意到，在触控板上向左或向右轻轻滑动两个手指会导致网络浏览器向前和向后翻页。 对于一些人来说，这是一个伟大的。 对于其他人来说，它偶然发生的比意外发生更频繁，这可能是恼人的。
+![image](https://user-images.githubusercontent.com/1940588/30794523-31e07604-a18e-11e7-9835-4bbf5c38cee5.png)
+
+方法2: 执行命令`defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool FALSE`
