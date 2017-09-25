@@ -47,13 +47,13 @@
         pathname = pathname.substring(0, pathname.length - 1)
     }
 
-    function executeSql(sql) {
+    function executeSql(sql, resultId) {
         $.ajax({
             type: 'POST',
             url: pathname + "/query",
             data: {tid: activeMerchantId, sql: sql},
             success: function (content, textStatus, request) {
-                tableCreate(content, sql)
+                tableCreate(content, sql, resultId)
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
@@ -488,9 +488,17 @@
         var hasRows = result.Rows && result.Rows.length > 0
 
         var table = '<div id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
-            '<table class="executionSummary"><tr><td>Tenant</td><td>Database</td><td>Rows</td><td>Time</td><td>Cost</td><td>Ops</td><td>Error</td><td>SQL</td></tr>'
-            + '<tr><td>' + activeMerchantName + '</td><td>' + (result.DatabaseName || '') + '</td><td>' + (hasRows ? result.Rows.length : '') + '</td><td>' + result.ExecutionTime + '</td><td>' + result.CostTime + '</td><td><span class="closeResult" id="closeResult' + queryResultId + '">Close</span></td><td'
-            + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td><td>' + sql + '</td><tr></table>'
+            '<table class="executionSummary">' +
+            '<tr><td>Tenant</td><td>Database</td><td>Rows</td><td>Time</td><td>Cost</td><td>Ops</td><td>Error</td><td>SQL</td></tr>'
+            + '<tr>' +
+            '<td>' + activeMerchantName + '</td><td>' + (result.DatabaseName || '') + '</td><td>' + (hasRows ? result.Rows.length : '') + '</td>' +
+            '<td>' + result.ExecutionTime + '</td>' +
+            '<td>' + result.CostTime + '</td>' +
+            '<td><span class="opsSpan" id="closeResult' + queryResultId + '">Close</span>' +
+            '<span class="opsSpan" id="reExecuteSql' + queryResultId + '">Re-Execute</span></td><td'
+            + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
+            '<td class="sqlTd" contenteditable="true">' + sql + '</td>' +
+            '<tr></table>'
         table += '<div id="divTranspose' + queryResultId + '" class="divTranspose"></div>'
         table += '<div id="divResult' + queryResultId + '" class="collapseDiv">'
         if (rowUpdateReady) {
@@ -549,10 +557,16 @@
         return table
     }
 
-    function attachCloseExecutionResultDivEvent() {
+    function attachOpsResultDivEvent() {
         var divId = '#executionResultDiv' + queryResultId
         $('#closeResult' + queryResultId).click(function () {
             $(divId).remove()
+        })
+
+        var resultId = queryResultId
+        $('#reExecuteSql' + queryResultId).click(function () {
+            var sql = $(divId).find('.sqlTd').text()
+            executeSql(sql, resultId)
         })
     }
 
@@ -571,17 +585,21 @@
         }).toggle($(divId).height() >= 300)
     }
 
-    function tableCreate(result, sql) {
+    function tableCreate(result, sql, resultId) {
         var rowUpdateReady = result.TableName && result.TableName != ""
 
         ++queryResultId
         var table = createResultTableHtml(result, sql, rowUpdateReady)
-        $(table).prependTo($('.result'))
+        if (resultId && resultId > 0) {
+            $('#executionResultDiv' + resultId).html(table)
+        } else {
+            $(table).prependTo($('.result'))
+        }
 
         alternateRowsColor()
         attachSearchTableEvent()
         attachExpandRowsEvent()
-        attachCloseExecutionResultDivEvent()
+        attachOpsResultDivEvent()
 
         if (rowUpdateReady) {
             attachEditableEvent()

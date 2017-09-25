@@ -68,9 +68,10 @@ table.executionSummary tr:first-child {
     background-color: #f7f7f7;
 }
 
-.closeResult {
+.opsSpan {
     cursor: pointer;
     text-decoration: underline;
+    margin-right: 10px;
 }
 
 .divTranspose {
@@ -145,4 +146,9 @@ table.executionSummary tr:first-child {
 .collapseDiv {
     max-height: 300px;
     overflow: auto;
+}
+
+.sqlTd {
+    max-width: 600px;
+    white-space: normal!important;
 }
