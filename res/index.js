@@ -286,7 +286,7 @@
     function checkboxEditableChange(checkboxEditable) {
         var edittable = checkboxEditable.prop('checked')
         checkboxEditable.parent().find('span.editButtons').toggle(edittable)
-        var dataTable = checkboxEditable.parent().next('table')
+        var dataTable = checkboxEditable.parents('div.divResult').find('table.queryResult')
         dataTable.find('.chk').toggle(edittable)
         var rowCheckboxes = dataTable.find('.dataRow').find('input[type=checkbox]')
         rowCheckboxes.unbind('click')
@@ -500,7 +500,7 @@
             '<td class="sqlTd" contenteditable="true">' + sql + '</td>' +
             '<tr></table>'
         table += '<div id="divTranspose' + queryResultId + '" class="divTranspose"></div>'
-        table += '<div id="divResult' + queryResultId + '" class="collapseDiv">'
+        table += '<div id="divResult' + queryResultId + '" class="divResult">'
         if (rowUpdateReady) {
             table += '<div>'
             if (hasRows) {
@@ -518,7 +518,7 @@
             table += '<div><input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search"></div>'
         }
 
-        table += '<table id="queryResult' + queryResultId + '" class="queryResult">'
+        table += '<div class="collapseDiv"><table id="queryResult' + queryResultId + '" class="queryResult">'
 
         if (result.Headers && result.Headers.length > 0) {
             table += '<tr class="headRow" queryResultId="' + queryResultId + '">'
@@ -552,7 +552,7 @@
             }
             table += '<td class="dataCell">' + new Array(result.Headers.length + 1).join('</td><td class="dataCell">') + '</td></tr>'
         }
-        table += '</table><br/><div></div>'
+        table += '</table></div><br/><div></div>'
 
         return table
     }
