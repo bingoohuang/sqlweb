@@ -373,7 +373,7 @@
 
     function attachSearchTableEvent() {
         $('#searchTable' + queryResultId).on('keyup change', function () {
-            var dataTable = $(this).parent().next('table')
+            var dataTable = $(this).parents('div.divResult').find('table.queryResult')
 
             var filter = $.trim($(this).val()).toUpperCase()
             var seperatePos = filter.indexOf(':')
@@ -518,7 +518,8 @@
             table += '<div><input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search"></div>'
         }
 
-        table += '<div class="collapseDiv"><table id="queryResult' + queryResultId + '" class="queryResult">'
+        table += '<div id="collapseDiv' + queryResultId + '" class="collapseDiv">' +
+            '<table id="queryResult' + queryResultId + '" class="queryResult">'
 
         if (result.Headers && result.Headers.length > 0) {
             table += '<tr class="headRow" queryResultId="' + queryResultId + '">'
@@ -572,17 +573,17 @@
 
     function attachExpandRowsEvent() {
         var buttonId = '#expandRows' + queryResultId
-        var divId = '#divResult' + queryResultId
+        var collapseDiv = '#collapseDiv' + queryResultId
 
         $(buttonId).click(function () {
             if ($(this).text() == 'Expand Rows') {
-                $(divId).removeClass('collapseDiv')
+                $(collapseDiv).removeClass('collapseDiv')
                 $(this).text('Collapse Rows')
             } else {
-                $(divId).addClass('collapseDiv')
+                $(collapseDiv).addClass('collapseDiv')
                 $(this).text('Expand Rows')
             }
-        }).toggle($(divId).height() >= 300)
+        }).toggle($(collapseDiv).height() >= 300)
     }
 
     function tableCreate(result, sql, resultId) {
