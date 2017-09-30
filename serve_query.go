@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"unicode"
 )
 
 type QueryResult struct {
@@ -20,7 +21,9 @@ type QueryResult struct {
 
 func serveQuery(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	querySql := strings.TrimSpace(req.FormValue("sql"))
+	querySql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
+		return unicode.IsSpace(r) || r == ';'
+	})
 	tid := strings.TrimSpace(req.FormValue("tid"))
 
 	dbDataSource, databaseName, err := selectDb(tid, req)
