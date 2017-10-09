@@ -5,6 +5,7 @@ import (
 	"github.com/xwb1989/sqlparser"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -13,14 +14,10 @@ func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource str
 	var primaryKeys []string
 	start := time.Now()
 	isSelect := false
-	sqlParseResult, err := sqlparser.Parse(querySql)
-	if err != nil {
-		log.Println("err:", err.Error())
-		return isSelect, tableName, primaryKeys, true
-	}
 
-	switch sqlParseResult.(type) {
-	case *sqlparser.Insert, *sqlparser.Delete, *sqlparser.Update, *sqlparser.Set:
+	firstWord := strings.ToUpper(FirstWord(querySql))
+	switch firstWord {
+	case "INSERT", "DELETE", "UPDATE", "SET":
 		if !authOk(r) {
 			json.NewEncoder(w).Encode(QueryResult{Headers: nil, Rows: nil,
 				Error:         "dangerous sql, please get authorized first!",
@@ -30,11 +27,14 @@ func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource str
 			log.Println("sql", querySql, "is not allowed because of insert/delete/update/set")
 			return isSelect, "", nil, false
 		}
-	case *sqlparser.Select:
+	case "SELECT":
 		isSelect = true
-		tableName = findSingleTableName(sqlParseResult)
-		if tableName != "" {
-			primaryKeys = findTablePrimaryKeys(tableName, dbDataSource)
+		sqlParseResult, err := sqlparser.Parse(querySql)
+		if err == nil {
+			tableName = findSingleTableName(sqlParseResult)
+			if tableName != "" {
+				primaryKeys = findTablePrimaryKeys(tableName, dbDataSource)
+			}
 		}
 	default:
 		isSelect = true
