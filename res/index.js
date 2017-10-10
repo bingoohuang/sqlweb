@@ -491,7 +491,7 @@
             '<table class="executionSummary">' +
             '<tr><td>Tenant</td><td>Database</td><td>Rows</td><td>Time</td><td>Cost</td><td>Ops</td><td>Error</td><td>SQL</td></tr>'
             + '<tr>' +
-            '<td>' + activeMerchantName + '</td><td>' + (result.DatabaseName || '') + '</td><td>' + (hasRows ? result.Rows.length : '') + '</td>' +
+            '<td>' + activeMerchantName + '</td><td>' + (result.DatabaseName || '') + '</td><td>' + (hasRows ? result.Rows.length : '0') + '</td>' +
             '<td>' + result.ExecutionTime + '</td>' +
             '<td>' + result.CostTime + '</td>' +
             '<td><span class="opsSpan" id="closeResult' + queryResultId + '">Close</span>' +
