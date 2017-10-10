@@ -659,6 +659,7 @@
             }
         }
         $('.tables').html(resultHtml)
+        $('.searchTableNames').change()
     }
 
     function showTablesAjax(activeMerchantId) {
