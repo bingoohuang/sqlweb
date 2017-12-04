@@ -625,10 +625,16 @@
     $('.searchButton').click(function () {
         hideTablesDiv()
         $('#tidtcodeSpan').text('')
+        var searchKey = $.trim($('.searchKey').val())
+        if (searchKey === '') {
+            alert("please input tid/tcode/tname")
+            return
+        }
+
         $.ajax({
             type: 'POST',
             url: pathname + "/searchDb",
-            data: {searchKey: $('.searchKey').val()},
+            data: {searchKey: searchKey},
             success: function (content, textStatus, request) {
                 var searchResult = $('.searchResult')
                 var searchHtml = ''

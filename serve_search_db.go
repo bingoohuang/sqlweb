@@ -31,7 +31,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 
 	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
-		"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%' LIMIT 3"
+		"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
 
 	_, data, _, _, err, _ := executeQuery(true, searchSql, dataSource)
 	if err != nil {
