@@ -641,8 +641,9 @@
                 if (content && content.length) {
                     for (var j = 0; j < content.length; j++) {
                         searchHtml += '<span tid="' + content[j].MerchantId
-                            + '" tcode="' + content[j].MerchantCode + '">🌀'
-                            + content[j].MerchantName + '</span>'
+                            + '" tcode="' + content[j].MerchantCode
+                            + '" homeArea="' + content[j].HomeArea
+                            + '">🌀' + content[j].MerchantName + '</span>'
                     }
                 } else {
                     $('.executeQuery').prop("disabled", true)
@@ -707,6 +708,7 @@
 
     var activeMerchantId = null
     var activeMerchantCode = null
+    var activeHomeArea = null
     var activeMerchantName = null
     $('.searchResult').on('click', 'span', function () {
         $('.searchResult span').removeClass('active')
@@ -714,9 +716,10 @@
         $this.addClass('active')
         activeMerchantId = $this.attr('tid')
         activeMerchantCode = $this.attr('tcode')
+        activeHomeArea = $this.attr('homeArea')
         activeMerchantName = $this.text()
 
-        $('#tidtcodeSpan').text('tid:' + activeMerchantId + ', tcode:' + activeMerchantCode)
+        $('#tidtcodeSpan').text('tid:' + activeMerchantId + ', tcode:' + activeMerchantCode + ', homeArea:' + activeHomeArea)
 
         $('.executeQuery').prop("disabled", false)
         showTablesAjax(activeMerchantId)
