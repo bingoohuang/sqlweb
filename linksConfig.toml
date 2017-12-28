@@ -1,4 +1,4 @@
 [links]
 
     [links.user_id]
-    linksTo = ["tt_f_user", "tt_f_member", "tt_f_mbr_card"]
+    linksTo = ["tt_f_user", "tt_f_member.member_id", "tt_f_mbr_card"]
