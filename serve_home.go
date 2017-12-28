@@ -67,7 +67,9 @@ func mergeCss() string {
 }
 
 func mergeScripts() string {
-	return mergeStatic("jquery-3.2.1.min.js", "codemirror-5.29.0.min.js", "sql-5.29.0.min.js",
+	return mergeStatic("jquery-3.2.1.min.js", "common.js",
+		"codemirror-5.29.0.min.js", "sql-5.29.0.min.js", "toml-5.29.0.min.js", "toml.js",
+		"linksConfig.js",
 		"sql-formatter-2.0.0.min.js", "index.js")
 }
 
@@ -75,7 +77,7 @@ func mergeStatic(statics ...string) string {
 	var scripts bytes.Buffer
 	for _, static := range statics {
 		scripts.Write(MustAsset("res/" + static))
-		scripts.Write([]byte("\n"))
+		scripts.Write([]byte(";"))
 	}
 
 	return scripts.String()

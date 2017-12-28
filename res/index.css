@@ -152,3 +152,7 @@ table.executionSummary tr:first-child {
     max-width: 600px;
     white-space: normal!important;
 }
+
+#linksConfigDiv {
+    display: none;
+}

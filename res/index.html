@@ -10,29 +10,44 @@
 </head>
 <body>
 <div>
-    <input placeholder="tid/tcode/name" class="searchKey">
-    <button class="searchButton">Find Tenant</button>
-    <span class="searchResult"></span><span id="tidtcodeSpan"></span>
-</div>
-<div>
-    <textarea id="code">-- input sql here</textarea>
-    <div class="resizeHandle"></div>
-    <button class="executeQuery">Run SQL</button>
-    <button class="formatSql">Format SQL</button>
-    &nbsp;
-    <button class="clearSql">Clear SQL</button>
-    <button class="collapseSql">Collapse SQL</button>
-    <button class="clearResult">Clear Result</button>
+    <div id="linksConfigDiv">
+        <textarea id="tomlEditor"></textarea>
+        <div>
+            <button id="SaveConfig">Save Config</button>
+            <button id="ReloadConfig">Reload Config</button>
+            <button id="CloseConfig">Close</button>
+        </div>
+    </div>
 
-    <button class="hideTables">Hide Tables</button>
-    <input class="searchTableNames" placeholder="Type to search tables">
+    <div id="sqlwebDiv">
+        <div>
+            <input placeholder="tid/tcode/name" class="searchKey">
+            <button class="searchButton">Find Tenant</button>
+            <span class="searchResult"></span><span id="tidtcodeSpan"></span>
+        </div>
+        <div>
+            <textarea id="code">-- input sql here</textarea>
+            <div class="resizeHandle"></div>
+            <button class="executeQuery">Run SQL</button>
+            <button class="formatSql">Format SQL</button>
+            &nbsp;
+            <button class="clearSql">Clear SQL</button>
+            <button class="collapseSql">Collapse SQL</button>
+            <button class="clearResult">Clear Result</button>
 
-    <LOGIN/>
+            <button id="linkConfigBtn">Links Config</button>
+            <button class="hideTables">Hide Tables</button>
+            <input class="searchTableNames" placeholder="Type to search tables">
+
+            <LOGIN/>
+        </div>
+        <div class="tablesWrapper">
+            <div class="tables"></div>
+        </div>
+        <div class="result"></div>
+    </div>
 </div>
-<div class="tablesWrapper">
-    <div class="tables"></div>
-</div>
-<div class="result"></div>
+
 <script>
     /*.SCRIPT*/
 </script>

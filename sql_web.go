@@ -10,7 +10,7 @@ import (
 
 var (
 	contextPath       string
-	port              int
+	port              string
 	maxRows           int
 	dataSource        string
 	writeAuthRequired bool
@@ -42,7 +42,7 @@ func init() {
 	flag.Parse()
 
 	contextPath = *contextPathArg
-	port = *portArg
+	port = strconv.Itoa(*portArg)
 	maxRows = *maxRowsArg
 	dataSource = *dataSourceArg
 	writeAuthRequired = *writeAuthRequiredArg
@@ -58,14 +58,15 @@ func init() {
 func main() {
 	http.HandleFunc(contextPath+"/", gzipWrapper(serveHome))
 	http.HandleFunc(contextPath+"/query", gzipWrapper(serveQuery))
+	http.HandleFunc(contextPath+"/loadLinksConfig", serveLoadLinksConfig)
+	http.HandleFunc(contextPath+"/saveLinksConfig", serveSaveLinksConfig)
 	http.HandleFunc(contextPath+"/favicon.ico", serveFavicon)
 	http.HandleFunc(contextPath+"/update", serveUpdate)
 	http.HandleFunc(contextPath+"/searchDb", serveSearchDb)
 	http.HandleFunc(contextPath+"/login", serveLogin)
 
-	sport := strconv.Itoa(port)
-	fmt.Println("start to listen at ", sport)
-	if err := http.ListenAndServe(":"+sport, nil); err != nil {
+	fmt.Println("start to listen at ", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
 }
