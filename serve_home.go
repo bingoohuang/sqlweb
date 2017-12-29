@@ -71,7 +71,7 @@ func mergeScripts() string {
 		"codemirror-5.29.0.min.js", "sql-5.29.0.min.js", "toml-5.29.0.min.js", "toml.js",
 		"linksConfig.js",
 		"sql-formatter-2.0.0.min.js",
-		"sqlEditor.js", "searchTenants.js", "tables.js", "rowFilter.js",
+		"sqlEditor.js", "searchTenants.js", "tables.js", "rowFilter.js", "createSql.js",
 		"index.js")
 }
 
