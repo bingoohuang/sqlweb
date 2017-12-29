@@ -62,13 +62,13 @@
             if ($button.data('alreadyclickedTimeout')) {
                 clearTimeout($button.data('alreadyclickedTimeout')) // prevent this from happening
             }
-            $.executeSql('show full columns from ' + tableName)
+            $.executeQueryAjax('show full columns from ' + tableName)
             hideTablesDiv()
         } else {
             $button.data('alreadyclicked', true)
             var alreadyclickedTimeout = setTimeout(function () {
                 $button.data('alreadyclicked', false) // reset when it happens
-                $.executeSql('select * from ' + tableName)
+                $.executeQueryAjax('select * from ' + tableName)
                 hideTablesDiv()
             }, 300) // <-- dblclick tolerance here
             $button.data('alreadyclickedTimeout', alreadyclickedTimeout) // store this id to clear if necessary

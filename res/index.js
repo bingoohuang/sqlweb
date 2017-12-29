@@ -1,56 +1,5 @@
 (function () {
-    function executeSql(sql, resultId) {
-        $.ajax({
-            type: 'POST',
-            url: pathname + "/query",
-            data: {tid: activeMerchantId, sql: sql},
-            success: function (content, textStatus, request) {
-                tableCreate(content, sql, resultId)
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
-            }
-        })
-        $.hideTablesDiv()
-    }
 
-    $.executeSql = executeSql
-
-    var queryResultId = 0
-
-
-    function executeUpdate(sqlRowIndices, sqls, $rows) {
-        $.ajax({
-            type: 'POST',
-            url: pathname + "/update",
-            data: {tid: activeMerchantId, sqls: sqls},
-            success: function (content, textStatus, request) {
-                if (!content.Ok) {
-                    alert(content.Message)
-                    return
-                }
-
-                for (var i = 0; i < content.RowsResult.length; ++i) {
-                    var rowResult = content.RowsResult[i]
-                    if (!rowResult.Ok) {
-                        alert(rowResult.Message)
-                    } else {
-                        var rowIndex = sqlRowIndices[i]
-                        var $row = $($rows[rowIndex])
-
-                        $row.find('td.dataCell').each(function (jndex, cell) {
-                            $(this).removeAttr('old').removeClass('changedCell')
-                        })
-                        $row.find('input[type=checkbox]').prop('checked', false)
-                        $row.remove('.deletedRow').removeClass('clonedRow')
-                    }
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
-            }
-        })
-    }
 
     function attachSaveUpdatesEvent(result) {
         var thisQueryResult = queryResultId
@@ -90,7 +39,7 @@
 
             var joinedSqls = sqls.join(';\n')
             if (confirm(joinedSqls + ';\n\nAre you sure to save ?')) {
-                executeUpdate(sqlRowIndices, joinedSqls, $rows)
+                $.executeUpdate(sqlRowIndices, joinedSqls, $rows)
             }
         })
     }
@@ -149,7 +98,6 @@
             checkboxEditableChange(checkboxEditable)
         })
     }
-
 
     function copyRows($checkboxes) {
         $checkboxes.each(function (index, checkbox) {
@@ -263,7 +211,7 @@
         var resultId = queryResultId
         $('#reExecuteSql' + queryResultId).click(function () {
             var sql = $(divId).find('.sqlTd').text()
-            executeSql(sql, resultId)
+            $.executeQueryAjax(sql, resultId)
         })
     }
 
@@ -282,7 +230,7 @@
         }).toggle($(collapseDiv).height() >= 300)
     }
 
-    function tableCreate(result, sql, resultId) {
+    $.tableCreate = function(result, sql, resultId) {
         var rowUpdateReady = result.TableName && result.TableName != ""
 
         ++queryResultId
@@ -306,8 +254,4 @@
             attachSaveUpdatesEvent(result)
         }
     }
-
-    $('.clearResult').click(function () {
-        $('.result').html('')
-    })
 })()

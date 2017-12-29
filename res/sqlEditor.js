@@ -44,7 +44,7 @@
 
     $('.executeQuery').prop("disabled", true).click(function () {
         var sql = codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()
-        $.executeSql(sql)
+        $.executeQueryAjax(sql)
     })
 
     $('.formatSql').click(function () {
