@@ -564,48 +564,6 @@
         $('.result').html('')
     })
 
-    $('.searchKey').keydown(function (event) {
-        var keyCode = event.keyCode || event.which
-        if (keyCode == 13) $('.searchButton').click()
-    }).focus(function () {
-        $(this).select()
-    })
-
-    $('.searchButton').click(function () {
-        hideTablesDiv()
-        $('#tidtcodeSpan').text('')
-        var searchKey = $.trim($('.searchKey').val())
-        if (searchKey === '') {
-            alert("please input tid/tcode/tname")
-            return
-        }
-
-        $.ajax({
-            type: 'POST',
-            url: pathname + "/searchDb",
-            data: {searchKey: searchKey},
-            success: function (content, textStatus, request) {
-                var searchResult = $('.searchResult')
-                var searchHtml = ''
-                if (content && content.length) {
-                    for (var j = 0; j < content.length; j++) {
-                        searchHtml += '<span tid="' + content[j].MerchantId
-                            + '" tcode="' + content[j].MerchantCode
-                            + '" homeArea="' + content[j].HomeArea
-                            + '">🌀' + content[j].MerchantName + '</span>'
-                    }
-                } else {
-                    $('.executeQuery').prop("disabled", true)
-                    $('.tables').html('')
-                }
-                searchResult.html(searchHtml)
-                $('.searchResult span:first-child').click()
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
-            }
-        })
-    })
 
     function showTables(result) {
         var resultHtml = ''
@@ -633,6 +591,8 @@
         })
     }
 
+    $.showTablesAjax = showTablesAjax
+
     $('.tables').on('click', 'span', function (event) {
         var $button = $(this)
         var tableName = $(this).text()
@@ -653,25 +613,6 @@
             $button.data('alreadyclickedTimeout', alreadyclickedTimeout) // store this id to clear if necessary
         }
         return false
-    })
-
-    var activeMerchantId = null
-    var activeMerchantCode = null
-    var activeHomeArea = null
-    var activeMerchantName = null
-    $('.searchResult').on('click', 'span', function () {
-        $('.searchResult span').removeClass('active')
-        var $this = $(this)
-        $this.addClass('active')
-        activeMerchantId = $this.attr('tid')
-        activeMerchantCode = $this.attr('tcode')
-        activeHomeArea = $this.attr('homeArea')
-        activeMerchantName = $this.text()
-
-        $('#tidtcodeSpan').text('tid:' + activeMerchantId + ', tcode:' + activeMerchantCode + ', homeArea:' + activeHomeArea)
-
-        $('.executeQuery').prop("disabled", false)
-        showTablesAjax(activeMerchantId)
     })
 
 
@@ -701,6 +642,8 @@
         $('.searchTableNames').hide()
     }
 
+    $.hideTablesDiv = hideTablesDiv
+
     function showTablesDiv() {
         $('.tablesWrapper').show()
         $('.hideTables').text('Hide Tables')
@@ -720,7 +663,7 @@
         $(this).select()
     })
 
-    $(document).on('paste','[contenteditable]', function(e) {
+    $(document).on('paste', '[contenteditable]', function (e) {
         e.preventDefault()
         var text = ''
         if (e.clipboardData || e.originalEvent.clipboardData) {
