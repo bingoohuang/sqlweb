@@ -3,7 +3,7 @@
     [links.user_id]
     linksTo = ["tt_f_user", "tt_f_user_role", 
     "tt_f_member", "tt_f_mbr_card.member_id", 
-    "tt_f_coach", "tt_f_staff", "tt_f_subscribe"]
+    "tt_f_coach", "tt_f_staff", "tt_f_subscribe", "tt_f_login"]
     
     [links.MBR_CARD_ID]
     linksTo = ["tt_f_mbr_card", "tt_l_mbrcard_chg"]
@@ -16,3 +16,6 @@
     
     [links.COACH_ID]
     linksTo = ["tt_f_card_rule", "tt_f_coach", "tt_f_schedule", "tt_f_coach_rest"]
+    
+    [links.MOBILE]
+    linksTo = ["tt_f_user", "tt_f_login"]

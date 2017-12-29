@@ -24,7 +24,7 @@
                 // ignore
             } else {
                 items['link' + linkedTable] = {
-                    name: 'goto ' + linkedTable + (isFieldNameEqual ? '' : '.' + linkedField),
+                    name: '-> ' + linkedTable + (isFieldNameEqual ? '' : '.' + linkedField),
                     icon: 'link'
                 }
             }
