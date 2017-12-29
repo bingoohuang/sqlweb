@@ -70,7 +70,9 @@ func mergeScripts() string {
 	return mergeStatic("jquery-3.2.1.min.js", "common.js",
 		"codemirror-5.29.0.min.js", "sql-5.29.0.min.js", "toml-5.29.0.min.js", "toml.js",
 		"linksConfig.js",
-		"sql-formatter-2.0.0.min.js", "index.js")
+		"sql-formatter-2.0.0.min.js",
+		"sqlEditor.js",
+		"index.js")
 }
 
 func mergeStatic(statics ...string) string {
