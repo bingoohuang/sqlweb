@@ -1,10 +1,16 @@
 (function () {
+    function toogleLinksConfigDiv() {
+        $('#linksConfigDiv').toggle()
+        $('#sqlwebDiv').toggle()
+    }
+
     $('#linkConfigBtn').click(function () {
-        $('#sqlwebDiv').hide()
-        $('#linksConfigDiv').show()
+        toogleLinksConfigDiv()
 
         tomlEditor.setSize(null, '500px')
     })
+    $('#CloseConfig').click(toogleLinksConfigDiv)
+    $('#ReloadConfig').click(ReloadConfig)
 
     $('#SaveConfig').click(function () {
         $.ajax({
@@ -13,11 +19,9 @@
             data: {linksConfig: tomlEditor.getValue()},
             success: function (content, textStatus, request) {
                 if (content === "OK") {
-                    $('#linksConfigDiv').hide()
-                    $('#sqlwebDiv').show()
+                    toogleLinksConfigDiv()
 
-                    var linksConfigToml = toml(tomlEditor.getValue())
-                    createLinksConfig(linksConfigToml)
+                    createLinksConfig(toml(tomlEditor.getValue()))
                 } else {
                     alert(content)
                 }
@@ -28,17 +32,10 @@
         })
     })
 
-    $('#CloseConfig').click(function () {
-        $('#linksConfigDiv').hide()
-        $('#sqlwebDiv').show()
-    })
-
-    $('#ReloadConfig').click(ReloadConfig)
 
     // refer : https://codemirror.net/mode/toml/index.html
     var tomlEditor = CodeMirror.fromTextArea(document.getElementById("tomlEditor"), {
-        mode: 'text/x-toml',
-        lineNumbers: true
+        mode: 'text/x-toml', lineNumbers: true
     })
 
     function ReloadConfig() {
@@ -47,14 +44,15 @@
             url: pathname + "/loadLinksConfig",
             success: function (content, textStatus, request) {
                 tomlEditor.setValue(content)
-                var linksConfigToml = toml(content)
-                createLinksConfig(linksConfigToml)
+                createLinksConfig(toml(content))
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     }
+
+    ReloadConfig()
 
     function createLinksConfig(linksConfig) {
         var $linksConfig = {tables: {}, fields: {}}
@@ -70,26 +68,31 @@
                 tt_f_member: "member_id",
                 tt_f_mbr_card: "user_id"
             }
+            member_id: {
+                tt_f_user: "user_id",
+                tt_f_member: "member_id",
+                tt_f_mbr_card: "user_id"
+            }
         }
         */
 
         $.each(linksConfig.links, function (key, value) {
             var fieldTable = {}
-            var upperKey = key.toUpperCase()
-            $linksConfig.fields[upperKey] = fieldTable
+            var upperLinkedField = key.toUpperCase()
+            $linksConfig.fields[upperLinkedField] = fieldTable
 
             $.each(value.linksTo, function (index, linkTo) {
                 var dotIndex = linkTo.indexOf('.')
+
                 var tableName = dotIndex < 0 ? linkTo : linkTo.substring(0, dotIndex)
                 var filedName = dotIndex < 0 ? key : linkTo.substring(dotIndex + 1)
-
                 var upperTable = tableName.toUpperCase()
                 var upperField = filedName.toUpperCase()
 
                 $linksConfig.tables[upperTable] = $linksConfig.tables[upperTable] || {}
-                $linksConfig.tables[upperTable][upperField] = upperKey
+                $linksConfig.tables[upperTable][upperField] = upperLinkedField
 
-                if (upperKey !== upperField) {
+                if (upperLinkedField !== upperField) {
                     $linksConfig.fields[upperField] = fieldTable
                 }
 
@@ -99,7 +102,4 @@
 
         $.linksConfig = $linksConfig
     }
-
-    ReloadConfig()
-
 })()
