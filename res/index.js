@@ -11,7 +11,7 @@
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
-        hideTablesDiv()
+        $.hideTablesDiv()
     }
 
     $.executeSql = executeSql
@@ -252,116 +252,6 @@
         })
     }
 
-    function matchCellValue(cellValue, operator, operatorValue) {
-        if (operator == '>=') {
-            return +cellValue >= +operatorValue
-        } else if (operator == '<=') {
-            return +cellValue <= +operatorValue
-        } else if (operator == '<>' || operator == '!=') {
-            return cellValue != operatorValue
-        } else if (operator == '>') {
-            return +cellValue > +operatorValue
-        } else if (operator == '<') {
-            return +cellValue < +operatorValue
-        } else if (operator == '=') {
-            return cellValue == operatorValue
-        } else if (operator == 'contains') {
-            return cellValue.indexOf(operatorValue) > -1
-        }
-
-        return false
-    }
-
-    function rowFilter(dataTable, filter) {
-        $('tr:gt(0)', dataTable).filter(function () {
-            var found = false
-            $('td.dataCell', $(this)).each(function (index, cell) {
-                var text = $.trim($(cell).text()).toUpperCase()
-                if (text.indexOf(filter) > -1) {
-                    found = true
-                    return false
-                }
-            })
-            $(this).toggle(found)
-        })
-    }
-
-    function fieldRowFilter(dataTable, columnName, operator, operatorValue) {
-        var headRow = dataTable.find('tr.headRow').first().find('td')
-        $('tr:gt(0)', dataTable).filter(function () {
-            var found = false
-            $('td.dataCell', $(this)).each(function (index, cell) {
-                var text = $.trim($(cell).text()).toUpperCase()
-                var fieldName = $(headRow.get(index + 1)).text()
-                if ((columnName == "" || columnName == fieldName) && matchCellValue(text, operator, operatorValue)) {
-                    found = true
-                    return false
-                }
-            })
-            $(this).toggle(found)
-        })
-    }
-
-    function parseOperatorValue(operatorValue) {
-        if (operatorValue.indexOf('>=') == 0) {
-            return {operator: '>=', operatorValue: $.trim(operatorValue.substring(2))}
-        } else if (operatorValue.indexOf('<=') == 0) {
-            return {operator: '<=', operatorValue: $.trim(operatorValue.substring(2))}
-        } else if (operatorValue.indexOf('!=') == 0 || operatorValue.indexOf('<>') == 0) {
-            return {operator: '!=', operatorValue: $.trim(operatorValue.substring(2))}
-        } else if (operatorValue.indexOf('>') == 0) {
-            return {operator: '>', operatorValue: $.trim(operatorValue.substring(1))}
-        } else if (operatorValue.indexOf('<') == 0) {
-            return {operator: '<', operatorValue: $.trim(operatorValue.substring(1))}
-        } else if (operatorValue.indexOf('=') == 0) {
-            return {operator: '=', operatorValue: $.trim(operatorValue.substring(1))}
-        } else {
-            return {operator: 'contains', operatorValue: operatorValue}
-        }
-    }
-
-    function attachSearchTableEvent() {
-        $('#searchTable' + queryResultId).on('keyup change', function () {
-            var dataTable = $(this).parents('div.divResult').find('table.queryResult')
-
-            var filter = $.trim($(this).val()).toUpperCase()
-            var seperatePos = filter.indexOf(':')
-            if (seperatePos == -1) {
-                rowFilter(dataTable, filter)
-            } else {
-                var columnName = $.trim(filter.substring(0, seperatePos))
-                if (seperatePos == filter.length - 1) {
-                    rowFilter(dataTable, filter)
-                    return
-                }
-
-                var operatorValue = $.trim(filter.substring(seperatePos + 1))
-                var result = parseOperatorValue(operatorValue)
-                if (result.operatorValue == '') {
-                    rowFilter(dataTable, filter)
-                    return
-                }
-
-
-                var headRow = dataTable.find('tr.headRow').first().find('td')
-                var foundColumn = false
-                headRow.each(function (index, td) {
-                    if ($(td).text() == columnName) {
-                        foundColumn = true
-                        return false
-                    }
-                })
-                if (!foundColumn) {
-                    rowFilter(dataTable, filter)
-                    return
-                }
-
-                fieldRowFilter(dataTable, columnName, result.operator, result.operatorValue)
-            }
-        }).focus(function () {
-            $(this).select()
-        })
-    }
 
     function copyRows($checkboxes) {
         $checkboxes.each(function (index, checkbox) {
@@ -547,7 +437,7 @@
         }
 
         alternateRowsColor()
-        attachSearchTableEvent()
+        $.attachSearchTableEvent(queryResultId)
         attachExpandRowsEvent()
         attachOpsResultDivEvent()
 
@@ -564,64 +454,6 @@
         $('.result').html('')
     })
 
-
-    function showTables(result) {
-        var resultHtml = ''
-        if (result.Rows && result.Rows.length > 0) {
-            for (var i = 0; i < result.Rows.length; i++) {
-                resultHtml += '<span>' + result.Rows[i][1] + '</span>'
-            }
-        }
-        $('.tables').html(resultHtml)
-        $('.searchTableNames').change()
-    }
-
-    function showTablesAjax(activeMerchantId) {
-        $.ajax({
-            type: 'POST',
-            url: pathname + "/query",
-            data: {tid: activeMerchantId, sql: 'show tables'},
-            success: function (content, textStatus, request) {
-                showTables(content)
-                showTablesDiv()
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
-            }
-        })
-    }
-
-    $.showTablesAjax = showTablesAjax
-
-    $('.tables').on('click', 'span', function (event) {
-        var $button = $(this)
-        var tableName = $(this).text()
-        if ($button.data('alreadyclicked')) {
-            $button.data('alreadyclicked', false) // reset
-            if ($button.data('alreadyclickedTimeout')) {
-                clearTimeout($button.data('alreadyclickedTimeout')) // prevent this from happening
-            }
-            executeSql('show full columns from ' + tableName)
-            hideTablesDiv()
-        } else {
-            $button.data('alreadyclicked', true)
-            var alreadyclickedTimeout = setTimeout(function () {
-                $button.data('alreadyclicked', false) // reset when it happens
-                executeSql('select * from ' + tableName)
-                hideTablesDiv()
-            }, 300) // <-- dblclick tolerance here
-            $button.data('alreadyclickedTimeout', alreadyclickedTimeout) // store this id to clear if necessary
-        }
-        return false
-    })
-
-
-    $('.hideTables').click(function () {
-        var visible = $('.tablesWrapper').toggle($(this).text() != 'Hide Tables').is(":visible")
-        $(this).text(visible ? 'Hide Tables' : 'Show Tables')
-        $('.searchTableNames').toggle(visible)
-    })
-
     $('.loginButton').click(function () {
         $.ajax({
             type: 'POST',
@@ -634,47 +466,5 @@
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
-    })
-
-    function hideTablesDiv() {
-        $('.tablesWrapper').hide()
-        $('.hideTables').text('Show Tables')
-        $('.searchTableNames').hide()
-    }
-
-    $.hideTablesDiv = hideTablesDiv
-
-    function showTablesDiv() {
-        $('.tablesWrapper').show()
-        $('.hideTables').text('Hide Tables')
-        $('.searchTableNames').show()
-    }
-
-    $('.searchTableNames').on('keyup change', function () {
-        var filter = $.trim($(this).val()).toUpperCase()
-
-        $('.tables span').each(function (index, span) {
-            var $span = $(span)
-            var text = $.trim($span.text()).toUpperCase()
-            var contains = text.indexOf(filter) > -1
-            $span.toggle(contains)
-        })
-    }).focus(function () {
-        $(this).select()
-    })
-
-    $(document).on('paste', '[contenteditable]', function (e) {
-        e.preventDefault()
-        var text = ''
-        if (e.clipboardData || e.originalEvent.clipboardData) {
-            text = (e.originalEvent || e).clipboardData.getData('text/plain')
-        } else if (window.clipboardData) {
-            text = window.clipboardData.getData('Text')
-        }
-        if (document.queryCommandSupported('insertText')) {
-            document.execCommand('insertText', false, text)
-        } else {
-            document.execCommand('paste', false, text)
-        }
     })
 })()
