@@ -86,21 +86,29 @@
 
         $.each(linksConfig.links, function (key, value) {
             var fieldTable = {}
+            var upperKey = key.toUpperCase()
+            $linksConfig.fields[upperKey] = fieldTable
 
             $.each(value.linksTo, function (index, linkTo) {
                 var dotIndex = linkTo.indexOf('.')
                 var tableName = dotIndex < 0 ? linkTo : linkTo.substring(0, dotIndex)
                 var filedName = dotIndex < 0 ? key : linkTo.substring(dotIndex + 1)
 
-                $linksConfig.tables[tableName] = $linksConfig.tables[tableName] || {}
-                $linksConfig.tables[tableName][filedName] = key
+                var upperTable = tableName.toUpperCase()
+                var upperField = filedName.toUpperCase()
 
-                fieldTable[tableName] = filedName
+                $linksConfig.tables[upperTable] = $linksConfig.tables[upperTable] || {}
+                $linksConfig.tables[upperTable][upperField] = upperKey
+
+                if (upperKey !== upperField) {
+                    $linksConfig.fields[upperField] = fieldTable
+                }
+
+                fieldTable[upperTable] = upperField
             })
-
-            $linksConfig.fields[key] = fieldTable
-            $.linksConfig = $linksConfig
         })
+
+        $.linksConfig = $linksConfig
     }
 
     ReloadConfig()

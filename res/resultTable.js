@@ -1,5 +1,5 @@
 (function () {
-    function createRows(result, rowUpdateReady) {
+    function createRows(result, rowUpdateReady, isTableInLinked, contextMenuHolder) {
         var rowHtml = ''
         for (var i = 0; i < result.Rows.length; i++) {
             rowHtml += '<tr class="dataRow">'
@@ -9,11 +9,24 @@
 
             for (var j = 0; j < result.Rows[i].length; ++j) {
                 var cellValue = result.Rows[i][j]
+
+                rowHtml += '<td class="dataCell '
                 if ('(null)' == cellValue) {
-                    rowHtml += '<td class="dataCell nullCell">' + cellValue + '</td>'
-                } else {
-                    rowHtml += '<td class="dataCell">' + cellValue + '</td>'
+                    rowHtml += 'nullCell '
                 }
+
+                if (isTableInLinked && result.Headers) {
+                    var columnName = result.Headers[j - 1]
+                    if ($.isInLinkedTableField(result.TableName, columnName)) {
+                        rowHtml += 'contextMenu-' + columnName
+
+                        contextMenuHolder.contextMenuRequired = true
+                        contextMenuHolder.columnNames = contextMenuHolder.columnNames || {}
+                        contextMenuHolder.columnNames[columnName] = true
+                    }
+                }
+
+                rowHtml += '">' + cellValue + '</td>'
             }
 
             rowHtml += '</tr>'
@@ -51,8 +64,8 @@
             '<td class="sqlTd" contenteditable="true">' + sql + '</td>' +
             '<tr></table>';
     }
-    
-    $.createResultTableHtml = function (result, sql, rowUpdateReady, queryResultId) {
+
+    $.createResultTableHtml = function (result, sql, rowUpdateReady, queryResultId, contextMenuHolder) {
         var hasRows = result.Rows && result.Rows.length > 0
         var table = createSummaryTable(queryResultId, result, hasRows, sql);
         table += '<div id="divTranspose' + queryResultId + '" class="divTranspose"></div>'
@@ -62,6 +75,9 @@
         } else if (hasRows) {
             table += '<div><input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search"></div>'
         }
+
+        contextMenuHolder.tableId = 'queryResult' + queryResultId
+        contextMenuHolder.tableName = result.TableName
 
         table += '<div id="collapseDiv' + queryResultId + '" class="collapseDiv">' +
             '<table id="queryResult' + queryResultId + '" class="queryResult">'
@@ -74,7 +90,8 @@
             table += '<td>#</td><td>' + result.Headers.join('</td><td>') + '</td></tr>'
         }
         if (hasRows) {
-            table += createRows(result, rowUpdateReady);
+            var isTableInLinked = result.TableName !== '' && $.isInLinkedTable(result.TableName)
+            table += createRows(result, rowUpdateReady, isTableInLinked, contextMenuHolder);
         } else if (result.Rows && result.Rows.length == 0) {
             table += '<tr class="dataRow clonedRow">'
             if (rowUpdateReady) {

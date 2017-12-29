@@ -1,0 +1,274 @@
+@charset "UTF-8";
+/*!
+ * jQuery contextMenu - Plugin for simple contextMenu handling
+ *
+ * Version: v2.6.3
+ *
+ * Authors: Björn Brala (SWIS.nl), Rodney Rehm, Addy Osmani (patches for FF)
+ * Web: http://swisnl.github.io/jQuery-contextMenu/
+ *
+ * Copyright (c) 2011-2017 SWIS BV and contributors
+ *
+ * Licensed under
+ *   MIT License http://www.opensource.org/licenses/mit-license
+ *
+ * Date: 2017-10-30T19:03:13.936Z
+ */
+@-webkit-keyframes cm-spin {
+    0% {
+        -webkit-transform: translateY(-50%) rotate(0deg);
+        transform: translateY(-50%) rotate(0deg);
+    }
+    100% {
+        -webkit-transform: translateY(-50%) rotate(359deg);
+        transform: translateY(-50%) rotate(359deg);
+    }
+}
+
+@-o-keyframes cm-spin {
+    0% {
+        -webkit-transform: translateY(-50%) rotate(0deg);
+        -o-transform: translateY(-50%) rotate(0deg);
+        transform: translateY(-50%) rotate(0deg);
+    }
+    100% {
+        -webkit-transform: translateY(-50%) rotate(359deg);
+        -o-transform: translateY(-50%) rotate(359deg);
+        transform: translateY(-50%) rotate(359deg);
+    }
+}
+
+@keyframes cm-spin {
+    0% {
+        -webkit-transform: translateY(-50%) rotate(0deg);
+        -o-transform: translateY(-50%) rotate(0deg);
+        transform: translateY(-50%) rotate(0deg);
+    }
+    100% {
+        -webkit-transform: translateY(-50%) rotate(359deg);
+        -o-transform: translateY(-50%) rotate(359deg);
+        transform: translateY(-50%) rotate(359deg);
+    }
+}
+
+@font-face {font-family: "context-menu-icons";
+    src: url('font/iconfont.eot?t=1514442780774'); /* IE9*/
+    src: url('font/iconfont.eot?t=1514442780774#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('data:application/x-font-woff;charset=utf-8;base64,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') format('woff'),
+    url('font/iconfont.ttf?t=1514442780774') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+    url('font/iconfont.svg?t=1514442780774#context-menu-icons') format('svg'); /* iOS 4.1- */
+}
+
+.context-menu-icon-link:before { content: "\e60e"; }
+.context-menu-icon-copy:before { content: "\e610"; }
+.context-menu-icon-delete:before { content: "\e611"; }
+.context-menu-icon-sql:before { content: "\e612"; }
+.context-menu-icon-rotate:before { content: "\e613"; }
+.context-menu-icon-column:before { content: "\e614"; }
+
+.context-menu-icons {
+    font-family: "context-menu-icons" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.context-menu-icon::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 2em;
+    font-family: "context-menu-icons";
+    font-size: 1em;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    color: #2980b9;
+    text-align: center;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.context-menu-icon.context-menu-hover:before {
+    color: #fff;
+}
+
+.context-menu-icon.context-menu-disabled::before {
+    color: #bbb;
+}
+
+.context-menu-icon.context-menu-icon-loading:before {
+    -webkit-animation: cm-spin 2s infinite;
+    -o-animation: cm-spin 2s infinite;
+    animation: cm-spin 2s infinite;
+}
+
+.context-menu-icon.context-menu-icon--fa {
+    display: list-item;
+    font-family: inherit;
+}
+
+.context-menu-icon.context-menu-icon--fa::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 2em;
+    font-family: FontAwesome;
+    font-size: 1em;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    color: #2980b9;
+    text-align: center;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.context-menu-icon.context-menu-icon--fa.context-menu-hover:before {
+    color: #fff;
+}
+
+.context-menu-icon.context-menu-icon--fa.context-menu-disabled::before {
+    color: #bbb;
+}
+
+.context-menu-list {
+    position: absolute;
+    display: inline-block;
+    min-width: 13em;
+    max-width: 26em;
+    padding: .25em 0;
+    margin: .3em;
+    font-family: inherit;
+    font-size: inherit;
+    list-style-type: none;
+    background: #fff;
+    border: 1px solid #bebebe;
+    border-radius: .2em;
+    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, .5);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .5);
+}
+
+.context-menu-item {
+    position: relative;
+    padding: .2em 2em;
+    color: #2f2f2f;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: #fff;
+}
+
+.context-menu-separator {
+    padding: 0;
+    margin: .35em 0;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.context-menu-item > label > input,
+.context-menu-item > label > textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+.context-menu-item.context-menu-hover {
+    color: #fff;
+    cursor: pointer;
+    background-color: #2980b9;
+}
+
+.context-menu-item.context-menu-disabled {
+    color: #bbb;
+    cursor: default;
+    background-color: #fff;
+}
+
+.context-menu-input.context-menu-hover {
+    color: #2f2f2f;
+    cursor: default;
+}
+
+.context-menu-submenu:after {
+    position: absolute;
+    top: 50%;
+    right: .5em;
+    z-index: 1;
+    width: 0;
+    height: 0;
+    content: '';
+    border-color: transparent transparent transparent #2f2f2f;
+    border-style: solid;
+    border-width: .25em 0 .25em .25em;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+/**
+ * Inputs
+ */
+.context-menu-item.context-menu-input {
+    padding: .3em .6em;
+}
+
+/* vertically align inside labels */
+.context-menu-input > label > * {
+    vertical-align: top;
+}
+
+/* position checkboxes and radios as icons */
+.context-menu-input > label > input[type="checkbox"],
+.context-menu-input > label > input[type="radio"] {
+    position: relative;
+    top: .12em;
+    margin-right: .4em;
+}
+
+.context-menu-input > label {
+    margin: 0;
+}
+
+.context-menu-input > label,
+.context-menu-input > label > input[type="text"],
+.context-menu-input > label > textarea,
+.context-menu-input > label > select {
+    display: block;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.context-menu-input > label > textarea {
+    height: 7em;
+}
+
+.context-menu-item > .context-menu-list {
+    top: .3em;
+    /* re-positioned by js */
+    right: -.3em;
+    display: none;
+}
+
+.context-menu-item.context-menu-visible > .context-menu-list {
+    display: block;
+}
+
+.context-menu-accesskey {
+    text-decoration: underline;
+}

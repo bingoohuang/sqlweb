@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"strconv"
@@ -56,14 +57,19 @@ func init() {
 }
 
 func main() {
-	http.HandleFunc(contextPath+"/", gzipWrapper(serveHome))
-	http.HandleFunc(contextPath+"/query", gzipWrapper(serveQuery))
-	http.HandleFunc(contextPath+"/loadLinksConfig", serveLoadLinksConfig)
-	http.HandleFunc(contextPath+"/saveLinksConfig", serveSaveLinksConfig)
-	http.HandleFunc(contextPath+"/favicon.ico", serveFavicon)
-	http.HandleFunc(contextPath+"/update", serveUpdate)
-	http.HandleFunc(contextPath+"/searchDb", serveSearchDb)
-	http.HandleFunc(contextPath+"/login", serveLogin)
+	r := mux.NewRouter()
+
+	r.HandleFunc(contextPath+"/", gzipWrapper(serveHome))
+	r.HandleFunc(contextPath+"/query", gzipWrapper(serveQuery))
+	r.HandleFunc(contextPath+"/loadLinksConfig", serveLoadLinksConfig)
+	r.HandleFunc(contextPath+"/saveLinksConfig", serveSaveLinksConfig)
+	r.HandleFunc(contextPath+"/font/{fontName}", serveFont)
+	r.HandleFunc(contextPath+"/favicon.ico", serveFavicon)
+	r.HandleFunc(contextPath+"/update", serveUpdate)
+	r.HandleFunc(contextPath+"/searchDb", serveSearchDb)
+	r.HandleFunc(contextPath+"/login", serveLogin)
+
+	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {

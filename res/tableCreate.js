@@ -60,7 +60,8 @@
         var rowUpdateReady = result.TableName && result.TableName != ""
 
         ++queryResultId
-        var table = $.createResultTableHtml(result, sql, rowUpdateReady, queryResultId)
+        var contextMenuHolder = {}
+        var table = $.createResultTableHtml(result, sql, rowUpdateReady, queryResultId, contextMenuHolder)
         if (resultId && resultId > 0) {
             $('#executionResultDiv' + resultId).html(table)
         } else {
@@ -71,6 +72,7 @@
         $.attachSearchTableEvent(queryResultId)
         attachExpandRowsEvent()
         attachOpsResultDivEvent()
+        $.createLinkToTableContextMenu(contextMenuHolder)
 
         if (rowUpdateReady) {
             $.attachEditableEvent(queryResultId)

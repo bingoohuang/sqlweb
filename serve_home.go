@@ -63,7 +63,7 @@ func minifyCssJs(mergedCss, mergedJs string, devMode bool) (string, string) {
 }
 
 func mergeCss() string {
-	return mergeStatic("codemirror-5.29.0.min.css", "index.css")
+	return mergeStatic("codemirror-5.29.0.min.css", "index.css", "jquery.contextMenu.css")
 }
 
 func mergeScripts() string {
@@ -74,6 +74,7 @@ func mergeScripts() string {
 		"sqlEditor.js", "searchTenants.js", "tables.js", "rowFilter.js", "createSql.js",
 		"transposeRows.js", "login.js", "sqlAjax.js", "checkboxEditable.js", "saveUpdates.js",
 		"resultTable.js", "tableCreate.js",
+		"contextMenu.js", "jquery.contextMenu.js", "jquery.ui.position.js",
 		"index.js")
 }
 
