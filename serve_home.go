@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/html"
@@ -56,18 +57,26 @@ func minifyCssJs(mergedCss, mergedJs string, devMode bool) (string, string) {
 	mini.AddFunc("text/css", css.Minify)
 	mini.AddFunc("text/javascript", js.Minify)
 
-	minifiedCss, _ := mini.String("text/css", mergedCss)
-	minifiedJs, _ := mini.String("text/javascript", mergedJs)
+	minifiedCss, err := mini.String("text/css", mergedCss)
+	if err != nil {
+		fmt.Println("mini css:", err.Error())
+	}
+	minifiedJs, err := mini.String("text/javascript", mergedJs)
+	if err != nil {
+		fmt.Println("mini js:", err.Error())
+	}
 
 	return minifiedCss, minifiedJs
 }
 
 func mergeCss() string {
-	return mergeStatic("codemirror-5.29.0.min.css", "index.css", "jquery.contextMenu.css")
+	return mergeStatic("\n",
+		"codemirror-5.29.0.min.css", "index.css", "jquery.contextMenu.css")
 }
 
 func mergeScripts() string {
-	return mergeStatic("jquery-3.2.1.min.js", "common.js",
+	return mergeStatic(";",
+		"jquery-3.2.1.min.js", "common.js",
 		"codemirror-5.29.0.min.js", "sql-5.29.0.min.js", "toml-5.29.0.min.js",
 		"linksConfig.js",
 		"sql-formatter-2.0.0.min.js",
@@ -78,11 +87,11 @@ func mergeScripts() string {
 		"index.js")
 }
 
-func mergeStatic(statics ...string) string {
+func mergeStatic(seperate string, statics ...string) string {
 	var scripts bytes.Buffer
 	for _, static := range statics {
 		scripts.Write(MustAsset("res/" + static))
-		scripts.Write([]byte(";"))
+		scripts.Write([]byte(seperate))
 	}
 
 	return scripts.String()
