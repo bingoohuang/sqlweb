@@ -40,7 +40,18 @@ Usage of ./go-sql-web:
 
 # snapshots
 
+Main page:
+
 ![image](https://user-images.githubusercontent.com/1940588/30257639-1aa0c41e-9679-11e7-8246-3abe87ba5510.png)
+
+LinksTo & Fast Entries:
+
+![image](https://user-images.githubusercontent.com/1940588/34432496-b5c56136-ecb2-11e7-8d96-a7ce803da0c0.png)
+
+LinksTo & Fast Entries Config:
+
+![image](https://user-images.githubusercontent.com/1940588/34432497-b9dd4d9c-ecb2-11e7-95a2-2fb8f8bdd229.png)
+
 
 # others
 ## 如何在Mac上关闭后退和前进触控板手势
