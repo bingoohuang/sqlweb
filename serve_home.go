@@ -68,13 +68,13 @@ func mergeCss() string {
 
 func mergeScripts() string {
 	return mergeStatic("jquery-3.2.1.min.js", "common.js",
-		"codemirror-5.29.0.min.js", "sql-5.29.0.min.js", "toml-5.29.0.min.js", "toml.js",
+		"codemirror-5.29.0.min.js", "sql-5.29.0.min.js", "toml-5.29.0.min.js",
 		"linksConfig.js",
 		"sql-formatter-2.0.0.min.js",
 		"sqlEditor.js", "searchTenants.js", "tables.js", "rowFilter.js", "createSql.js",
 		"transposeRows.js", "login.js", "sqlAjax.js", "checkboxEditable.js", "saveUpdates.js",
 		"resultTable.js", "tableCreate.js",
-		"contextMenu.js", "jquery.contextMenu.js", "jquery.ui.position.js",
+		"contextMenu.js", "jquery.contextMenu.js", "jquery.ui.position.js", "fastEntries.js",
 		"index.js")
 }
 

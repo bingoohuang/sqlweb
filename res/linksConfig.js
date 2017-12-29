@@ -18,10 +18,10 @@
             url: pathname + "/saveLinksConfig",
             data: {linksConfig: tomlEditor.getValue()},
             success: function (content, textStatus, request) {
-                if (content === "OK") {
+                if (content.OK === "OK") {
                     toogleLinksConfigDiv()
 
-                    createLinksConfig(toml(tomlEditor.getValue()))
+                    createLinksConfig(JSON.parse(content.Json))
                 } else {
                     alert(content)
                 }
@@ -43,8 +43,8 @@
             type: 'POST',
             url: pathname + "/loadLinksConfig",
             success: function (content, textStatus, request) {
-                tomlEditor.setValue(content)
-                createLinksConfig(toml(content))
+                tomlEditor.setValue(content.LinksConfig)
+                createLinksConfig(JSON.parse(content.Json))
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
@@ -55,6 +55,8 @@
     ReloadConfig()
 
     function createLinksConfig(linksConfig) {
+        $.createFastEntries(linksConfig.entries)
+
         var $linksConfig = {tables: {}, fields: {}}
         /*
         tables: {

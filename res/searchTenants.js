@@ -8,6 +8,8 @@
 
     $('.searchButton').click(function () {
         $.hideTablesDiv()
+        $('#fastEntriesDiv').hide()
+        
         $('#tidtcodeSpan').text('')
         var searchKey = $.trim($('.searchKey').val())
         if (searchKey === '') {
@@ -56,6 +58,8 @@
 
         $('.executeQuery').prop("disabled", false)
         $.showTablesAjax(activeMerchantId)
+
+        $('#fastEntriesDiv').show()
     })
 
 })()
