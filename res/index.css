@@ -169,3 +169,7 @@ table.executionSummary tr:first-child {
     margin: 10px 0 0 10px;
     display: none;
 }
+
+.highlightCell {
+    background: yellow;
+}

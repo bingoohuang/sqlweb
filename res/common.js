@@ -30,4 +30,21 @@ var activeMerchantName = null;
     $('.clearResult').click(function () {
         $('.result').html('')
     })
+
+
+    $(document).on('dblclick', 'table td', function (e) {
+        e.preventDefault()
+        var hasClass = $(this).hasClass('highlightCell');
+        $('table td.highlightCell').removeClass('highlightCell')
+        if (!hasClass) {
+            var cellValue = $(this).text()
+            if (cellValue === '') return
+
+            $('table td').each(function (index, td) {
+                if ($(td).text() === cellValue) {
+                    $(this).addClass('highlightCell')
+                }
+            })
+        }
+    })
 })()
