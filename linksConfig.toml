@@ -1,9 +1,6 @@
 [links]
-
     [links.user_id]
-    linksTo = ["tt_f_user", "tt_f_user_role", 
-    "tt_f_member", "tt_f_mbr_card.member_id", 
-    "tt_f_coach", "tt_f_staff", "tt_f_subscribe", "tt_f_login"]
+    linksTo = ["tt_f_user", "tt_f_user_role", "tt_f_member", "tt_f_mbr_card.member_id", "tt_f_coach", "tt_f_staff", "tt_f_subscribe", "tt_f_login"]
     
     [links.MBR_CARD_ID]
     linksTo = ["tt_f_mbr_card", "tt_l_mbrcard_chg"]
@@ -19,3 +16,16 @@
     
     [links.MOBILE]
     linksTo = ["tt_f_user", "tt_f_login"]
+
+
+[entries]
+    [entries.member]
+    type = "input"
+    placeholder = "手机号码/姓名"
+    label = "查找用户"
+    sql = "select * from tt_f_user where nickname like '%{input}%' or mobile like '%{input}%'"
+
+    [entries.merchant]
+    type = "link"
+    label = "查找馆主"
+    sql = "select * from tt_f_user_role where role_id = '100'"

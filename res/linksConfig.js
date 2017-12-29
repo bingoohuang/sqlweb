@@ -3,16 +3,7 @@
         $('#sqlwebDiv').hide()
         $('#linksConfigDiv').show()
 
-        if (tomlEditor == null) {
-            // refer : https://codemirror.net/mode/toml/index.html
-            tomlEditor = CodeMirror.fromTextArea(document.getElementById("tomlEditor"), {
-                mode: 'text/x-toml',
-                lineNumbers: true
-            })
-
-            tomlEditor.setSize(null, '300px')
-        }
-        tomlEditor.setValue(linksConfigStr)
+        tomlEditor.setSize(null, '500px')
     })
 
     $('#SaveConfig').click(function () {
@@ -25,8 +16,7 @@
                     $('#linksConfigDiv').hide()
                     $('#sqlwebDiv').show()
 
-                    linksConfigStr = tomlEditor.getValue()
-                    var linksConfigToml = toml(linksConfigStr)
+                    var linksConfigToml = toml(tomlEditor.getValue())
                     createLinksConfig(linksConfigToml)
                 } else {
                     alert(content)
@@ -43,22 +33,21 @@
         $('#sqlwebDiv').show()
     })
 
-    $('#ReloadConfig').click(function () {
-        ReloadConfig()
-        tomlEditor.setValue(linksConfigStr)
+    $('#ReloadConfig').click(ReloadConfig)
+
+    // refer : https://codemirror.net/mode/toml/index.html
+    var tomlEditor = CodeMirror.fromTextArea(document.getElementById("tomlEditor"), {
+        mode: 'text/x-toml',
+        lineNumbers: true
     })
-
-    var tomlEditor = null
-    var linksConfigStr = ''
-
 
     function ReloadConfig() {
         $.ajax({
             type: 'POST',
             url: pathname + "/loadLinksConfig",
             success: function (content, textStatus, request) {
-                linksConfigStr = content
-                var linksConfigToml = toml(linksConfigStr)
+                tomlEditor.setValue(content)
+                var linksConfigToml = toml(content)
                 createLinksConfig(linksConfigToml)
             },
             error: function (jqXHR, textStatus, errorThrown) {
