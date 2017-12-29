@@ -95,10 +95,6 @@
         })
     }
 
-    function alternateRowsColor() {
-        $('#queryResult' + queryResultId + ' tr:even').addClass('rowEven')
-    }
-
     function toggleRowEditable() {
         var rowChecked = $(this).prop('checked')
         var dataCells = $(this).parents('tr').find('td.dataCell')
@@ -297,7 +293,7 @@
             $(table).prependTo($('.result'))
         }
 
-        alternateRowsColor()
+        $('#queryResult' + queryResultId + ' tr:even').addClass('rowEven')
         $.attachSearchTableEvent(queryResultId)
         attachExpandRowsEvent()
         attachOpsResultDivEvent()
@@ -313,19 +309,5 @@
 
     $('.clearResult').click(function () {
         $('.result').html('')
-    })
-
-    $('.loginButton').click(function () {
-        $.ajax({
-            type: 'POST',
-            url: pathname + "/login",
-            data: {tid: activeMerchantId, sql: 'show tables'},
-            success: function (content, textStatus, request) {
-                window.location = content.RedirectUrl
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
-            }
-        })
     })
 })()

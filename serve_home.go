@@ -72,7 +72,7 @@ func mergeScripts() string {
 		"linksConfig.js",
 		"sql-formatter-2.0.0.min.js",
 		"sqlEditor.js", "searchTenants.js", "tables.js", "rowFilter.js", "createSql.js",
-		"transposeRows.js",
+		"transposeRows.js", "login.js",
 		"index.js")
 }
 
