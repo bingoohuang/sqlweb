@@ -1,5 +1,5 @@
 (function () {
-    $.attachSaveUpdatesEvent = function(result, queryResultId) {
+    $.attachSaveUpdatesEvent = function (result, queryResultId) {
         var thisQueryResult = queryResultId
         $('#saveUpdates' + thisQueryResult).click(function () {
             var table = $('#queryResult' + thisQueryResult)
@@ -17,14 +17,13 @@
                     sqlRowIndices[sqlRowIndices.length] = index
                 } else if ($row.hasClass('deletedRow')) {
                     var deleteSql = 'delete from ' + result.TableName + ' '
-                    deleteSql = $.createWherePart(deleteSql, result, headRow, cells)
+                    deleteSql += $.createWherePart(result, headRow, cells)
                     sqls[sqls.length] = deleteSql
                     sqlRowIndices[sqlRowIndices.length] = index
                 } else {
                     var updateSql = $.createUpdateSetPart(cells, result, headRow)
-
                     if (updateSql != null) {
-                        updateSql = $.createWherePart(updateSql, result, headRow, cells)
+                        updateSql += $.createWherePart(result, headRow, cells)
                         sqls[sqls.length] = updateSql
                         sqlRowIndices[sqlRowIndices.length] = index
                     }

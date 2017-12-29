@@ -9,24 +9,16 @@
     $.createInsert = function (cells, result) {
         var insertSql = 'insert into ' + wrapFieldName(result.TableName) + '('
         for (var i = 0; i < result.Headers.length; ++i) {
-            if (i > 0) {
-                insertSql += ', '
-            }
+            insertSql += i > 0 ? ', ' : ''
             insertSql += wrapFieldName(result.Headers[i])
         }
         insertSql += ') values ('
 
         cells.each(function (jndex, cell) {
-            if (jndex > 1) {
-                insertSql += ', '
-            }
+            insertSql += jndex > 1 ? ', ' : ''
             if (jndex > 0) {
                 var newValue = $(cell).text()
-                if ("(null)" == newValue) {
-                    insertSql += 'null'
-                } else {
-                    insertSql += '\'' + newValue.replace(regex, escaper) + '\''
-                }
+                insertSql += "(null)" == newValue ? 'null' : ('\'' + newValue.replace(regex, escaper) + '\'')
             }
         })
         return insertSql + ')'
@@ -43,12 +35,10 @@
                     updateSql += ', '
                 }
                 var fieldName = $(headRow.get(jndex + 1)).text()
+                updateSql += wrapFieldName(fieldName)
+
                 var newValue = $(cell).text()
-                if ("(null)" == newValue) {
-                    updateSql += wrapFieldName(fieldName) + ' is null'
-                } else {
-                    updateSql += wrapFieldName(fieldName) + ' = \'' + newValue.replace(regex, escaper) + '\''
-                }
+                updateSql += "(null)" == newValue ? ' = null' : ' = \'' + newValue.replace(regex, escaper) + '\''
             }
         })
         return updateSql
@@ -59,42 +49,35 @@
         else return '`' + fieldName + '`'
     }
 
-    $.createWherePart = function (updateSql, result, headRow, cells) {
-        updateSql += ' where '
+    $.createWherePart = function (result, headRow, cells) {
+        var sql = ' where '
         if (result.PrimaryKeysIndex.length > 0) {
             for (var i = 0; i < result.PrimaryKeysIndex.length; ++i) {
                 var ki = result.PrimaryKeysIndex[i] + 1
-                if (i > 0) {
-                    updateSql += ' and '
-                }
+                sql += i > 0 ? ' and ' : ''
+
                 var pkName = $(headRow.get(ki + 1)).text()
                 var $cell = $(cells.get(ki))
                 var pkValue = $cell.attr('old') || $cell.text()
-                updateSql += wrapFieldName(pkName) + ' = \'' + pkValue.replace(regex, escaper) + '\''
+                sql += wrapFieldName(pkName) + ' = \'' + pkValue.replace(regex, escaper) + '\''
             }
-            return updateSql
+            return sql
         } else {
             var wherePart = ''
             cells.each(function (jndex, cell) {
                 if (jndex > 0) {
                     var whereValue = $(this).attr('old') || $(cell).text()
-                    if (wherePart != '') {
-                        wherePart += ' and '
-                    }
-                    var fieldName = $(headRow.get(jndex + 1)).text()
+                    wherePart += wherePart != '' ? ' and ' : ''
 
-                    if ("(null)" == whereValue) {
-                        wherePart += wrapFieldName(fieldName) + ' is null'
-                    } else {
-                        wherePart += wrapFieldName(fieldName) + ' = \'' + whereValue.replace(regex, escaper) + '\''
-                    }
+                    var fieldName = $(headRow.get(jndex + 1)).text()
+                    wherePart += wrapFieldName(fieldName)
+                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + whereValue.replace(regex, escaper) + '\''
                 }
             })
-            if (wherePart != null) {
-                updateSql += wherePart
-            }
+
+            sql += wherePart
         }
 
-        return updateSql
+        return sql
     }
 })()
