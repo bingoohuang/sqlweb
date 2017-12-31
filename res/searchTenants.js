@@ -1,15 +1,15 @@
 (function () {
     $('.searchKey').keydown(function (event) {
         var keyCode = event.keyCode || event.which
-        if (keyCode == 13) $('.searchButton').click()
+        if (keyCode == 13) searchTenants()
     }).focus(function () {
         $(this).select()
     })
 
-    $('.searchButton').click(function () {
+    function searchTenants() {
         $.hideTablesDiv()
         $('#fastEntriesDiv').hide()
-        
+
         $('#tidtcodeSpan').text('')
         var searchKey = $.trim($('.searchKey').val())
         if (searchKey === '') {
@@ -29,7 +29,7 @@
                         searchHtml += '<span tid="' + content[j].MerchantId
                             + '" tcode="' + content[j].MerchantCode
                             + '" homeArea="' + content[j].HomeArea
-                            + '">🌀' + content[j].MerchantName + '</span>'
+                            + '" class="context-menu-icons context-menu-icon-tenant">' + content[j].MerchantName + '</span>'
                     }
                 } else {
                     $('.executeQuery').prop("disabled", true)
@@ -42,8 +42,7 @@
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
-    })
-
+    }
 
     $('.searchResult').on('click', 'span', function () {
         $('.searchResult span').removeClass('active')
@@ -54,7 +53,9 @@
         activeHomeArea = $this.attr('homeArea')
         activeMerchantName = $this.text()
 
-        $('#tidtcodeSpan').text('tid:' + activeMerchantId + ', tcode:' + activeMerchantCode + ', homeArea:' + activeHomeArea)
+        $('#tidtcodeSpan').html('<span class="context-menu-icons context-menu-icon-id">' + activeMerchantId + ' </span>' +
+            '<span class="context-menu-icons context-menu-icon-code">' + activeMerchantCode + '</span>' +
+            '<span class="context-menu-icons context-menu-icon-earth">' + activeHomeArea + '</span>')
 
         $('.executeQuery').prop("disabled", false)
         $.showTablesAjax(activeMerchantId)

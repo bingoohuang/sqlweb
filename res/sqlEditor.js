@@ -37,18 +37,31 @@
         extraKeys: extraKeys
     })
 
+    $.contextMenu({
+        selector: '#sqlwebDiv .CodeMirror',
+        callback: function (key, options) {
+            if (key === 'FormatSql') {
+                var sql = codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()
+                var formattedSql = sqlFormatter.format(sql, {language: 'sql'})
+                codeMirror.setValue(formattedSql)
+            } else if (key === 'ClearSql') {
+                codeMirror.setValue('')
+            } else if (key === 'RunSql') {
+                if ($('.executeQuery').prop('disabled') === false) {
+                    $('.executeQuery').click()
+                }
+            }
+        },
+        items: {
+            RunSql: {name: 'Run SQL', icon: 'run'},
+            FormatSql: {name: 'Format SQL', icon: 'format'},
+            ClearSql: {name: 'Clear SQL', icon: 'clear'}
+        }
+    })
+
     $('.executeQuery').prop("disabled", true).click(function () {
         var sql = codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()
         $.executeQueryAjax(sql)
-    })
-
-    $('.formatSql').click(function () {
-        var sql = codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()
-        var formattedSql = sqlFormatter.format(sql, {language: 'sql'})
-        codeMirror.setValue(formattedSql)
-    })
-    $('.clearSql').click(function () {
-        codeMirror.setValue('')
     })
 
 })()

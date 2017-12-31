@@ -24,7 +24,10 @@ table td {
     border: 1px solid #ccc;
     cursor: pointer;
     margin-right: 10px;
-    border-radius: 10px;
+}
+
+#tidtcodeSpan span {
+    margin-right: 10px;
 }
 
 .searchResult .active {
