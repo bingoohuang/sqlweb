@@ -31,6 +31,15 @@ table td {
     margin-right: 10px;
 }
 
+#rightSpan {
+    position: absolute;
+    right: 10px;
+}
+
+#buttonsLineDiv {
+    margin: 10px 0;
+}
+
 .searchResult .active {
     background-color: #ccc;
     font-weight: bold;
@@ -69,7 +78,7 @@ table td {
     margin-top: 10px;
 }
 
-#CloseConfig {
+#CloseConfig, #tidtcodeSpan {
     position: absolute;
     right: 10px;
 }

@@ -32,14 +32,18 @@
         <div>
             <textarea id="code" placeholder="SQL goes here"></textarea>
             <div class="resizeHandle"></div>
-            <button class="executeQuery">Run SQL</button>
-            <button class="clearResult">Clear Result</button>
 
-            <button id="linkConfigBtn">Links Config</button>
-            <button class="hideTables">Hide Tables</button>
-            <input class="searchTableNames" placeholder="Type to search tables">
+            <div id="buttonsLineDiv">
+                <button class="executeQuery">Run SQL</button>
+                <button class="clearResult">Clear Result</button>
 
-            <LOGIN/>
+                <input class="searchTableNames" placeholder="Type to search tables">
+
+                <span id="rightSpan">
+                <LOGIN/>
+                <button id="linkConfigBtn">Links Config</button>
+            </span>
+            </div>
         </div>
         <div class="tablesWrapper">
             <div class="tables"></div>

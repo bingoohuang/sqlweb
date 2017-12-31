@@ -7,7 +7,7 @@
     })
 
     function searchTenants() {
-        $.hideTablesDiv()
+        $('.tablesWrapper').hide()
         $('#fastEntriesDiv').hide()
 
         $('#tidtcodeSpan').text('')

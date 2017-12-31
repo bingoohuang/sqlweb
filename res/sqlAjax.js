@@ -11,7 +11,7 @@
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
-        $.hideTablesDiv()
+        $('.tablesWrapper').hide()
     }
 
 

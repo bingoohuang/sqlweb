@@ -8,35 +8,34 @@
         }
         $('.tables').html(resultHtml)
         $('.searchTableNames').change()
+
+        $.contextMenu({
+            selector: '.tables span',
+            callback: function (key, options) {
+                if (key === 'ShowFullColumns') {
+                    var tableName = $(this).text()
+                    $.executeQueryAjax('select * from ' + tableName)
+                }
+            },
+            items: {
+                ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
+            }
+        })
     }
 
-    function showTablesAjax(activeMerchantId) {
+    $.showTablesAjax = function (activeMerchantId) {
         $.ajax({
             type: 'POST',
             url: pathname + "/query",
             data: {tid: activeMerchantId, sql: 'show tables'},
             success: function (content, textStatus, request) {
                 showTables(content)
-                showTablesDiv()
+                $('.tablesWrapper').show()
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
-    }
-
-    function hideTablesDiv() {
-        $('.tablesWrapper').hide()
-        $('.hideTables').text('Show Tables')
-        $('.searchTableNames').hide()
-    }
-
-    $.hideTablesDiv = hideTablesDiv
-
-    function showTablesDiv() {
-        $('.tablesWrapper').show()
-        $('.hideTables').text('Hide Tables')
-        $('.searchTableNames').show()
     }
 
     $('.searchTableNames').on('keyup change', function () {
@@ -50,36 +49,11 @@
         })
     }).focus(function () {
         $(this).select()
+        $('.tablesWrapper').show()
     })
-
-    $.showTablesAjax = showTablesAjax
 
     $('.tables').on('click', 'span', function (event) {
-        var $button = $(this)
         var tableName = $(this).text()
-        if ($button.data('alreadyclicked')) {
-            $button.data('alreadyclicked', false) // reset
-            if ($button.data('alreadyclickedTimeout')) {
-                clearTimeout($button.data('alreadyclickedTimeout')) // prevent this from happening
-            }
-            $.executeQueryAjax('show full columns from ' + tableName)
-            hideTablesDiv()
-        } else {
-            $button.data('alreadyclicked', true)
-            var alreadyclickedTimeout = setTimeout(function () {
-                $button.data('alreadyclicked', false) // reset when it happens
-                $.executeQueryAjax('select * from ' + tableName)
-                hideTablesDiv()
-            }, 300) // <-- dblclick tolerance here
-            $button.data('alreadyclickedTimeout', alreadyclickedTimeout) // store this id to clear if necessary
-        }
-        return false
-    })
-
-
-    $('.hideTables').click(function () {
-        var visible = $('.tablesWrapper').toggle($(this).text() != 'Hide Tables').is(":visible")
-        $(this).text(visible ? 'Hide Tables' : 'Show Tables')
-        $('.searchTableNames').toggle(visible)
+        $.executeQueryAjax('select * from ' + tableName)
     })
 })()
