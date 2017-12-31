@@ -10,20 +10,25 @@
 </head>
 <body>
 <div>
+    <div>
+        <input placeholder="Find tenants by tid/tcode/name" class="searchKey">
+        <span class="searchResult"></span><span id="tidtcodeSpan"></span>
+    </div>
+
     <div id="linksConfigDiv">
         <textarea id="tomlEditor"></textarea>
-        <div>
+
+        <div id="linksConfigButtonsDiv">
             <button id="SaveConfig">Save Config</button>
-            <button id="ReloadConfig">Reload Config</button>
             <button id="CloseConfig">Close</button>
+        </div>
+
+        <div id="tablesWithSpecifiedColumn">
+
         </div>
     </div>
 
     <div id="sqlwebDiv">
-        <div>
-            <input placeholder="tid/tcode/name" class="searchKey">
-            <span class="searchResult"></span><span id="tidtcodeSpan"></span>
-        </div>
         <div>
             <textarea id="code" placeholder="SQL goes here"></textarea>
             <div class="resizeHandle"></div>

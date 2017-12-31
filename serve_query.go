@@ -19,6 +19,42 @@ type QueryResult struct {
 	Msg              string
 }
 
+func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	tid := strings.TrimSpace(req.FormValue("tid"))
+	columnName := strings.TrimSpace(req.FormValue("columnName"))
+
+	dbDataSource, databaseName, err := selectDb(tid, req)
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
+	}
+
+	querySql := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
+		"WHERE TABLE_SCHEMA NOT IN('information_schema','mysql','performance_schema') " +
+		"AND COLUMN_NAME = '" + columnName + "'"
+
+	_, rows, executionTime, costTime, err, msg := processSql(true, querySql, dbDataSource)
+
+	queryResult := struct {
+		Rows          [][]string
+		Error         string
+		ExecutionTime string
+		CostTime      string
+		DatabaseName  string
+		Msg           string
+	}{
+		Rows:          rows,
+		Error:         gotErrorMessage(err),
+		ExecutionTime: executionTime,
+		CostTime:      costTime,
+		DatabaseName:  databaseName,
+		Msg:           msg,
+	}
+
+	json.NewEncoder(w).Encode(queryResult)
+}
+
 func serveQuery(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	querySql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {

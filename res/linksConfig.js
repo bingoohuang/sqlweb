@@ -11,10 +11,31 @@
             tomlEditor = CodeMirror.fromTextArea(document.getElementById("tomlEditor"), {
                 mode: 'text/x-toml', lineNumbers: true
             })
+
+            $.contextMenu({
+                selector: '#linksConfigDiv .CodeMirror',
+                zIndex: 10,
+                callback: function (key, options) {
+                    if (key === 'FindTablesByColumn') {
+                        if (!tomlEditor.somethingSelected()) {
+                            alert("Please choose the column name first")
+                            return
+                        }
+
+                        var columnName = tomlEditor.getSelection()
+                        FindTablesByColumn(columnName)
+                    } else if (key === 'ReloadConfig') {
+                        ReloadConfig()
+                    }
+                },
+                items: {
+                    FindTablesByColumn: {name: 'Find Tables', icon: 'tables'},
+                    ReloadConfig: {name: 'Reset Config', icon: 'reload'},
+                }
+            })
         }
     })
     $('#CloseConfig').click(toogleLinksConfigDiv)
-    $('#ReloadConfig').click(ReloadConfig)
 
     $('#SaveConfig').click(function () {
         $.ajax({
@@ -36,6 +57,28 @@
         })
     })
 
+    function FindTablesByColumn(columnName) {
+        $.ajax({
+            type: 'POST',
+            url: pathname + "/tablesByColumn",
+            data: {tid: activeMerchantId, columnName: columnName},
+            success: function (content, textStatus, request) {
+                var tablesHtml = ''
+                if (content.Rows.length == 0) {
+                    tablesHtml += '<div>There are no tables which has column ' + columnName + '</div>'
+                } else {
+                    tablesHtml += '<div>There are ' + content.Rows.length + ' tables which has column ' + columnName + ':</div>'
+                    $.each(content.Rows, function (index, row) {
+                        tablesHtml += '<span>' + row[1] + '</span>'
+                    })
+                }
+                $('#tablesWithSpecifiedColumn').html(tablesHtml)
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+            }
+        })
+    }
 
     // refer : https://codemirror.net/mode/toml/index.html
     var tomlEditor = null
@@ -45,7 +88,11 @@
             type: 'POST',
             url: pathname + "/loadLinksConfig",
             success: function (content, textStatus, request) {
-                $('#tomlEditor').val(content.LinksConfig)
+                if (tomlEditor != null) {
+                    tomlEditor.setValue(content.LinksConfig)
+                } else {
+                    $('#tomlEditor').val(content.LinksConfig)
+                }
                 createLinksConfig(JSON.parse(content.Json))
             },
             error: function (jqXHR, textStatus, errorThrown) {

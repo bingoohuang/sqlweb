@@ -39,6 +39,7 @@
 
     $.contextMenu({
         selector: '#sqlwebDiv .CodeMirror',
+        zIndex: 10,
         callback: function (key, options) {
             if (key === 'FormatSql') {
                 var sql = codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()

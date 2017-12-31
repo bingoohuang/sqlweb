@@ -53,9 +53,9 @@
         activeHomeArea = $this.attr('homeArea')
         activeMerchantName = $this.text()
 
-        $('#tidtcodeSpan').html('<span class="context-menu-icons context-menu-icon-id">' + activeMerchantId + ' </span>' +
-            '<span class="context-menu-icons context-menu-icon-code">' + activeMerchantCode + '</span>' +
-            '<span class="context-menu-icons context-menu-icon-earth">' + activeHomeArea + '</span>')
+        $('#tidtcodeSpan').html('<span title="tid" class="context-menu-icons context-menu-icon-id">' + activeMerchantId + ' </span>' +
+            '<span title="tcode" class="context-menu-icons context-menu-icon-code">' + activeMerchantCode + '</span>' +
+            '<span title="home area" class="context-menu-icons context-menu-icon-earth">' + activeHomeArea + '</span>')
 
         $('.executeQuery').prop("disabled", false)
         $.showTablesAjax(activeMerchantId)

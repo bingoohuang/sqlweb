@@ -1,5 +1,6 @@
 button {
     padding: 3px 10px;
+    cursor: pointer;
 }
 
 table {
@@ -17,7 +18,7 @@ table td {
 }
 
 .searchKey {
-    width: 150px;
+    width: 200px;
 }
 
 .searchResult span {
@@ -48,6 +49,29 @@ table td {
     padding: 0 5px;
     cursor: pointer;
     user-select: none;
+}
+
+#tablesWithSpecifiedColumn span {
+    float: left;
+    width: 15%;
+    padding: 0 5px;
+}
+
+#tablesWithSpecifiedColumn {
+    margin-top: 10px;
+}
+
+#tablesWithSpecifiedColumn div {
+    margin-bottom: 5px;
+}
+
+#linksConfigButtonsDiv {
+    margin-top: 10px;
+}
+
+#CloseConfig {
+    position: absolute;
+    right: 10px;
 }
 
 span.clickable {
