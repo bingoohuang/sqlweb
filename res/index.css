@@ -173,3 +173,14 @@ table.executionSummary tr:first-child {
 .highlightCell {
     background: yellow;
 }
+
+.CodeMirror {
+    height: auto;
+    max-height:600px;
+}
+
+
+.CodeMirror-scroll {
+    height: auto;
+    max-height:600px;
+}

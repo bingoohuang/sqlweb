@@ -7,7 +7,11 @@
     $('#linkConfigBtn').click(function () {
         toogleLinksConfigDiv()
 
-        tomlEditor.setSize(null, '500px')
+        if (tomlEditor == null) {
+            tomlEditor = CodeMirror.fromTextArea(document.getElementById("tomlEditor"), {
+                mode: 'text/x-toml', lineNumbers: true
+            })
+        }
     })
     $('#CloseConfig').click(toogleLinksConfigDiv)
     $('#ReloadConfig').click(ReloadConfig)
@@ -34,16 +38,14 @@
 
 
     // refer : https://codemirror.net/mode/toml/index.html
-    var tomlEditor = CodeMirror.fromTextArea(document.getElementById("tomlEditor"), {
-        mode: 'text/x-toml', lineNumbers: true
-    })
+    var tomlEditor = null
 
     function ReloadConfig() {
         $.ajax({
             type: 'POST',
             url: pathname + "/loadLinksConfig",
             success: function (content, textStatus, request) {
-                tomlEditor.setValue(content.LinksConfig)
+                $('#tomlEditor').val(content.LinksConfig)
                 createLinksConfig(JSON.parse(content.Json))
             },
             error: function (jqXHR, textStatus, errorThrown) {
