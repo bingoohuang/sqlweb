@@ -36,11 +36,6 @@
         matchBrackets: true,
         extraKeys: extraKeys
     })
-    codeMirror.setSize(null, '60px')
-
-    $('.collapseSql').click(function () {
-        codeMirror.setSize(null, '60px')
-    })
 
     $('.executeQuery').prop("disabled", true).click(function () {
         var sql = codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()

@@ -174,13 +174,30 @@ table.executionSummary tr:first-child {
     background: yellow;
 }
 
-.CodeMirror {
+#linksConfigDiv .CodeMirror {
     height: auto;
-    max-height:600px;
+    min-height: 100px;
+    max-height: 600px;
 }
 
-
-.CodeMirror-scroll {
+#linksConfigDiv .CodeMirror-scroll {
     height: auto;
-    max-height:600px;
+    min-height: 100px;
+    max-height: 600px;
+}
+
+#sqlwebDiv .CodeMirror {
+    height: auto;
+    min-height: 50px;
+    max-height: 300px;
+}
+
+#sqlwebDiv .CodeMirror-scroll {
+    height: auto;
+    min-height: 50px;
+    max-height: 300px;
+}
+
+#sqlwebDiv .CodeMirror pre.CodeMirror-placeholder {
+    color: #999;
 }
