@@ -57,12 +57,24 @@
                 if ($('.executeQuery').prop('disabled') === false) {
                     $('.executeQuery').click()
                 }
+            } else if (key === 'ShowFullColumns') {
+                var selected = codeMirror.somethingSelected();
+
+                var tableName = ''
+                if (selected) {
+                    tableName = codeMirror.getSelection()
+                } else {
+                    var word = codeMirror.findWordAt(codeMirror.getCursor());
+                    tableName = codeMirror.getRange(word.anchor, word.head);
+                }
+                $.executeQueryAjax('show full columns from ' + tableName)
             }
         },
         items: {
             RunSql: {name: 'Run SQL', icon: 'run'},
             FormatSql: {name: 'Format SQL', icon: 'format'},
-            ClearSql: {name: 'Clear SQL', icon: 'clear'}
+            ClearSql: {name: 'Clear SQL', icon: 'clear'},
+            ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
         }
     })
 

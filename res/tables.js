@@ -14,7 +14,7 @@
             callback: function (key, options) {
                 if (key === 'ShowFullColumns') {
                     var tableName = $(this).text()
-                    $.executeQueryAjax('select * from ' + tableName)
+                    $.executeQueryAjax('show full columns from ' + tableName)
                 }
             },
             items: {
