@@ -21,6 +21,11 @@ table td {
     width: 200px;
 }
 
+.searchResult {
+    max-width: 500px;
+    display: inline-block;
+}
+
 .searchResult span {
     border: 1px solid #ccc;
     cursor: pointer;
