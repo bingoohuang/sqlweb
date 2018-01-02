@@ -42,9 +42,15 @@
         zIndex: 10,
         callback: function (key, options) {
             if (key === 'FormatSql') {
-                var sql = codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()
+                var selected = codeMirror.somethingSelected();
+                var sql = selected ? codeMirror.getSelection() : codeMirror.getValue()
                 var formattedSql = sqlFormatter.format(sql, {language: 'sql'})
-                codeMirror.setValue(formattedSql)
+
+                if (selected) {
+                    codeMirror.replaceSelection(formattedSql)
+                } else {
+                    codeMirror.setValue(formattedSql)
+                }
             } else if (key === 'ClearSql') {
                 codeMirror.setValue('')
             } else if (key === 'RunSql') {
