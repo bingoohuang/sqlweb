@@ -64,7 +64,7 @@ func main() {
 	r.HandleFunc(contextPath+"/tablesByColumn", serveTablesByColumn)
 	r.HandleFunc(contextPath+"/loadLinksConfig", serveLoadLinksConfig)
 	r.HandleFunc(contextPath+"/saveLinksConfig", serveSaveLinksConfig)
-	r.HandleFunc(contextPath+"/font/{fontName}", serveFont)
+	r.HandleFunc(contextPath+"/iconfont.{extension}", serveFont)
 	r.HandleFunc(contextPath+"/favicon.ico", serveFavicon)
 	r.HandleFunc(contextPath+"/update", serveUpdate)
 	r.HandleFunc(contextPath+"/searchDb", serveSearchDb)

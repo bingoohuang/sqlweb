@@ -11,9 +11,9 @@ import (
 
 func serveFont(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	fontName := vars["fontName"]
+	extension := vars["extension"]
 
-	HandleStaticResource("res/font/"+fontName, w)
+	HandleStaticResource("res/iconfont."+extension, w)
 }
 
 func serveFavicon(w http.ResponseWriter, r *http.Request) {
