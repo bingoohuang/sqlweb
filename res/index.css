@@ -41,10 +41,6 @@ table td {
     right: 10px;
 }
 
-#buttonsLineDiv {
-    margin: 10px 0;
-}
-
 .searchResult .active {
     background-color: #ccc;
     font-weight: bold;
@@ -230,13 +226,13 @@ table.executionSummary tr:first-child {
 #sqlwebDiv .CodeMirror {
     height: auto;
     min-height: 50px;
-    max-height: 300px;
+    max-height: 500px;
 }
 
 #sqlwebDiv .CodeMirror-scroll {
     height: auto;
     min-height: 50px;
-    max-height: 300px;
+    max-height: 500px;
 }
 
 #sqlwebDiv .CodeMirror pre.CodeMirror-placeholder {

@@ -1,25 +1,4 @@
 (function () {
-    var MIN_HEIGHT = 60
-    var start_y
-    var start_h
-
-    function on_drag(e) {
-        var newHeight = Math.max(MIN_HEIGHT, (start_h + e.y - start_y)) + "px"
-        codeMirror.setSize(null, newHeight)
-    }
-
-    function on_release(e) {
-        document.body.removeEventListener("mousemove", on_drag)
-        window.removeEventListener("mouseup", on_release)
-    }
-
-    $('.resizeHandle')[0].addEventListener("mousedown", function (e) {
-        start_y = e.y
-        start_h = $('.CodeMirror').height()
-        document.body.addEventListener("mousemove", on_drag)
-        window.addEventListener("mouseup", on_release)
-    })
-
     var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault // 判断是否为Mac
     var runKey = (mac ? "Cmd" : "Ctrl") + "-Enter"
     var extraKeys = {}
