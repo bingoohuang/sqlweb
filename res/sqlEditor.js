@@ -16,6 +16,8 @@
         extraKeys: extraKeys
     })
 
+    $.sqlCodeMirror = codeMirror
+
     $.contextMenu({
         selector: '#sqlwebDiv .CodeMirror',
         zIndex: 10,

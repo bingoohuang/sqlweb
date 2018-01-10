@@ -12,13 +12,16 @@
         $.contextMenu({
             selector: '.tables span',
             callback: function (key, options) {
+                var tableName = $(this).text()
                 if (key === 'ShowFullColumns') {
-                    var tableName = $(this).text()
                     $.executeQueryAjax('show full columns from ' + tableName)
+                } else if (key == 'ShowCreateTable') {
+                    $.showCreateTableAjax(tableName)
                 }
             },
             items: {
                 ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
+                ShowCreateTable: {name: 'Show Create Table', icon: 'create-table'},
             }
         })
     }
