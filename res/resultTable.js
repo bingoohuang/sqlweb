@@ -35,7 +35,7 @@
     }
 
     function rowUpdateOperateArea(hasRows, queryResultId) {
-        var html = '<div>'
+        var html = '<div class="operateAreaDiv">'
         if (hasRows) {
             html += '<input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search">'
         }

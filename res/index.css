@@ -205,6 +205,11 @@ table.executionSummary tr:first-child {
 #fastEntriesDiv {
     margin: 10px 0 0 10px;
     display: none;
+    text-align: right;
+}
+
+.operateAreaDiv {
+    text-align: right;
 }
 
 .highlightCell {
