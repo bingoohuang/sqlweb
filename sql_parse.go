@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"fmt"
 )
 
 func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource string) (bool, string, []string, bool) {
