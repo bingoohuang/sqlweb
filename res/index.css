@@ -208,9 +208,9 @@ table.executionSummary tr:first-child {
     text-align: right;
 }
 
-.operateAreaDiv {
-    text-align: right;
-}
+/* .operateAreaDiv {
+     text-align: right;
+ }*/
 
 .highlightCell {
     background: yellow;
