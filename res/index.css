@@ -10,7 +10,7 @@ table {
 
 table td {
     border: 1px solid #eeeeee;
-    white-space: nowrap;
+    white-space: pre;
 }
 
 .error, .changedCell {
