@@ -12,9 +12,11 @@ const linksConfigFile = "linksConfig.toml"
 
 func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 	linksConfig := r.FormValue("linksConfig")
+	activeClassifier := r.FormValue("activeClassifier")
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	err := ioutil.WriteFile(linksConfigFile, []byte(linksConfig), 0644)
+	configFile := aclassifiedLinksConfigFile(activeClassifier)
+	err := ioutil.WriteFile(configFile, []byte(linksConfig), 0644)
 	if err != nil {
 		json.NewEncoder(w).Encode(struct {
 			OK   string
@@ -41,10 +43,16 @@ func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func aclassifiedLinksConfigFile(activeClassifier string) string {
+	return activeClassifier + "-" + linksConfigFile
+}
+
 func serveLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	if _, err := os.Stat(linksConfigFile); os.IsNotExist(err) {
+	activeClassifier := r.FormValue("activeClassifier")
+	configFile := aclassifiedLinksConfigFile(activeClassifier)
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		json.NewEncoder(w).Encode(struct {
 			LinksConfig string
 			Json        string
@@ -55,7 +63,7 @@ func serveLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	linksConfig, _ := ioutil.ReadFile(linksConfigFile)
+	linksConfig, _ := ioutil.ReadFile(configFile)
 	jsonBytes, err := tomlToJson([]byte(linksConfig))
 	if err != nil {
 		fmt.Println("tomlToJson err:", err.Error())

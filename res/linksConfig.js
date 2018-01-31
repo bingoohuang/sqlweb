@@ -41,7 +41,7 @@
         $.ajax({
             type: 'POST',
             url: pathname + "/saveLinksConfig",
-            data: {linksConfig: tomlEditor.getValue()},
+            data: {linksConfig: tomlEditor.getValue(), activeClassifier: activeClassifier},
             success: function (content, textStatus, request) {
                 if (content.OK === "OK") {
                     toogleLinksConfigDiv()
@@ -83,10 +83,19 @@
     // refer : https://codemirror.net/mode/toml/index.html
     var tomlEditor = null
 
+    var lastActiveClassifier  = null
+
     function ReloadConfig() {
+        if (lastActiveClassifier === activeClassifier) {
+            return
+        }
+
+        lastActiveClassifier = activeClassifier
+
         $.ajax({
             type: 'POST',
             url: pathname + "/loadLinksConfig",
+            data: {activeClassifier: lastActiveClassifier},
             success: function (content, textStatus, request) {
                 if (tomlEditor != null) {
                     tomlEditor.setValue(content.LinksConfig)
@@ -101,7 +110,7 @@
         })
     }
 
-    ReloadConfig()
+    $.ReloadConfig = ReloadConfig
 
     function createLinksConfig(linksConfig) {
         $.createFastEntries(linksConfig.entries)

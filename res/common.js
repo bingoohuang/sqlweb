@@ -8,8 +8,10 @@ var queryResultId = 0
 var activeMerchantId = null
 var activeMerchantCode = null
 var activeHomeArea = null
-var activeMerchantName = null;
+var activeMerchantName = null
+var activeClassifier = null
 
+;
 (function () {
     $(document).on('paste', '[contenteditable]', function (e) {
         e.preventDefault()
@@ -26,11 +28,9 @@ var activeMerchantName = null;
         }
     })
 
-
     $('.clearResult').click(function () {
         $('.result').html('')
     })
-
 
     $(document).on('dblclick', 'table td', function (e) {
         e.preventDefault()

@@ -1,0 +1,44 @@
+[links]
+    [links.user_id]
+    linksTo = ["tt_f_user", "tt_f_user_role", "tt_f_member", "tt_f_coach", "tt_f_staff", "tt_f_subscribe", "tt_f_login"]
+    
+    [links.member_id]
+    linksTo = ["tt_f_member", "tt_f_mbr_card", "tt_f_subscribe_card"]
+     
+    [links.MBR_CARD_ID]
+    linksTo = ["tt_f_mbr_card", "tt_l_mbrcard_chg"]
+
+    [links.CARD_ID]
+    linksTo = ["tt_f_mbr_card", "tt_f_card", "tt_f_card_rule"]
+    
+    [links.COURSE_ID]
+    linksTo = ["tt_f_card_rule", "tt_f_schedule", "tt_f_course"]
+    
+    [links.COACH_ID]
+    linksTo = ["tt_f_card_rule", "tt_f_coach", "tt_f_schedule", "tt_f_coach_rest"]
+    
+    [links.MOBILE]
+    linksTo = ["tt_f_user", "tt_f_login"]
+    
+    [links.SCHEDULE_ID]
+    linksTo = ["tt_f_schedule", "TT_F_SUBSCRIBE"]
+    
+    [links.role_id]
+    linksTo = ["tt_f_role", "tt_f_user_role"]
+    
+[entries]
+    [entries.member]
+    type = "input"
+    placeholder = "手机号码/姓名/userId"
+    label = "查找用户"
+    sql = "select * from tt_f_user where nickname like '%{input}%' or mobile like '%{input}%' or user_id = '{input}' "
+
+    [entries.merchant]
+    type = "link"
+    label = "查找馆主"
+    sql = "select * from tt_f_user_role where role_id = '100'"
+    
+    [entries.memberWithCards]
+    type = "link"
+    label = "有卡会员"
+    sql = "select * from tt_f_user where user_id in (select user_id from tt_f_member where member_id in (select member_id from tt_f_mbr_card where state != 0))"

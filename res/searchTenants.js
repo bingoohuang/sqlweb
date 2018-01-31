@@ -29,6 +29,7 @@
                         searchHtml += '<span tid="' + content[j].MerchantId
                             + '" tcode="' + content[j].MerchantCode
                             + '" homeArea="' + content[j].HomeArea
+                            + '" classifier="' + content[j].Classifier
                             + '" class="context-menu-icons context-menu-icon-tenant">' + content[j].MerchantName + '</span>'
                     }
                 } else {
@@ -51,6 +52,7 @@
         activeMerchantId = $this.attr('tid')
         activeMerchantCode = $this.attr('tcode')
         activeHomeArea = $this.attr('homeArea')
+        activeClassifier = $this.attr('classifier')
         activeMerchantName = $this.text()
 
         $('#tidtcodeSpan').html('&nbsp;<span title="tid" class="context-menu-icons context-menu-icon-id">' + activeMerchantId + ' </span>' +

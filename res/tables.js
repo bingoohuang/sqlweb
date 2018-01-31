@@ -8,6 +8,7 @@
         }
         $('.tables').html(resultHtml)
         $('.searchTableNames').change()
+        $.ReloadConfig()
 
         $.contextMenu({
             selector: '.tables span',

@@ -11,6 +11,7 @@ type SearchResult struct {
 	MerchantId   string
 	MerchantCode string
 	HomeArea     string
+	Classifier   string
 }
 
 func serveSearchDb(w http.ResponseWriter, req *http.Request) {
@@ -30,10 +31,9 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA " +
+	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
 		"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
-
 	_, data, _, _, err, _ := executeQuery(true, searchSql, dataSource)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
@@ -42,7 +42,8 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 
 	searchResult := make([]SearchResult, len(data))
 	for i, v := range data {
-		searchResult[i] = SearchResult{MerchantName: v[1], MerchantId: v[2], MerchantCode: v[3], HomeArea: v[4]}
+		searchResult[i] = SearchResult{
+			MerchantName: v[1], MerchantId: v[2], MerchantCode: v[3], HomeArea: v[4], Classifier: v[5]}
 	}
 
 	json.NewEncoder(w).Encode(searchResult)
