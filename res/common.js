@@ -34,7 +34,7 @@ var activeClassifier = null
 
     $(document).on('dblclick', 'table td', function (e) {
         e.preventDefault()
-        var hasClass = $(this).hasClass('highlightCell');
+        var hasClass = $(this).hasClass('highlightCell')
         $('table td.highlightCell').removeClass('highlightCell')
         if (!hasClass) {
             var cellValue = $(this).text()

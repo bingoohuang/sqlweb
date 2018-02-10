@@ -31,7 +31,7 @@
 
             rowHtml += '</tr>'
         }
-        return rowHtml;
+        return rowHtml
     }
 
     function rowUpdateOperateArea(hasRows, queryResultId) {
@@ -47,7 +47,7 @@
             + '<button id="saveUpdates' + queryResultId + '">Save Changes To DB</button>'
             + '<button id="rowTranspose' + queryResultId + '">Transpose</button>'
             + '</span></div>'
-        return html;
+        return html
     }
 
     function createSummaryTable(queryResultId, result, hasRows, sql) {
@@ -62,16 +62,16 @@
             '<span class="opsSpan" id="reExecuteSql' + queryResultId + '">Re-Execute</span></td><td'
             + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
             '<td class="sqlTd" contenteditable="true">' + sql + '</td>' +
-            '<tr></table>';
+            '<tr></table>'
     }
 
     $.createResultTableHtml = function (result, sql, rowUpdateReady, queryResultId, contextMenuHolder) {
         var hasRows = result.Rows && result.Rows.length > 0
-        var table = createSummaryTable(queryResultId, result, hasRows, sql);
+        var table = createSummaryTable(queryResultId, result, hasRows, sql)
         table += '<div id="divTranspose' + queryResultId + '" class="divTranspose"></div>'
         table += '<div id="divResult' + queryResultId + '" class="divResult">'
         if (rowUpdateReady) {
-            table += rowUpdateOperateArea(hasRows, queryResultId);
+            table += rowUpdateOperateArea(hasRows, queryResultId)
         } else if (hasRows) {
             table += '<div><input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search"></div>'
         }
@@ -91,7 +91,7 @@
         }
         if (hasRows) {
             var isTableInLinked = result.TableName !== '' && $.isInLinkedTable(result.TableName)
-            table += createRows(result, rowUpdateReady, isTableInLinked, contextMenuHolder);
+            table += createRows(result, rowUpdateReady, isTableInLinked, contextMenuHolder)
         } else if (result.Rows && result.Rows.length == 0) {
             table += '<tr class="dataRow clonedRow">'
             if (rowUpdateReady) {

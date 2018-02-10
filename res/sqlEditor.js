@@ -23,7 +23,7 @@
         zIndex: 10,
         callback: function (key, options) {
             if (key === 'FormatSql') {
-                var selected = codeMirror.somethingSelected();
+                var selected = codeMirror.somethingSelected()
                 var sql = selected ? codeMirror.getSelection() : codeMirror.getValue()
                 var formattedSql = sqlFormatter.format(sql, {language: 'sql'})
 
@@ -39,14 +39,14 @@
                     $('.executeQuery').click()
                 }
             } else if (key === 'ShowFullColumns') {
-                var selected = codeMirror.somethingSelected();
+                var selected = codeMirror.somethingSelected()
 
                 var tableName = ''
                 if (selected) {
                     tableName = codeMirror.getSelection()
                 } else {
-                    var word = codeMirror.findWordAt(codeMirror.getCursor());
-                    tableName = codeMirror.getRange(word.anchor, word.head);
+                    var word = codeMirror.findWordAt(codeMirror.getCursor())
+                    tableName = codeMirror.getRange(word.anchor, word.head)
                 }
                 $.executeQueryAjax('show full columns from ' + tableName)
             }
@@ -78,7 +78,7 @@
                 ++i
             } else if (ch == '\'') {
                 if (inQuoted && i + 1 < len && sqlsString[i + 1] === '\'') {
-                    ++i; // jump espace for literal apostrophe, or single quote
+                    ++i  // jump escape for literal apostrophe, or single quote
                 } else {
                     inQuoted = !inQuoted
                 }
