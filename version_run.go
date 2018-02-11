@@ -66,18 +66,22 @@ func servePrepareExecuteVersionSql(w http.ResponseWriter, req *http.Request) {
 }
 
 func PrepareRun(VersionName string, Tenants []Tenant) ([]VersionRunBean, error) {
-	versionSqlSubs, err := GetVersionSqlSubs(VersionName)
+	VersionSqlSubs, err := GetVersionSqlSubs(VersionName)
 	if err != nil {
 		return nil, err
 	}
 
-	err = AddVersionSqlSubs(versionSqlSubs)
+	err = AddVersionSqlSubs(VersionName, VersionSqlSubs)
 	if err != nil {
 		return nil, err
 	}
 
-	versionRuns := createVersionRuns(versionSqlSubs, Tenants, VersionName)
-	return versionRuns, AddVersionRuns(versionRuns)
+	VersionRuns := createVersionRuns(VersionSqlSubs, Tenants, VersionName)
+	runs := AddVersionRuns(VersionName, Tenants, VersionRuns)
+
+	UpdateVersionPrepared(VersionName)
+
+	return VersionRuns, runs
 }
 
 type ExecuteResult struct {
@@ -95,6 +99,32 @@ type SqlResult struct {
 	CostTime     string
 	RunResult    string
 	RowsAffected int64
+}
+
+type RunExecuteVersionSqlResponse struct {
+	Ok      string
+	Results []ExecuteResult
+}
+
+func serveRunExecuteVersionSql(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	VersionName := strings.TrimSpace(req.FormValue("VersionName"))
+	Tids := make([]string, 0)
+	err := json.Unmarshal([]byte(req.FormValue("Tids")), &Tids)
+	var res RunExecuteVersionSqlResponse
+	if err != nil {
+		res.Ok = err.Error()
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	results, err := BatchVersionRun(VersionName, Tids)
+	if err != nil {
+		res.Ok = err.Error()
+	}
+	res.Results = results
+	json.NewEncoder(w).Encode(res)
 }
 
 func BatchVersionRun(VersionName string, Tids []string) ([]ExecuteResult, error) {
@@ -237,8 +267,8 @@ func queryVersonSubs(VersionName string) ([]VersionSqlSub, error) {
 func createVersionRuns(subs []VersionSqlSub, tenants []Tenant, VersionName string) []VersionRunBean {
 	currentTime := time.Now().Format(`006-01-02 15:04:05`)
 	versionRuns := make([]VersionRunBean, 0)
-	for _, sub := range subs {
-		for _, tenant := range tenants {
+	for _, tenant := range tenants {
+		for _, sub := range subs {
 			versionRuns = append(versionRuns, VersionRunBean{
 				VersionName: VersionName,
 				Tid:         tenant.Tid,
@@ -283,7 +313,7 @@ func GetVersionSqlSubs(VersionName string) ([]VersionSqlSub, error) {
 	return versionSqlSubs, nil
 }
 
-func AddVersionRuns(runs []VersionRunBean) error {
+func AddVersionRuns(VersionName string, Tenants []Tenant, runs []VersionRunBean) error {
 	db, err := sql.Open("sqlite3", "./version.db")
 	if err != nil {
 		return err
@@ -294,7 +324,13 @@ func AddVersionRuns(runs []VersionRunBean) error {
 	if err != nil {
 		return err
 	}
-	stmt, err := tx.Prepare(`insert into version_run(version_name, tid，tname, sql_seq, sub_seq, 
+
+	stmt1, err := tx.Prepare(`delete from version_run where version_name = ? and tid = ?`)
+	for _, tenant := range Tenants {
+		stmt1.Exec(VersionName, tenant.Tid)
+	}
+
+	stmt, err := tx.Prepare(`insert into version_run(version_name, tid, tname, sql_seq, sub_seq, 
 									create_time, update_time) values(?, ?, ?, ?, ?, ?, ?)`)
 	if err != nil {
 		tx.Rollback()
@@ -314,7 +350,7 @@ func AddVersionRuns(runs []VersionRunBean) error {
 	return err
 }
 
-func AddVersionSqlSubs(subs []VersionSqlSub) error {
+func AddVersionSqlSubs(VersionName string, subs []VersionSqlSub) error {
 	db, err := sql.Open("sqlite3", "./version.db")
 	if err != nil {
 		return err
@@ -325,6 +361,9 @@ func AddVersionSqlSubs(subs []VersionSqlSub) error {
 	if err != nil {
 		return err
 	}
+
+	tx.Exec(`delete from version_sql_sub where version_name = ?`, VersionName)
+
 	stmt, err := tx.Prepare(`insert into version_sql_sub(version_name, sql_seq, sub_seq, sql, 
 									create_time, update_time) values(?, ?, ?, ?, ?, ?)`)
 	if err != nil {

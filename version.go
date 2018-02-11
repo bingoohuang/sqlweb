@@ -12,6 +12,7 @@ import (
 type Version struct {
 	VersionName string
 	VersionDesc string
+	Prepared    bool
 	CreateTime  string
 	UpdateTime  string
 }
@@ -43,7 +44,7 @@ func ListVersions() ([]Version, error) {
 
 	versions := make([]Version, 0)
 
-	sqlStmt := `select version_name, version_desc, create_time, update_time from version order by update_time desc limit 10`
+	sqlStmt := `select version_name, version_desc, prepared, create_time, update_time from version order by update_time desc limit 10`
 	rows, err := db.Query(sqlStmt)
 	if err != nil {
 		return nil, err
@@ -51,13 +52,13 @@ func ListVersions() ([]Version, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var version Version
-		err = rows.Scan(&version.VersionName, &version.VersionDesc, &version.CreateTime, &version.UpdateTime)
+		var v Version
+		err = rows.Scan(&v.VersionName, &v.VersionDesc, &v.Prepared, &v.CreateTime, &v.UpdateTime)
 		if err != nil {
 			return nil, err
 		}
 
-		versions = append(versions, version)
+		versions = append(versions, v)
 	}
 	err = rows.Err()
 	if err != nil {
@@ -145,6 +146,21 @@ func serveUpdateVersion(w http.ResponseWriter, req *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(response)
+}
+
+func UpdateVersionPrepared(VersionName string) (int64, error) {
+	db, err := sql.Open("sqlite3", "./version.db")
+	if err != nil {
+		return 0, err
+	}
+	defer db.Close()
+
+	result, err := db.Exec(`update version set prepared = 1 where version_name = ?`, VersionName)
+	if err != nil {
+		return 0, err
+	}
+
+	return result.RowsAffected()
 }
 
 func UpdateVersion(oldVersionName string, version Version) (int64, error) {

@@ -80,6 +80,7 @@ func main() {
 	r.HandleFunc(contextPath+"/deleteVersionSql", serveDeleteVersionSql)
 
 	r.HandleFunc(contextPath+"/prepareExecuteVersionSql", servePrepareExecuteVersionSql)
+	r.HandleFunc(contextPath+"/runExecuteVersionSql", serveRunExecuteVersionSql)
 
 	http.Handle("/", r)
 
