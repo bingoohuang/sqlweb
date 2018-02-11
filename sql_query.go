@@ -18,9 +18,13 @@ func selectDb(tid string, req *http.Request) (string, string, error) {
 		}
 	}
 
-	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "' LIMIT 1"
+	return selectDbByTid(tid, dataSource)
+}
 
-	_, data, _, _, err, _ := executeQuery(true, queryDbSql, dataSource)
+func selectDbByTid(tid string, ds string) (string, string, error) {
+	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "'"
+
+	_, data, _, _, err, _ := executeQuery(true, queryDbSql, ds)
 	if err != nil {
 		return "", "", err
 	}
@@ -37,7 +41,8 @@ func selectDb(tid string, req *http.Request) (string, string, error) {
 	return row[1] + ":" + row[2] + "@tcp(" + row[3] + ":" + row[4] + ")/" + row[5] + "?charset=utf8mb4,utf8&timeout=3s", row[5], nil
 }
 
-func executeQuery(isSelect bool, querySql, dataSource string) ([]string /*header*/, [][]string, /*data*/
+func executeQuery(isSelect bool, querySql, dataSource string) (
+	[]string /*header*/, [][]string, /*data*/
 	string /*executionTime*/, string /*costTime*/, error, string /* msg */) {
 	db, err := sql.Open("mysql", dataSource)
 	if err != nil {

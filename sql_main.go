@@ -70,6 +70,17 @@ func main() {
 	r.HandleFunc(contextPath+"/searchDb", serveSearchDb)
 	r.HandleFunc(contextPath+"/login", serveLogin)
 
+	r.HandleFunc(contextPath+"/listVersion", serveListVersions)
+	r.HandleFunc(contextPath+"/addVersion", serveAddVersion)
+	r.HandleFunc(contextPath+"/updateVersion", serveUpdateVersion)
+
+	r.HandleFunc(contextPath+"/listVersionSqls", serveListVersionSqls)
+	r.HandleFunc(contextPath+"/addVersionSql", serveAddVersionSql)
+	r.HandleFunc(contextPath+"/updateVersionSql", serveUpdateVersionSql)
+	r.HandleFunc(contextPath+"/deleteVersionSql", serveDeleteVersionSql)
+
+	r.HandleFunc(contextPath+"/prepareExecuteVersionSql", servePrepareExecuteVersionSql)
+
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", port)
