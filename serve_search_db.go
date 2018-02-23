@@ -25,7 +25,12 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 	if searchKey == "trr" {
 		if authOk(req) {
 			var searchResult [1]SearchResult
-			searchResult[0] = SearchResult{MerchantName: "trr", MerchantId: "trr", MerchantCode: "trr"}
+			searchResult[0] = SearchResult{
+				MerchantName: "trr",
+				MerchantId:   "trr",
+				MerchantCode: "trr",
+				HomeArea:     "south-center",
+				Classifier:   "trr"}
 			json.NewEncoder(w).Encode(searchResult)
 			return
 		}

@@ -243,3 +243,13 @@ table.executionSummary tr:first-child {
 #sqlwebDiv .CodeMirror pre.CodeMirror-placeholder {
     color: #999;
 }
+
+.SqlsVersionDiv {
+    display: none;
+}
+
+.SqlsVersionDivClose {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+}

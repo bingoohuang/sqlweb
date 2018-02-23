@@ -84,6 +84,7 @@ func mergeScripts() string {
 		"transposeRows.js", "login.js", "sqlAjax.js", "checkboxEditable.js", "saveUpdates.js",
 		"resultTable.js", "tableCreate.js",
 		"contextMenu.js", "jquery.contextMenu.js", "jquery.ui.position.js", "fastEntries.js",
+		"SqlsVersion.js",
 		"index.js", "sqlEditor.js")
 }
 
@@ -99,7 +100,7 @@ func mergeStatic(seperate string, statics ...string) string {
 
 func loginHtml(w http.ResponseWriter, r *http.Request) string {
 	if !writeAuthRequired {
-		return ""
+		return `<button id="SqlsVersion">Sqls Version</button>`
 	}
 
 	loginCookie := readLoginCookie(r)
@@ -111,7 +112,8 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 		return `<button class="loginButton">Login</button>`
 	}
 
-	return `<img class="loginAvatar" src="` + loginCookie.Avatar +
+	return `<button id="SqlsVersion">Sqls Version</button>` +
+		`<img class="loginAvatar" src="` + loginCookie.Avatar +
 		`"/><span class="loginName">` + loginCookie.Name + `</span>`
 }
 
