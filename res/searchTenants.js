@@ -45,7 +45,7 @@
         })
     }
 
-    $.openUrl = function () {
+    var createUrl = function () {
         var url = ''
 
         if (activeHomeArea === 'south-center') {
@@ -60,8 +60,7 @@
             url += '/et-server/center/' + activeMerchantCode + '/vision#'
         }
 
-        var win = window.open(url, '_blank')
-        win.focus()
+        return url
     }
 
     $('.searchResult').on('click', 'span', function () {
@@ -77,7 +76,7 @@
         $('#tidtcodeSpan').html('&nbsp;<span title="tid" class="context-menu-icons context-menu-icon-id">' + activeMerchantId + ' </span>' +
             '&nbsp;<span title="tcode" class="context-menu-icons context-menu-icon-code">' + activeMerchantCode + '</span>' +
             '&nbsp;<span title="home area" class="context-menu-icons context-menu-icon-earth">' + activeHomeArea + '</span>' +
-            '&nbsp;<span><a href="javascript:void(0)" onclick="$.openUrl()">Home</a></span>')
+            '&nbsp;<span><a href="' + createUrl() + '" target="_blank">Home</a></span>')
 
         $('.executeQuery').prop("disabled", false)
         $.showTablesAjax(activeMerchantId)
