@@ -45,6 +45,25 @@
         })
     }
 
+    $.openUrl = function () {
+        var url = ''
+
+        if (activeHomeArea === 'south-center') {
+            url += 'https://app.easy-hi.com'
+        } else if (activeHomeArea === 'north-center') {
+            url += 'https://appn.easy-hi.com'
+        }
+
+        if (activeClassifier === 'yoga') {
+            url += '/yoga-system/center/' + activeMerchantCode + '/index/vision#'
+        } else if (activeClassifier === 'et') {
+            url += '/et-server/center/' + activeMerchantCode + '/vision#'
+        }
+
+        var win = window.open(url, '_blank')
+        win.focus()
+    }
+
     $('.searchResult').on('click', 'span', function () {
         $('.searchResult span').removeClass('active')
         var $this = $(this).addClass('active')
@@ -57,7 +76,8 @@
 
         $('#tidtcodeSpan').html('&nbsp;<span title="tid" class="context-menu-icons context-menu-icon-id">' + activeMerchantId + ' </span>' +
             '&nbsp;<span title="tcode" class="context-menu-icons context-menu-icon-code">' + activeMerchantCode + '</span>' +
-            '&nbsp;<span title="home area" class="context-menu-icons context-menu-icon-earth">' + activeHomeArea + '</span>')
+            '&nbsp;<span title="home area" class="context-menu-icons context-menu-icon-earth">' + activeHomeArea + '</span>' +
+            '&nbsp;<span><a href="javascript:void(0)" onclick="$.openUrl()">Home</a></span>')
 
         $('.executeQuery').prop("disabled", false)
         $.showTablesAjax(activeMerchantId)
