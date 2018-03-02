@@ -48,7 +48,7 @@
 
                     createLinksConfig(JSON.parse(content.Json))
                 } else {
-                    alert(content)
+                    alert(content.OK)
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
