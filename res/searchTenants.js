@@ -48,10 +48,14 @@
     var createUrl = function () {
         var url = ''
 
-        if (activeHomeArea === 'south-center') {
-            url += 'https://app.easy-hi.com'
-        } else if (activeHomeArea === 'north-center') {
-            url += 'https://appn.easy-hi.com'
+        if (location.hostname.indexOf("test.") >= 0) {
+            url += 'http://test.go.easy-hi.com'
+        } else {
+            if (activeHomeArea === 'south-center') {
+                url += 'https://app.easy-hi.com'
+            } else if (activeHomeArea === 'north-center') {
+                url += 'https://appn.easy-hi.com'
+            }
         }
 
         if (activeClassifier === 'yoga') {
