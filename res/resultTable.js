@@ -1,5 +1,29 @@
 (function () {
-    function createRows(result, rowUpdateReady, isTableInLinked, contextMenuHolder) {
+    function createHead(queryResultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder) {
+        var head = '<tr class="headRow" queryResultId="' + queryResultId + '">'
+        if (rowUpdateReady) {
+            head += '<td><div class="chk checkAll"></div></td>'
+        }
+        head += '<td>#</td>'
+
+        contextMenuHolder.columnNames = contextMenuHolder.columnNames || {}
+        contextMenuHolder.allColumnNames = contextMenuHolder.allColumnNames || {}
+
+        for (var j = 0; j < result.Headers.length; ++j) {
+            var headName = result.Headers[j]
+            contextMenuHolder.allColumnNames[headName] = true
+            head += '<td class="headCell contextMenu-' + headName + '">' + headName + '</td>'
+            if (contextMenuHolder.hasRows && $.isInLinkedTableField(result.TableName, headName)) {
+                contextMenuHolder.columnNames[headName] = true
+            }
+        }
+        head += '</tr>'
+
+
+        return head
+    }
+
+    function createRows(result, rowUpdateReady) {
         var rowHtml = ''
         for (var i = 0; i < result.Rows.length; i++) {
             rowHtml += '<tr class="dataRow">'
@@ -13,17 +37,8 @@
                 rowHtml += '<td class="dataCell '
                 if ('(null)' == cellValue) {
                     rowHtml += 'nullCell '
-                }
-
-                if (isTableInLinked && result.Headers) {
-                    var columnName = result.Headers[j - 1]
-                    if ($.isInLinkedTableField(result.TableName, columnName)) {
-                        rowHtml += 'contextMenu-' + columnName
-
-                        contextMenuHolder.contextMenuRequired = true
-                        contextMenuHolder.columnNames = contextMenuHolder.columnNames || {}
-                        contextMenuHolder.columnNames[columnName] = true
-                    }
+                } else if (result.Headers) {
+                    rowHtml += 'contextMenu-' + result.Headers[j - 1]
                 }
 
                 rowHtml += '">' + cellValue + '</td>'
@@ -48,14 +63,14 @@
             + '<button id="rowTranspose' + queryResultId + '">Transpose</button>'
             + '</span>'
             + '<span class="clickable hide" id="showSummary' + queryResultId + '">Show Summary</span>' +
-        '</div>'
+            '</div>'
         return html
     }
 
     function createSummaryTable(queryResultId, result, hasRows, sql) {
         return '<div id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
             '<table class="executionSummary">' +
-            '<tr><td>Tenant</td><td>Database</td><td>Rows</td><td>Time</td><td>Cost</td><td>Ops</td><td>Error</td><td>SQL</td></tr>'
+            '<tr><td>Tenant</td><td>Database</td><td>Rows</td><td>Time</td><td>Cost</td><td>Ops</td><td>SQL</td><td>Error</td></tr>'
             + '<tr>' +
             '<td>' + activeMerchantName + '</td><td>' + (result.DatabaseName || '') + '</td><td>' + (hasRows ? result.Rows.length : '0') + '</td>' +
             '<td>' + result.ExecutionTime + '</td>' +
@@ -63,11 +78,11 @@
             '<td><span class="opsSpan" id="closeResult' + queryResultId + '">Close</span>' +
             '<span class="opsSpan" id="reExecuteSql' + queryResultId + '">Re-Execute</span>' +
             '<span class="opsSpan" id="hideSummary' + queryResultId + '">Hide</span>' +
-            '</td><td'
-            + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
             '<td class="sqlTd" contenteditable="true">' + sql + '</td>' +
+            '</td><td' + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
             '<tr></table>'
     }
+
 
     $.createResultTableHtml = function (result, sql, rowUpdateReady, queryResultId, contextMenuHolder) {
         var hasRows = result.Rows && result.Rows.length > 0
@@ -80,22 +95,19 @@
             table += '<div><input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search"></div>'
         }
 
-        contextMenuHolder.tableId = 'queryResult' + queryResultId
+        contextMenuHolder.queryResultId = queryResultId
         contextMenuHolder.tableName = result.TableName
+        contextMenuHolder.hasRows = hasRows
 
         table += '<div id="collapseDiv' + queryResultId + '" class="collapseDiv">' +
             '<table id="queryResult' + queryResultId + '" class="queryResult">'
 
         if (result.Headers && result.Headers.length > 0) {
-            table += '<tr class="headRow" queryResultId="' + queryResultId + '">'
-            if (rowUpdateReady) {
-                table += '<td><div class="chk checkAll"></div></td>'
-            }
-            table += '<td>#</td><td>' + result.Headers.join('</td><td>') + '</td></tr>'
+            var isTableInLinked = hasRows && result.TableName !== '' && $.isInLinkedTable(result.TableName)
+            table += createHead(queryResultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder)
         }
         if (hasRows) {
-            var isTableInLinked = result.TableName !== '' && $.isInLinkedTable(result.TableName)
-            table += createRows(result, rowUpdateReady, isTableInLinked, contextMenuHolder)
+            table += createRows(result, rowUpdateReady)
         } else if (result.Rows && result.Rows.length == 0) {
             table += '<tr class="dataRow clonedRow">'
             if (rowUpdateReady) {
