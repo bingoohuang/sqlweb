@@ -32,6 +32,16 @@
         return inPart
     }
 
+    var linkTo = function (queryResultId, columnName, key, linkedToTables, cell) {
+        var linkedTableName = key.substring(4)
+        var linkedField = linkedToTables[linkedTableName]
+
+        var sql = "select * from " + linkedTableName + " where " + linkedField + (cell.hasClass('headCell')
+            ? " in (" + createInPart(queryResultId, columnName) + ")"
+            : " = '" + cell.text() + "'")
+
+        $.executeQueryAjax(sql)
+    }
     var createLinkToTableColumnContextMenu = function (queryResultId, tableName, columnName, linkColumnNames) {
         var itemsHead = {}
         var itemsData = {}
@@ -50,12 +60,12 @@
                 if (isTableNameEqual && isFieldNameEqual) {
                     // ignore
                 } else {
-                    itemsData['link' + linkedTable] = {
+                    var itemData = {
                         name: '-> ' + linkedTable + (isFieldNameEqual ? '' : '.' + linkedField),
                         icon: 'link'
                     }
-
-                    itemsHead['link' + linkedTable] = itemsData['link' + linkedTable]
+                    itemsData['link' + linkedTable] = itemData
+                    itemsHead['link' + linkedTable] = itemData
                 }
             })
         }
@@ -76,17 +86,9 @@
                 selector: selector + '.dataCell',
                 callback: function (key, options) {
                     if (key.indexOf('link') == 0) {
-                        var linkedTableName = key.substring(4)
-                        var linkedField = linkedToTables[linkedTableName]
-
-                        var sql = $(this).hasClass('headCell')
-                            ? "select * from " + linkedTableName + " where " + linkedField + " in (" + createInPart(queryResultId, columnName) + ")"
-                            : "select * from " + linkedTableName + " where " + linkedField + " = '" + $(this).text() + "'"
-
-                        $.executeQueryAjax(sql)
+                        linkTo(queryResultId, columnName, key, linkedToTables, $(this))
                     } else if (key === 'Copy Where') {
-                        var where = columnName + " = '" + $(this).text() + "'"
-                        $.copyTextToClipboard(where)
+                        $.copyTextToClipboard(columnName + " = '" + $(this).text() + "'")
                     }
                 },
                 items: itemsData
@@ -96,8 +98,7 @@
                 selector: selector + '.dataCell',
                 callback: function (key, options) {
                     if (key === 'Copy Where') {
-                        var where = columnName + " = '" + $(this).text() + "'"
-                        $.copyTextToClipboard(where)
+                        $.copyTextToClipboard(columnName + " = '" + $(this).text() + "'")
                     }
                 },
                 items: itemsData
@@ -108,14 +109,7 @@
             selector: selector + '.headCell',
             callback: function (key, options) {
                 if (key.indexOf('link') == 0) {
-                    var linkedTableName = key.substring(4)
-                    var linkedField = linkedToTables[linkedTableName]
-
-                    var sql = $(this).hasClass('headCell')
-                        ? "select * from " + linkedTableName + " where " + linkedField + " in (" + createInPart(queryResultId, columnName) + ")"
-                        : "select * from " + linkedTableName + " where " + linkedField + " = '" + $(this).text() + "'"
-
-                    $.executeQueryAjax(sql)
+                    linkTo(queryResultId, columnName, key, linkedToTables, $(this))
                 } else if (key === 'sqlInPart') {
                     var inPart = columnName + " in (" + createInPart(queryResultId, columnName) + ")"
                     $.copyTextToClipboard(inPart)
