@@ -1,4 +1,10 @@
 (function () {
+    $.executeMultiSqlsAjax = function (sql, resultId) {
+        var sqls = $.splitSqls(sql, ';')
+
+        $.executeQueryAjax(sqls[0], null, sqls, 0)
+    }
+
     $.executeQueryAjax = function (sql, resultId, sqls, nextIndex) {
         $.ajax({
             type: 'POST',

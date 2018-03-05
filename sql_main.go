@@ -7,6 +7,9 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
+	"runtime"
+	"github.com/skratchdot/open-golang/open"
 )
 
 var (
@@ -85,7 +88,21 @@ func main() {
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", port)
+	go openExplorer(port)
+
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
+	}
+}
+
+
+func openExplorer(port string) {
+	time.Sleep(100 * time.Millisecond)
+
+	switch runtime.GOOS {
+	case "windows":
+		fallthrough
+	case "darwin":
+		open.Run("http://127.0.0.1:" + port)
 	}
 }

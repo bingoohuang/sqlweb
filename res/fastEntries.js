@@ -19,7 +19,7 @@
                 var entryKey = $(this).attr('entryKey')
                 var sqlTemplate = fastEntriesConfig[entryKey].sql
                 var sql = sqlTemplate.replace(/\{input\}/g, input)
-                $.executeQueryAjax(sql)
+                $.executeMultiSqlsAjax(sql)
             }
         }).focus(function () {
             $(this).select()
@@ -28,7 +28,7 @@
         $('#fastEntriesDiv span.clickable').click(function () {
             var entryKey = $(this).attr('entryKey')
             var sql = fastEntriesConfig[entryKey].sql
-            $.executeQueryAjax(sql)
+            $.executeMultiSqlsAjax(sql)
         })
     }
 })()

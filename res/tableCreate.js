@@ -33,11 +33,17 @@
         $('#closeResult' + queryResultId).click(function () {
             $(divId).remove()
         })
-
         var resultId = queryResultId
+
         $('#reExecuteSql' + queryResultId).click(function () {
             var sql = $(divId).find('.sqlTd').text()
             $.executeQueryAjax(sql, resultId)
+        })
+
+        var showSummary = '#showSummary' + queryResultId
+        $('#hideSummary' + queryResultId).click(function () {
+            $(divId).find('.executionSummary').hide()
+            $(showSummary).show()
         })
     }
 

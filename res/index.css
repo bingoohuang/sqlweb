@@ -127,6 +127,10 @@ table.executionSummary tr:first-child {
     display: none;
 }
 
+.hide {
+    display: none;
+}
+
 .loginAvatar {
     width: 16px;
     height: 16px;

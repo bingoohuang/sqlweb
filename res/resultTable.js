@@ -46,7 +46,9 @@
             + '<button id="deleteRows' + queryResultId + '">Tag Rows As Deleted</button>'
             + '<button id="saveUpdates' + queryResultId + '">Save Changes To DB</button>'
             + '<button id="rowTranspose' + queryResultId + '">Transpose</button>'
-            + '</span></div>'
+            + '</span>'
+            + '<span class="clickable hide" id="showSummary' + queryResultId + '">Show Summary</span>' +
+        '</div>'
         return html
     }
 
@@ -59,7 +61,9 @@
             '<td>' + result.ExecutionTime + '</td>' +
             '<td>' + result.CostTime + '</td>' +
             '<td><span class="opsSpan" id="closeResult' + queryResultId + '">Close</span>' +
-            '<span class="opsSpan" id="reExecuteSql' + queryResultId + '">Re-Execute</span></td><td'
+            '<span class="opsSpan" id="reExecuteSql' + queryResultId + '">Re-Execute</span>' +
+            '<span class="opsSpan" id="hideSummary' + queryResultId + '">Hide</span>' +
+            '</td><td'
             + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
             '<td class="sqlTd" contenteditable="true">' + sql + '</td>' +
             '<tr></table>'
