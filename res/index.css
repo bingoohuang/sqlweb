@@ -97,7 +97,7 @@ span.clickable {
     padding-top: 1px;
 }
 
-div.executionResult:not(:first-child) {
+div.executionResult {
     margin-top: -18px;
 }
 
@@ -212,7 +212,7 @@ table.executionSummary tr:first-child {
 }
 
 #fastEntriesDiv {
-    margin: 10px 0 0 10px;
+    margin: 10px 0 18px 10px;
     display: none;
     text-align: right;
 }
