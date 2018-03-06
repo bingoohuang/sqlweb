@@ -88,7 +88,7 @@
                     if (key.indexOf('link') == 0) {
                         linkTo(queryResultId, columnName, key, linkedToTables, $(this))
                     } else if (key === 'Copy Where') {
-                        $.copyTextToClipboard(columnName + " = '" + $(this).text() + "'")
+                        $.copyTextToClipboard(' where ' + columnName + " = '" + $(this).text() + "'")
                     }
                 },
                 items: itemsData
@@ -98,7 +98,7 @@
                 selector: selector + '.dataCell',
                 callback: function (key, options) {
                     if (key === 'Copy Where') {
-                        $.copyTextToClipboard(columnName + " = '" + $(this).text() + "'")
+                        $.copyTextToClipboard(' where ' + columnName + " = '" + $(this).text() + "'")
                     }
                 },
                 items: itemsData

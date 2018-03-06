@@ -50,11 +50,7 @@
     }
 
     function rowUpdateOperateArea(hasRows, queryResultId) {
-        var html = '<div class="operateAreaDiv">'
-        if (hasRows) {
-            html += '<input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search">'
-        }
-        html += '<button id="expandRows' + queryResultId + '">Expand Rows</button>'
+        return '<button id="expandRows' + queryResultId + '">Expand Rows</button>'
             + '<input type="checkbox" id="checkboxEditable' + queryResultId + '" class="checkboxEditable">'
             + '<label for="checkboxEditable' + queryResultId + '">Editable?</label>'
             + '<span class="editButtons"><button id="copyRow' + queryResultId + '" class="copyRow">Copy Rows</button>'
@@ -62,38 +58,47 @@
             + '<button id="saveUpdates' + queryResultId + '">Save Changes To DB</button>'
             + '<button id="rowTranspose' + queryResultId + '">Transpose</button>'
             + '</span>'
-            + '<span class="clickable hide" id="showSummary' + queryResultId + '">Show Summary</span>' +
-            '</div>'
-        return html
+            + '<span class="clickable hide" id="showSummary' + queryResultId + '">Show Summary</span>'
     }
 
-    function createSummaryTable(queryResultId, result, hasRows, sql) {
+    function createSummaryTable(queryResultId, result, hasRows) {
         return '<div id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
-            '<table class="executionSummary">' +
-            '<tr><td>Tenant</td><td>Database</td><td>Rows</td><td>Time</td><td>Cost</td><td>Ops</td><td>SQL</td><td>Error</td></tr>'
-            + '<tr>' +
-            '<td>' + activeMerchantName + '</td><td>' + (result.DatabaseName || '') + '</td><td>' + (hasRows ? result.Rows.length : '0') + '</td>' +
-            '<td>' + result.ExecutionTime + '</td>' +
-            '<td>' + result.CostTime + '</td>' +
-            '<td><span class="opsSpan" id="closeResult' + queryResultId + '">Close</span>' +
-            '<span class="opsSpan" id="reExecuteSql' + queryResultId + '">Re-Execute</span>' +
+            '<table class="executionSummary"><tr>' +
+            '<td>Tenant:&nbsp;' + activeMerchantName + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
+            '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
+            '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
+            '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
+            '<td>' +
+            '<span class="opsSpan" id="closeResult' + queryResultId + '">Close</span>' +
             '<span class="opsSpan" id="hideSummary' + queryResultId + '">Hide</span>' +
-            '<td class="sqlTd" contenteditable="true">' + sql + '</td>' +
-            '</td><td' + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
-            '<tr></table>'
+            '</td>' +
+            '<td' + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
+            '</tr></table>'
     }
-
 
     $.createResultTableHtml = function (result, sql, rowUpdateReady, queryResultId, contextMenuHolder) {
         var hasRows = result.Rows && result.Rows.length > 0
-        var table = createSummaryTable(queryResultId, result, hasRows, sql)
+        var table = createSummaryTable(queryResultId, result, hasRows)
         table += '<div id="divTranspose' + queryResultId + '" class="divTranspose"></div>'
         table += '<div id="divResult' + queryResultId + '" class="divResult">'
-        if (rowUpdateReady) {
-            table += rowUpdateOperateArea(hasRows, queryResultId)
-        } else if (hasRows) {
-            table += '<div><input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search"></div>'
+        table += '<div class="operateAreaDiv">'
+        if (hasRows) {
+            table += '<input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search">'
         }
+        if (rowUpdateReady) {
+            table += '<button id="expandRows' + queryResultId + '">Expand Rows</button>'
+                + '<input type="checkbox" id="checkboxEditable' + queryResultId + '" class="checkboxEditable">'
+                + '<label for="checkboxEditable' + queryResultId + '">Editable?</label>'
+                + '<span class="editButtons"><button id="copyRow' + queryResultId + '" class="copyRow">Copy Rows</button>'
+                + '<button id="deleteRows' + queryResultId + '">Delete Rows</button>'
+                + '<button id="saveUpdates' + queryResultId + '">Commit</button>'
+                + '<button id="rowTranspose' + queryResultId + '">Transpose</button>'
+                + '</span>'
+                + '<span class="opsSpan hide" id="showSummary' + queryResultId + '">Show Summary</span>'
+        }
+        table += '<span class="opsSpan" id="reExecuteSql' + queryResultId + '">Re Run:</span>'
+        table += '<span class="sqlTd" contenteditable="true">' + sql + '</span>'
+        table += '</div>'
 
         contextMenuHolder.queryResultId = queryResultId
         contextMenuHolder.tableName = result.TableName
