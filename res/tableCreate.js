@@ -39,12 +39,6 @@
             var sql = $(divId).find('.sqlTd').text()
             $.executeQueryAjax(sql, resultId)
         })
-
-        var showSummary = '#showSummary' + queryResultId
-        $('#hideSummary' + queryResultId).click(function () {
-            $(divId).find('.executionSummary').hide()
-            $(showSummary).show()
-        })
     }
 
     function attachExpandRowsEvent() {

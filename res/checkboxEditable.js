@@ -52,11 +52,5 @@
         checkboxEditable.click(function () {
             checkboxEditableChange(checkboxEditable)
         })
-
-        var executionResultDiv = '#executionResultDiv' + queryResultId
-        $('#showSummary' + queryResultId).click(function () {
-            $(executionResultDiv).find('.executionSummary').show()
-            $(this).hide()
-        })
     }
 })()

@@ -94,7 +94,11 @@ span.clickable {
 
 .result {
     clear: both;
-    padding-top: 10px;
+    padding-top: 1px;
+}
+
+div.executionResult:not(:first-child) {
+    margin-top: -18px;
 }
 
 table tr:first-child {

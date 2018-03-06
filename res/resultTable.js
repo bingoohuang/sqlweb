@@ -62,7 +62,7 @@
     }
 
     function createSummaryTable(queryResultId, result, hasRows) {
-        return '<div id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
+        return '<div class="executionResult" id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
             '<table class="executionSummary"><tr>' +
             '<td>Tenant:&nbsp;' + activeMerchantName + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
@@ -70,7 +70,6 @@
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
             '<td>' +
             '<span class="opsSpan" id="closeResult' + queryResultId + '">Close</span>' +
-            '<span class="opsSpan" id="hideSummary' + queryResultId + '">Hide</span>' +
             '</td>' +
             '<td' + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
             '</tr></table>'
@@ -94,7 +93,6 @@
                 + '<button id="saveUpdates' + queryResultId + '">Commit</button>'
                 + '<button id="rowTranspose' + queryResultId + '">Transpose</button>'
                 + '</span>'
-                + '<span class="opsSpan hide" id="showSummary' + queryResultId + '">Show Summary</span>'
         }
         table += '<span class="opsSpan" id="reExecuteSql' + queryResultId + '">Re Run:</span>'
         table += '<span class="sqlTd" contenteditable="true">' + sql + '</span>'
