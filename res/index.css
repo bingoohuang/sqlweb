@@ -105,7 +105,7 @@ div.executionResult {
     margin-top: -18px;
 }
 
-table tr:first-child {
+thead {
     background-color: aliceblue;
 }
 
@@ -162,7 +162,7 @@ table.executionSummary tr:first-child {
     background-color: gold !important;
 }
 
-.rowEven {
+.rowOdd {
     background-color: #eeeeee;
 }
 

@@ -1,6 +1,6 @@
 (function () {
     function createHead(queryResultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder) {
-        var head = '<tr class="headRow" queryResultId="' + queryResultId + '">'
+        var head = '<thead><tr class="headRow" queryResultId="' + queryResultId + '">'
         if (rowUpdateReady) {
             head += '<td><div class="chk checkAll"></div></td>'
         }
@@ -17,7 +17,7 @@
                 contextMenuHolder.columnNames[headName] = true
             }
         }
-        head += '</tr>'
+        head += '</tr></thead>'
 
 
         return head
@@ -180,19 +180,21 @@
         table += '<div id="collapseDiv' + queryResultId + '" class="collapseDiv">'
 
         table += '<table id="queryResult' + queryResultId + '" class="queryResult">'
-        table += '<tr class="headRow" queryResultId="' + queryResultId + '">'
-        table += '<td class="headCell">#</td><td class="headCell">MERCHANT_ID</td><td class="headCell">MERCHANT_NAME</td><td class="headCell">MERCHANT_CODE</td><td class="headCell">##</td>'
+        table += '<thead><tr class="headRow" queryResultId="' + queryResultId + '">'
+        table += '<td class="headCell">#</td><td class="headCell">MERCHANT_ID</td>' +
+            '<td class="headCell">MERCHANT_NAME</td>' +
+            '<td class="headCell">MERCHANT_CODE</td><td class="headCell">##</td>'
 
         if (headers && headers.length) {
             for (var j = 0; j < headers.length; ++j) {
-                table += '<td class="headCell">' + headers[j] + '</td>'
+                table += '<td class="headCell contextMenu ' + $.escapeContextMenuCssName(headers[j]) + '">' + headers[j] + '</td>'
             }
         } else {
             table += '<td class="headCell">Msg</td>'
         }
-        table += '</tr>'
+        table += '</tr></thead>'
 
-        table += '</table></div><br/><div></div>'
+        table += '<tbody></tbody></table></div><br/><div></div>'
 
         return table
     }
@@ -231,6 +233,8 @@
             var isTableInLinked = hasRows && result.TableName !== '' && $.isInLinkedTable(result.TableName)
             table += createHead(queryResultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder)
         }
+
+        table += '<tbody>'
         if (hasRows) {
             table += createRows(result, rowUpdateReady)
         } else if (result.Rows && result.Rows.length == 0) {
@@ -240,7 +244,7 @@
             }
             table += '<td class="dataCell">' + new Array(result.Headers.length + 1).join('</td><td class="dataCell">') + '</td></tr>'
         }
-        table += '</table></div><br/><div></div>'
+        table += '</tbody></table></div><br/><div></div>'
 
         return table
     }

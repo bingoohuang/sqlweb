@@ -62,6 +62,18 @@
         }
     }
 
+    $.findColumnIndex = function (dataTable, columnName) {
+        var headRow = dataTable.find('tr.headRow').first().find('td')
+        var foundColumnIndex = -1
+        headRow.each(function (index, td) {
+            if ($(td).text().toUpperCase() == columnName) {
+                foundColumnIndex = index
+                return false
+            }
+        })
+        return foundColumnIndex;
+    }
+
     $.attachSearchTableEvent = function (queryResultId) {
         $('#searchTable' + queryResultId).on('keyup change', function () {
             var dataTable = $(this).parents('div.divResult').find('table.queryResult')
@@ -83,16 +95,7 @@
                     rowFilter(dataTable, filter)
                     return
                 }
-
-
-                var headRow = dataTable.find('tr.headRow').first().find('td')
-                var foundColumnIndex = -1
-                headRow.each(function (index, td) {
-                    if ($(td).text().toUpperCase() == columnName) {
-                        foundColumnIndex = index
-                        return false
-                    }
-                })
+                var foundColumnIndex = $.findColumnIndex(dataTable, columnName);
                 if (foundColumnIndex < 0) {
                     rowFilter(dataTable, filter)
                     return

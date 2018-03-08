@@ -61,14 +61,34 @@
     }
 
     $.js_yyyy_mm_dd_hh_mm_ss_SSS = function () {
-        var  now = new Date();
+        var now = new Date();
         var year = "" + now.getFullYear();
-        var month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
-        var day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
-        var hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
-        var minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
-        var second = "" + now.getSeconds(); if (second.length == 1) { second = "0" + second; }
-        var millis = "" + now.getMilliseconds(); if (second.length == 1) { second = "00" + second; }  else if (second.length == 2) { second = "0" + second; }
+        var month = "" + (now.getMonth() + 1);
+        if (month.length == 1) {
+            month = "0" + month;
+        }
+        var day = "" + now.getDate();
+        if (day.length == 1) {
+            day = "0" + day;
+        }
+        var hour = "" + now.getHours();
+        if (hour.length == 1) {
+            hour = "0" + hour;
+        }
+        var minute = "" + now.getMinutes();
+        if (minute.length == 1) {
+            minute = "0" + minute;
+        }
+        var second = "" + now.getSeconds();
+        if (second.length == 1) {
+            second = "0" + second;
+        }
+        var millis = "" + now.getMilliseconds();
+        if (second.length == 1) {
+            second = "00" + second;
+        } else if (second.length == 2) {
+            second = "0" + second;
+        }
         return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second + "." + millis;
     }
 
@@ -97,7 +117,7 @@
         return 'contextMenu-' + prefix + $.stringHashCode(headName)
     }
 
-    $.stringHashCode = function(s) {
+    $.stringHashCode = function (s) {
         var hash = 0, i, chr
         if (s.length === 0) return hash
         for (i = 0; i < s.length; i++) {
@@ -106,5 +126,46 @@
             hash |= 0; // Convert to 32bit integer
         }
         return hash
+    }
+
+    $.sortingTable = function (tableId, compareColumnIndex, asc, seqIndex) {
+        var datas = [];
+        var $tbody = $('#' + tableId + ' tbody')
+        var tbody = $tbody[0]
+        var tbodyLength = tbody.rows.length;
+        for (var i = 0; i < tbodyLength; i++) {
+            datas[i] = tbody.rows[i];
+        }
+
+        // sort by cell[index]
+        datas.sort(function (a, b) {
+            var compare = compareCells(a, b, compareColumnIndex)
+            return asc ? compare : (-compare)
+        })
+        for (var i = 0; i < tbodyLength; i++) {
+            // rearrange table rows by sorted rows
+            datas[i].cells[seqIndex].innerText = (i + 1)
+            tbody.appendChild(datas[i]);
+        }
+
+        $tbody.find('tr').removeClass('rowOdd').filter(':odd').addClass('rowOdd')
+    }
+
+    function compareCells(aRow, bRow, compareColumnIndex) {
+        var aVal = aRow.cells[compareColumnIndex].innerText;
+        var bVal = bRow.cells[compareColumnIndex].innerText;
+
+        aVal = aVal.replace(/\,/g, '');
+        bVal = bVal.replace(/\,/g, '');
+
+        if (aVal.match(/^[0-9]+$/) && bVal.match(/^[0-9]+$/)) {
+            return parseFloat(aVal) - parseFloat(bVal);
+        } else if (aVal < bVal) {
+            return -1;
+        } else if (aVal > bVal) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 })()

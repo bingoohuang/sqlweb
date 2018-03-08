@@ -42,6 +42,7 @@
 
         $.executeQueryAjax(sql)
     }
+
     var createLinkToTableColumnContextMenu = function (queryResultId, tableName, columnName, linkColumnNames) {
         var itemsHead = {}
         var itemsData = {}
@@ -80,6 +81,14 @@
             name: 'Copy Columns As In Clause',
             icon: 'link'
         }
+        itemsHead['orderByAsc'] = {
+            name: 'Order By Asc',
+            icon: 'link'
+        }
+        itemsHead['orderByDesc'] = {
+            name: 'Order By Desc',
+            icon: 'link'
+        }
 
         if (linkColumnNames[columnName]) {
             $.contextMenu({
@@ -105,6 +114,8 @@
             })
         }
 
+        var columnIndex = $.findColumnIndex($('#queryResult' + queryResultId), columnName)
+
         $.contextMenu({
             selector: selector + '.headCell',
             callback: function (key, options) {
@@ -113,6 +124,38 @@
                 } else if (key === 'sqlInPart') {
                     var inPart = columnName + " in (" + createInPart(queryResultId, columnName) + ")"
                     $.copyTextToClipboard(inPart)
+                } else if (key === 'orderByAsc') {
+                    $.sortingTable('queryResult' + queryResultId, columnIndex, true, 1)
+                } else if (key === 'orderByDesc') {
+                    $.sortingTable('queryResult' + queryResultId, columnIndex, false, 1)
+                }
+            },
+            items: itemsHead
+        })
+    }
+
+
+    $.createOrderByContextMenu = function (queryResultId) {
+        var itemsHead = {}
+
+        itemsHead['orderByAsc'] = {
+            name: 'Order By Asc',
+            icon: 'link'
+        }
+        itemsHead['orderByDesc'] = {
+            name: 'Order By Desc',
+            icon: 'link'
+        }
+
+        $.contextMenu({
+            selector: '#queryResult' + queryResultId + ' td.headCell.contextMenu',
+            callback: function (key, options) {
+                if (key === 'orderByAsc') {
+                    var columnIndex = $.findColumnIndex($('#queryResult' + queryResultId), $(this).text().toUpperCase())
+                    $.sortingTable('queryResult' + queryResultId, columnIndex, true, 0)
+                } else if (key === 'orderByDesc') {
+                    var columnIndex = $.findColumnIndex($('#queryResult' + queryResultId), $(this).text().toUpperCase())
+                    $.sortingTable('queryResult' + queryResultId, columnIndex, false, 0)
                 }
             },
             items: itemsHead

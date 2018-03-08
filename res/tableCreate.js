@@ -111,13 +111,15 @@
 
     function multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime, batchConfirm) {
         if (groupIndex >= tenantIdsGroup.length || (groupIndex > 0 && batchConfirm && !window.confirm('Continue?'))) {
-            $('#queryResult' + resultId + ' tr:even').addClass('rowEven')
+            $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd')
             $.attachSearchTableEvent(resultId)
             attachExpandRowsEvent(resultId)
             attachOpsResultDivEvent(resultId)
 
             $('#summaryRows' + resultId).text(dataRowsIndex)
             $('#summaryCostTime' + resultId).text($.costTime(startTime))
+            $.createOrderByContextMenu(resultId)
+
             return
         }
 
@@ -141,7 +143,7 @@
                     dataRowsIndex += resortedContent[i].Rows && resortedContent[i].Rows.length ? resortedContent[i].Rows.length : 1
                 }
 
-                $('#queryResult' + resultId).append(rows)
+                $('#queryResult' + resultId + " tbody").append(rows)
 
                 setTimeout(function () {
                     multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex + 1, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime, batchConfirm)
@@ -210,7 +212,7 @@
             $(table).prependTo($('.result'))
         }
 
-        $('#queryResult' + queryResultId + ' tr:even').addClass('rowEven')
+        $('#queryResult' + queryResultId + ' tbody tr:odd').addClass('rowOdd')
         $.attachSearchTableEvent(queryResultId)
         attachExpandRowsEvent(queryResultId)
         attachOpsResultDivEvent(queryResultId)
