@@ -64,6 +64,7 @@ func main() {
 
 	r.HandleFunc(contextPath+"/", gzipWrapper(serveHome))
 	r.HandleFunc(contextPath+"/query", gzipWrapper(serveQuery))
+	r.HandleFunc(contextPath+"/multipleTenantsQuery", gzipWrapper(multipleTenantsQuery))
 	r.HandleFunc(contextPath+"/tablesByColumn", serveTablesByColumn)
 	r.HandleFunc(contextPath+"/loadLinksConfig", serveLoadLinksConfig)
 	r.HandleFunc(contextPath+"/saveLinksConfig", serveSaveLinksConfig)

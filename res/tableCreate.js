@@ -9,15 +9,14 @@
         })
     }
 
-    function attachDeleteRowsEvent() {
+    function attachDeleteRowsEvent(queryResultId) {
         var cssChoser = '#queryResult' + queryResultId + ' :checked'
         $('#deleteRows' + queryResultId).click(function () {
             $(cssChoser).parents('tr').addClass('deletedRow')
         })
     }
 
-    function attachCopyRowsEvent() {
-        var thisQueryResult = queryResultId
+    function attachCopyRowsEvent(thisQueryResult) {
         $('#copyRow' + thisQueryResult).click(function () {
             var checkboxes = $('#queryResult' + thisQueryResult + ' :checked')
             if (checkboxes.length == 0) {
@@ -28,20 +27,153 @@
         })
     }
 
-    function attachOpsResultDivEvent() {
-        var divId = '#executionResultDiv' + queryResultId
-        $('#closeResult' + queryResultId).click(function () {
+    function createTenantMap(tenants) {
+        var tenantsMap = {}
+        for (var i = 0; i < tenants.length; ++i) {
+            var tenant = tenants[i]
+            tenantsMap[tenant.merchantId] = tenant
+        }
+        return tenantsMap
+    }
+
+    function createTenantIdGroup(tenants, groupSize) {
+        var tenantIdsGroup = []
+        var group = []
+        for (var i = 0; i < tenants.length; ++i) {
+            group.push(tenants[i].merchantId)
+
+            if (group.length == groupSize) {
+                tenantIdsGroup.push(group)
+                group = []
+            }
+        }
+
+        if (group.length > 0) {
+            tenantIdsGroup.push(group)
+        }
+
+        return tenantIdsGroup;
+    }
+
+    function attachOpsResultDivEvent(resultId) {
+        var divId = '#executionResultDiv' + resultId
+        $('#closeResult' + resultId).click(function () {
             $(divId).remove()
         })
-        var resultId = queryResultId
 
-        $('#reExecuteSql' + queryResultId).click(function () {
+        $('#reExecuteSql' + resultId).click(function () {
             var sql = $(divId).find('.sqlTd').text()
             $.executeQueryAjax(sql, resultId)
         })
+
+        $('#multipleTenantsExecutable' + resultId).click(function () {
+            var sql = $.trim($.getEditorSql())
+            if (sql === "") {
+                alert("please input the sql!")
+                return
+            }
+
+            var $this = $(this)
+            var merchantIdIndex = parseInt($this.attr('merchantIdIndex'))
+            var merchantNameIndex = parseInt($this.attr('merchantNameIndex'))
+            var merchantCodeIndex = parseInt($this.attr('merchantCodeIndex'))
+            var tenants = findTenants(resultId, merchantIdIndex, merchantNameIndex, merchantCodeIndex)
+            var tenantsMap = createTenantMap(tenants)
+            var tenantIdsGroup = createTenantIdGroup(tenants, 20)
+
+            if (tenantIdsGroup.length > 0) {
+                multipleTenantsQueryAjax(sql, tenantsMap, ++queryResultId, 0, tenantIdsGroup, 0, 0, Date.now())
+            }
+        })
     }
 
-    function attachExpandRowsEvent() {
+    function sortContent(content, currentGroupIds, headerHolder, groupIndex) {
+        var resortedCotent = []
+
+        for (var i = 0; i < currentGroupIds.length; ++i) {
+            for (var j = 0; j < content.length; ++j) {
+                if (groupIndex == 0 && content[j].Headers && content[j].Headers.length) {
+                    headerHolder.Headers = content[j].Headers
+                }
+
+                if (content[j].Tid === currentGroupIds[i]) {
+                    resortedCotent.push(content[j])
+                    break
+                }
+            }
+        }
+
+        return resortedCotent
+    }
+
+    function multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime) {
+        if (groupIndex >= tenantIdsGroup.length) {
+            $('#queryResult' + resultId + ' tr:even').addClass('rowEven')
+            $.attachSearchTableEvent(resultId)
+            attachExpandRowsEvent(resultId)
+            attachOpsResultDivEvent(resultId)
+
+            $('#summaryRows' + resultId).text(dataRowsIndex)
+            $('#summaryCostTime' + resultId).text($.costTime(startTime))
+            return
+        }
+
+        var currentGroup = tenantIdsGroup[groupIndex]
+        var multipleTenantIds = currentGroup.join(',')
+        $.ajax({
+            type: 'POST',
+            url: pathname + "/multipleTenantsQuery",
+            data: {multipleTenantIds: multipleTenantIds, sql: sql},
+            success: function (content, textStatus, request) {
+                var headerHolder = {}
+                var resortedContent = sortContent(content, currentGroup, headerHolder, groupIndex)
+                if (groupIndex == 0) {
+                    tableCreateSimpleHead(headerHolder.Headers, sql, resultId)
+                    headerColumnsLen = headerHolder.Headers ? headerHolder.Headers.length : 1
+                }
+
+                var rows = ''
+                for (var i = 0; i < resortedContent.length; ++i) {
+                    rows += $.createRowsSimple(tenantsMap, resortedContent[i], headerColumnsLen, dataRowsIndex)
+                    dataRowsIndex += resortedContent[i].Rows && resortedContent[i].Rows.length ? resortedContent[i].Rows.length : 1
+                }
+
+                $('#queryResult' + resultId).append(rows)
+
+                multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex + 1, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime)
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+            }
+        })
+    }
+
+    var findTenants = function (queryResultId, merchantIdIndex, merchantNameIndex, merchantCodeIndex) {
+        var checkboxEditable = $('#checkboxEditable' + queryResultId).prop('checked')
+        var chosenRows = checkboxEditable
+            ? $('#queryResult' + queryResultId + ' :checked').parents('tr:visible')
+            : $('#queryResult' + queryResultId + ' tr.dataRow:visible')
+
+        var offset = 2
+        var tenants = []
+        chosenRows.each(function (index, tr) {
+            var tds = $(tr).find('td');
+            var item = {
+                merchantId: tds.eq(merchantIdIndex + offset).text(),
+                merchantName: tds.eq(merchantNameIndex + offset).text(),
+                merchantCode: tds.eq(merchantCodeIndex + offset).text()
+            }
+            if (checkboxEditable) {
+                tenants.unshift(item)
+            } else {
+                tenants.push(item)
+            }
+        })
+
+        return tenants
+    }
+
+    function attachExpandRowsEvent(queryResultId) {
         var buttonId = '#expandRows' + queryResultId
         var collapseDiv = '#collapseDiv' + queryResultId
 
@@ -54,6 +186,11 @@
                 $(this).text('Expand Rows')
             }
         }).toggle($(collapseDiv).height() >= 300)
+    }
+
+    var tableCreateSimpleHead = function (headers, sql, queryResultId) {
+        var table = $.tableCreateSimpleHeadHtml(headers, sql, queryResultId)
+        $(table).prependTo($('.result'))
     }
 
     $.tableCreate = function (result, sql, resultId) {
@@ -70,14 +207,14 @@
 
         $('#queryResult' + queryResultId + ' tr:even').addClass('rowEven')
         $.attachSearchTableEvent(queryResultId)
-        attachExpandRowsEvent()
-        attachOpsResultDivEvent()
+        attachExpandRowsEvent(queryResultId)
+        attachOpsResultDivEvent(queryResultId)
         $.createLinkToTableContextMenu(contextMenuHolder)
 
         if (rowUpdateReady) {
             $.attachEditableEvent(queryResultId)
-            attachCopyRowsEvent()
-            attachDeleteRowsEvent()
+            attachCopyRowsEvent(queryResultId)
+            attachDeleteRowsEvent(queryResultId)
             $.attachRowTransposesEvent(queryResultId)
             $.attachSaveUpdatesEvent(result, queryResultId)
         }

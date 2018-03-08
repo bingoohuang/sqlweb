@@ -59,8 +59,11 @@
         }
     })
 
+    $.getEditorSql = function() {
+        return codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()
+    }
+
     $('.executeQuery').prop("disabled", true).click(function () {
-        var sql = codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()
-        $.executeMultiSqlsAjax(sql)
+        $.executeMultiSqlsAjax($.getEditorSql())
     })
 })()

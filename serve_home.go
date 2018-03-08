@@ -85,7 +85,7 @@ func mergeScripts() string {
 		"resultTable.js", "tableCreate.js",
 		"contextMenu.js", "jquery.contextMenu.js", "jquery.ui.position.js", "fastEntries.js",
 		"SqlsVersion.js",
-		"index.js", "sqlEditor.js", "utils.js")
+		"index.js", "sqlEditor.js", "utils.js", "jquery.loading.js")
 }
 
 func mergeStatic(seperate string, statics ...string) string {

@@ -22,7 +22,7 @@ func selectDb(tid string, req *http.Request) (string, string, error) {
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {
-	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "'"
+	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "' AND STATE = '2'"
 
 	_, data, _, _, err, _ := executeQuery(true, queryDbSql, ds)
 	if err != nil {
@@ -30,8 +30,9 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 	}
 
 	if len(data) == 0 {
-		return "", "", errors.New("no db found")
+		return "", "", errors.New("no db found for tid:" + tid)
 	} else if len(data) > 1 {
+		log.Println("data", data)
 		return "", "", errors.New("more than one db found")
 	}
 
@@ -42,16 +43,15 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 }
 
 func executeQuery(isSelect bool, querySql, dataSource string) (
-	[]string /*header*/, [][]string, /*data*/
-	string /*executionTime*/, string /*costTime*/, error, string /* msg */) {
+	[]string /*header*/ , [][]string, /*data*/
+	string   /*executionTime*/ , string /*costTime*/ , error, string /* msg */) {
 	db, err := sql.Open("mysql", dataSource)
 	if err != nil {
 		return nil, nil, "", "", err, ""
 	}
 	defer db.Close()
 
-	header, data, executionTime, costTime, err, msg := query(isSelect, db, querySql, maxRows)
-	return header, data, executionTime, costTime, err, msg
+	return query(isSelect, db, querySql, maxRows)
 }
 
 func update(db *sql.DB, sql string) (string, string, int64, error) {

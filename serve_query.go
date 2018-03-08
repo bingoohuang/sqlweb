@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"unicode"
+	"time"
 )
 
 type QueryResult struct {
@@ -17,6 +18,7 @@ type QueryResult struct {
 	TableName        string
 	PrimaryKeysIndex []int
 	Msg              string
+	Tid              string
 }
 
 func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
@@ -53,6 +55,67 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(queryResult)
+}
+
+func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
+	start := time.Now()
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	if !authOk(req) {
+		results := make([] *QueryResult, 1)
+		results[0] = &QueryResult{Headers: nil, Rows: nil,
+			Error: "dangerous sql, please get authorized first!",
+			ExecutionTime: start.Format("2006-01-02 15:04:05.000"),
+			CostTime: time.Since(start).String(),
+		}
+
+		json.NewEncoder(w).Encode(results)
+		return
+	}
+
+	sql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
+		return unicode.IsSpace(r) || r == ';'
+	})
+	isSelect := isSelectSql(sql)
+	multipleTenantIds := strings.FieldsFunc(req.FormValue("multipleTenantIds"), func(c rune) bool { return c == ',' })
+
+	tenantsSize := len(multipleTenantIds)
+	resultChan := make(chan *QueryResult, tenantsSize)
+	saveHistory(sql)
+
+	for _, tid := range multipleTenantIds {
+		go executeSqlInTid(isSelect, tid, resultChan, sql)
+	}
+
+	results := make([] *QueryResult, tenantsSize)
+	for i := 0; i < tenantsSize; i++ {
+		results[i] = <-resultChan
+	}
+
+	json.NewEncoder(w).Encode(results)
+}
+
+func executeSqlInTid(isSelect bool, tid string, resultChan chan *QueryResult, sql string) {
+	dbDataSource, databaseName, err := selectDbByTid(tid, dataSource)
+	if err != nil {
+		resultChan <- &QueryResult{
+			Error: gotErrorMessage(err),
+			Tid:   tid,
+		}
+		return
+	}
+
+	headers, rows, executionTime, costTime, err, msg := executeQuery(isSelect, sql, dbDataSource)
+	resultChan <- &QueryResult{
+		Headers:       headers,
+		Rows:          rows,
+		Error:         gotErrorMessage(err),
+		ExecutionTime: executionTime,
+		CostTime:      costTime,
+		DatabaseName:  databaseName,
+		Msg:           msg,
+		Tid:           tid,
+	}
 }
 
 func serveQuery(w http.ResponseWriter, req *http.Request) {

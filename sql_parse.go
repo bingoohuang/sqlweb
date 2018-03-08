@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+func isSelectSql(querySql string) (bool) {
+	return "SELECT" == strings.ToUpper(FirstWord(querySql))
+}
+
 func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource string) (bool, string, []string, bool) {
 	var tableName string
 	var primaryKeys []string
@@ -20,9 +24,9 @@ func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource str
 	case "INSERT", "DELETE", "UPDATE", "SET":
 		if !authOk(r) {
 			json.NewEncoder(w).Encode(QueryResult{Headers: nil, Rows: nil,
-				Error:         "dangerous sql, please get authorized first!",
+				Error: "dangerous sql, please get authorized first!",
 				ExecutionTime: start.Format("2006-01-02 15:04:05.000"),
-				CostTime:      time.Since(start).String(),
+				CostTime: time.Since(start).String(),
 			})
 			log.Println("sql", querySql, "is not allowed because of insert/delete/update/set")
 			return isSelect, "", nil, false
