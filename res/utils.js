@@ -6,7 +6,6 @@
         }
     }
 
-
     $.splitSqls = function (sqlsString, separateChar) {
         var sqls = []
 
@@ -77,5 +76,35 @@
         var diff = Date.now() - startTime;
         var seconds = diff / 1000
         return seconds + "s"
+    }
+
+    $.escapeContextMenuCssName = function (headName) {
+        var regExp = /^[0-9a-zA-Z-_]+$/;
+        if (regExp.test(headName)) {
+            return 'contextMenu-' + headName
+        }
+
+        var prefix = ""
+        for (i = 1; i < headName.length; i++) {
+            var temp = headName.substr(0, i)
+            if (regExp.test(temp)) {
+                prefix = temp
+            } else {
+                break
+            }
+        }
+
+        return 'contextMenu-' + prefix + $.stringHashCode(headName)
+    }
+
+    $.stringHashCode = function(s) {
+        var hash = 0, i, chr
+        if (s.length === 0) return hash
+        for (i = 0; i < s.length; i++) {
+            chr = s.charCodeAt(i)
+            hash = ((hash << 5) - hash) + chr
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash
     }
 })()

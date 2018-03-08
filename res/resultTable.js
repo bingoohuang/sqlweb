@@ -12,7 +12,7 @@
         for (var j = 0; j < result.Headers.length; ++j) {
             var headName = result.Headers[j]
             contextMenuHolder.allColumnNames[headName] = true
-            head += '<td class="headCell contextMenu-' + headName + '">' + headName + '</td>'
+            head += '<td class="headCell ' + $.escapeContextMenuCssName(headName) + '">' + headName + '</td>'
             if (contextMenuHolder.hasRows && $.isInLinkedTableField(result.TableName, headName)) {
                 contextMenuHolder.columnNames[headName] = true
             }
@@ -38,7 +38,7 @@
                 if ('(null)' == cellValue) {
                     rowHtml += 'nullCell '
                 } else if (result.Headers) {
-                    rowHtml += 'contextMenu-' + result.Headers[j - 1]
+                    rowHtml += $.escapeContextMenuCssName(result.Headers[j - 1])
                 }
 
                 rowHtml += '">' + cellValue + '</td>'
@@ -113,7 +113,7 @@
             + '" merchantNameIndex="' + holder.merchantNameIndex
             + '" merchantCodeIndex="' + holder.merchantCodeIndex
             + '">ExecuteSqlAmongBelowTenants</span>'
-            + '<span>BatchSize<input class="batchSize" placeholder="20">'
+            + '<span>BatchSize:<input class="batchSize" placeholder="20">'
             + '<label><input class="confirm" type="checkbox" name="checkbox" value="value">Confirm to Continue?</label>'
             + '</span>'
             + '</span>'

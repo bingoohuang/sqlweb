@@ -13,7 +13,7 @@
             : $('#queryResult' + queryResultId + ' tr:visible')
 
         var duplicate = {}
-        chosenRows.find('td.contextMenu-' + columnName).each(
+        chosenRows.find('td.' + $.escapeContextMenuCssName(columnName)).each(
             function (index, td) {
                 if (checkboxEditable || index > 0 /*ignore head cell*/) {
                     var val = $(td).text()
@@ -74,7 +74,7 @@
             icon: 'link'
         }
 
-        var selector = '#queryResult' + queryResultId + ' td.contextMenu-' + columnName
+        var selector = '#queryResult' + queryResultId + ' td.' + $.escapeContextMenuCssName(columnName)
 
         itemsHead['sqlInPart'] = {
             name: 'Copy Columns As In Clause',
