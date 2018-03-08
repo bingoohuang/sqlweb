@@ -61,6 +61,10 @@ table td {
     user-select: none;
 }
 
+input.batchSize{
+    width: 22px;
+}
+
 #tablesWithSpecifiedColumn span {
     float: left;
     width: 15%;

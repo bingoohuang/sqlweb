@@ -66,7 +66,8 @@
             $.executeQueryAjax(sql, resultId)
         })
 
-        $('#multipleTenantsExecutable' + resultId).click(function () {
+        var multipleTenantsExecutable = $('#multipleTenantsExecutable' + resultId);
+        multipleTenantsExecutable.find('.opsSpan').click(function () {
             var sql = $.trim($.getEditorSql())
             if (sql === "") {
                 alert("please input the sql!")
@@ -79,10 +80,12 @@
             var merchantCodeIndex = parseInt($this.attr('merchantCodeIndex'))
             var tenants = findTenants(resultId, merchantIdIndex, merchantNameIndex, merchantCodeIndex)
             var tenantsMap = createTenantMap(tenants)
-            var tenantIdsGroup = createTenantIdGroup(tenants, 20)
+            var batchSize = parseInt(multipleTenantsExecutable.find('.batchSize').val())
+            var batchConfirm = multipleTenantsExecutable.find('.confirm').prop('checked')
+            var tenantIdsGroup = createTenantIdGroup(tenants, batchSize)
 
             if (tenantIdsGroup.length > 0) {
-                multipleTenantsQueryAjax(sql, tenantsMap, ++queryResultId, 0, tenantIdsGroup, 0, 0, Date.now())
+                multipleTenantsQueryAjax(sql, tenantsMap, ++queryResultId, 0, tenantIdsGroup, 0, 0, Date.now(), batchConfirm)
             }
         })
     }
@@ -106,8 +109,8 @@
         return resortedCotent
     }
 
-    function multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime) {
-        if (groupIndex >= tenantIdsGroup.length) {
+    function multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime, batchConfirm) {
+        if (groupIndex >= tenantIdsGroup.length || (groupIndex > 0 && batchConfirm && !window.confirm('Continue?'))) {
             $('#queryResult' + resultId + ' tr:even').addClass('rowEven')
             $.attachSearchTableEvent(resultId)
             attachExpandRowsEvent(resultId)
@@ -140,7 +143,9 @@
 
                 $('#queryResult' + resultId).append(rows)
 
-                multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex + 1, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime)
+                setTimeout(function () {
+                    multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex + 1, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime, batchConfirm)
+                }, 100)
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)

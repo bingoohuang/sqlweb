@@ -108,11 +108,15 @@
         var holder = {}
         if (!supportsMultipleTenantsExecutable(result, hasRows, holder)) return ""
 
-        return '<span class="opsSpan" id="multipleTenantsExecutable' + queryResultId
-            + '" merchantIdIndex="' + holder.merchantIdIndex
+        return '<span id="multipleTenantsExecutable' + queryResultId + '">'
+            + '<span class="opsSpan" merchantIdIndex="' + holder.merchantIdIndex
             + '" merchantNameIndex="' + holder.merchantNameIndex
             + '" merchantCodeIndex="' + holder.merchantCodeIndex
-            + '">Execute Sql Among Below Tenants</span>'
+            + '">ExecuteSqlAmongBelowTenants</span>'
+            + '<span>BatchSize<input class="batchSize" placeholder="20">'
+            + '<label><input class="confirm" type="checkbox" name="checkbox" value="value">Confirm to Continue?</label>'
+            + '</span>'
+            + '</span>'
     }
 
     function supportsMultipleTenantsExecutable(result, hasRows, holder) {
