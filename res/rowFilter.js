@@ -74,7 +74,7 @@
         return foundColumnIndex;
     }
 
-    $.attachSearchTableEvent = function (queryResultId) {
+    $.attachSearchTableEvent = function (queryResultId, seqIndex) {
         $('#searchTable' + queryResultId).on('keyup change', function () {
             var dataTable = $(this).parents('div.divResult').find('table.queryResult')
 
@@ -103,6 +103,10 @@
 
                 fieldRowFilter(dataTable, foundColumnIndex, result.operator, result.operatorValue)
             }
+
+            dataTable.find('tbody tr:visible').each(function (index, tr) {
+                $(tr).find('td').eq(seqIndex).text(index + 1)
+            })
         }).focus(function () {
             $(this).select()
         })

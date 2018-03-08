@@ -112,7 +112,7 @@
     function multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime, batchConfirm) {
         if (groupIndex >= tenantIdsGroup.length || (groupIndex > 0 && batchConfirm && !window.confirm('Continue?'))) {
             $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd')
-            $.attachSearchTableEvent(resultId)
+            $.attachSearchTableEvent(resultId, 0)
             attachExpandRowsEvent(resultId)
             attachOpsResultDivEvent(resultId)
 
@@ -213,7 +213,7 @@
         }
 
         $('#queryResult' + queryResultId + ' tbody tr:odd').addClass('rowOdd')
-        $.attachSearchTableEvent(queryResultId)
+        $.attachSearchTableEvent(queryResultId, 1)
         attachExpandRowsEvent(queryResultId)
         attachOpsResultDivEvent(queryResultId)
         $.createLinkToTableContextMenu(contextMenuHolder)
