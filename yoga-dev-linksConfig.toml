@@ -31,14 +31,21 @@
     type = "input"
     placeholder = "手机号码/姓名/userId"
     label = "查找用户"
-    sql = "select * from tt_f_user where nickname like '%{input}%' or mobile like '%{input}%' or user_id = '{input}' "
+    sql = """\
+    	select * from tt_f_user where nickname like '%{input}%' or mobile like '%{input}%' or user_id = '{input}';\
+    	select ur.USER_ID, ur.role_id, r.role_name from TT_F_USER_ROLE ur left join tt_f_role r on ur.role_id = r.role_id where ur.USER_ID IN _result_0.USER_ID\
+        """
 
-    [entries.merchant]
-    type = "link"
-    label = "查找馆主"
-    sql = "select * from tt_f_user_role where role_id = '100'"
-    
-    [entries.memberWithCards]
-    type = "link"
-    label = "有卡会员"
-    sql = "select * from tt_f_user where user_id in (select user_id from tt_f_member where member_id in (select member_id from tt_f_mbr_card where state != 0))"
+
+    [entries.findSubscribeInfoByCardName]
+    type = "input"
+    placeholder = "卡名称"
+    label = "根据卡查找订课信息"
+    sql ="""\
+        select * from tt_f_card where CARD_NAME like '%{input}%';\
+        select * from tt_f_mbr_card where CARD_ID in _result_last.CARD_ID;\
+        select * from tt_f_subscribe_pay where PAY_ID in _result_last.MBR_CARD_ID;\
+        select * from tt_f_subscribe where SUBSCRIBE_ID in _result_last.SUBSCRIBE_ID;\
+        select * from TT_F_SCHEDULE where SCHEDULE_ID in _result_last.SCHEDULE_ID;\
+        select * from TT_F_USER where USER_ID in _result_3.USER_ID;\
+        """
