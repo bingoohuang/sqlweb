@@ -34,18 +34,12 @@
         })
     }
 
-    function fieldRowFilter(dataTable, columnName, operator, operatorValue) {
+    function fieldRowFilter(dataTable, foundColumnIndex, operator, operatorValue) {
         var headRow = dataTable.find('tr.headRow').first().find('td')
         $('tr:gt(0)', dataTable).filter(function () {
-            var found = false
-            $('td.dataCell', $(this)).each(function (index, cell) {
-                var text = $.trim($(cell).text()).toUpperCase()
-                var fieldName = $(headRow.get(index + 1)).text()
-                if ((columnName == "" || columnName == fieldName) && matchCellValue(text, operator, operatorValue)) {
-                    found = true
-                    return false
-                }
-            })
+            var td = $('td', $(this)).eq(foundColumnIndex)
+            var text = $.trim(td.text()).toUpperCase()
+            var found = matchCellValue(text, operator, operatorValue)
             $(this).toggle(found)
         })
     }
@@ -68,7 +62,7 @@
         }
     }
 
-    $.attachSearchTableEvent = function(queryResultId) {
+    $.attachSearchTableEvent = function (queryResultId) {
         $('#searchTable' + queryResultId).on('keyup change', function () {
             var dataTable = $(this).parents('div.divResult').find('table.queryResult')
 
@@ -92,19 +86,19 @@
 
 
                 var headRow = dataTable.find('tr.headRow').first().find('td')
-                var foundColumn = false
+                var foundColumnIndex = -1
                 headRow.each(function (index, td) {
-                    if ($(td).text() == columnName) {
-                        foundColumn = true
+                    if ($(td).text().toUpperCase() == columnName) {
+                        foundColumnIndex = index
                         return false
                     }
                 })
-                if (!foundColumn) {
+                if (foundColumnIndex < 0) {
                     rowFilter(dataTable, filter)
                     return
                 }
 
-                fieldRowFilter(dataTable, columnName, result.operator, result.operatorValue)
+                fieldRowFilter(dataTable, foundColumnIndex, result.operator, result.operatorValue)
             }
         }).focus(function () {
             $(this).select()
