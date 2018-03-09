@@ -77,16 +77,19 @@
             }
 
             var $this = $(this)
+            
             var merchantIdIndex = parseInt($this.attr('merchantIdIndex'))
             var merchantNameIndex = parseInt($this.attr('merchantNameIndex'))
             var merchantCodeIndex = parseInt($this.attr('merchantCodeIndex'))
             var tenants = findTenants(resultId, merchantIdIndex, merchantNameIndex, merchantCodeIndex)
-            var tenantsMap = createTenantMap(tenants)
-            var batchSize = parseInt(multipleTenantsExecutable.find('.batchSize').val())
-            var batchConfirm = multipleTenantsExecutable.find('.confirm').prop('checked')
+
+            var batchSizeInput = multipleTenantsExecutable.find('.batchSize');
+            var batchSize = parseInt(batchSizeInput.val() || batchSizeInput.prop('placeholder'))
             var tenantIdsGroup = createTenantIdGroup(tenants, batchSize)
 
             if (tenantIdsGroup.length > 0) {
+                var tenantsMap = createTenantMap(tenants)
+                var batchConfirm = multipleTenantsExecutable.find('.confirm').prop('checked')
                 multipleTenantsQueryAjax(sql, tenantsMap, ++queryResultId, 0, tenantIdsGroup, 0, 0, Date.now(), batchConfirm)
             }
         })
