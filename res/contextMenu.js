@@ -43,6 +43,10 @@
         $.executeQueryAjax(classifier, tid, tname, sql)
     }
 
+    function processCopyWhere(columnName, cellValue) {
+        $.copyTextToClipboard(' where ' + columnName + " = '" + cellValue + "'")
+    }
+
     var createLinkToTableColumnContextMenu = function (classifier, tid, tname, queryResultId, tableName, columnName, linkColumnNames) {
         var itemsHead = {}
         var itemsData = {}
@@ -74,6 +78,10 @@
             name: 'Copy Where',
             icon: 'link'
         }
+        itemsData['Show Column'] = {
+            name: 'Show Column',
+            icon: 'link'
+        }
 
         var selector = '#queryResult' + queryResultId + ' td.' + $.escapeContextMenuCssName(columnName)
 
@@ -97,7 +105,9 @@
                     if (key.indexOf('link') == 0) {
                         linkTo(classifier, tid, tname, queryResultId, columnName, key, linkedToTables, $(this))
                     } else if (key === 'Copy Where') {
-                        $.copyTextToClipboard(' where ' + columnName + " = '" + $(this).text() + "'")
+                        processCopyWhere(columnName, $(this).text())
+                    } else if (key === 'Show Column') {
+                        $.processShowColumn(classifier, tid, tableName, columnName)
                     }
                 },
                 items: itemsData
@@ -107,7 +117,9 @@
                 selector: selector + '.dataCell',
                 callback: function (key, options) {
                     if (key === 'Copy Where') {
-                        $.copyTextToClipboard(' where ' + columnName + " = '" + $(this).text() + "'")
+                        processCopyWhere(columnName, $(this).text())
+                    } else if (key === 'Show Column') {
+                        $.processShowColumn(classifier, tid, tableName, columnName)
                     }
                 },
                 items: itemsData

@@ -272,4 +272,5 @@ table.executionSummary tr:first-child {
     position: absolute;
     right: 10px;
     bottom: 10px;
+    color: blue;
 }
