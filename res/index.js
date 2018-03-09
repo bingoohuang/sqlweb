@@ -1,18 +1,17 @@
 (function () {
-    var lastClickedRow = null
-    var lastRowOdd = false
     $(document).on('click', 'tbody tr', function () {
-        if (lastClickedRow != null) {
-            lastClickedRow.removeClass('highlightRow')
-            if (lastRowOdd == true) {
-                lastClickedRow.addClass('rowOdd')
+        var row = $(this)
+
+        if (row.hasClass('highlightRow')) {
+            row.removeClass('highlightRow')
+            if (row.attr('rowOdd') === 'true') {
+                row.addClass('rowOdd')
             }
+        } else {
+            if (row.attr('rowOdd') === 'true') {
+                row.removeClass('rowOdd')
+            }
+            row.addClass('highlightRow')
         }
-        lastClickedRow = $(this)
-        lastRowOdd = lastClickedRow.hasClass('rowOdd')
-        if (lastRowOdd) {
-            lastClickedRow.removeClass('rowOdd')
-        }
-        lastClickedRow.addClass('highlightRow')
     })
 })()

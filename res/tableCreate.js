@@ -116,7 +116,7 @@
 
     function multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime, batchConfirm) {
         if (groupIndex >= tenantIdsGroup.length || (groupIndex > 0 && batchConfirm && !window.confirm('Continue?'))) {
-            $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd')
+            $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd').attr('rowOdd', true)
             $.attachSearchTableEvent(resultId, 0)
             attachExpandRowsEvent(resultId)
             attachOpsResultDivEvent(resultId)
@@ -225,7 +225,7 @@
             $(table).prependTo($('.result'))
         }
 
-        $('#queryResult' + newResultId + ' tbody tr:odd').addClass('rowOdd')
+        $('#queryResult' + newResultId + ' tbody tr:odd').addClass('rowOdd').attr('rowOdd', 'true')
         $.attachSearchTableEvent(newResultId, 1)
         attachExpandRowsEvent(newResultId)
         attachOpsResultDivEvent(newResultId)

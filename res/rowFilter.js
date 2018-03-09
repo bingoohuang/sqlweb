@@ -106,7 +106,7 @@
 
             dataTable.find('tbody tr:visible').each(function (index, tr) {
                 $(tr).find('td').eq(seqIndex).text(index + 1)
-            })
+            }).removeAttr('rowOdd').removeClass('rowOdd').filter(':odd').addClass('rowOdd').attr('rowOdd', 'true')
         }).focus(function () {
             $(this).select()
         })

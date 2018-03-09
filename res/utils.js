@@ -148,7 +148,7 @@
             tbody.appendChild(datas[i]);
         }
 
-        $tbody.find('tr').removeClass('rowOdd').filter(':odd').addClass('rowOdd')
+        $tbody.find('tr').removeAttr('rowOdd').removeClass('rowOdd').filter(':odd').addClass('rowOdd').attr('rowOdd', 'true')
     }
 
     function compareCells(aRow, bRow, compareColumnIndex) {
