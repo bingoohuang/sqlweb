@@ -62,8 +62,10 @@
         })
 
         $('#reExecuteSql' + resultId).click(function () {
+            var tid = $(this).attr('tid')
+            var tname = $(this).attr('tname')
             var sql = $(divId).find('.sqlTd').text()
-            $.executeQueryAjax(sql, resultId)
+            $.executeQueryAjax(tid, tname, sql, resultId)
         })
 
         var multipleTenantsExecutable = $('#multipleTenantsExecutable' + resultId);
@@ -200,30 +202,30 @@
         $(table).prependTo($('.result'))
     }
 
-    $.tableCreate = function (result, sql, resultId) {
+    $.tableCreate = function (result, sql, oldResultId, tid, tname) {
         var rowUpdateReady = result.TableName && result.TableName != ""
 
-        ++queryResultId
+        var newResultId = ++queryResultId
         var contextMenuHolder = {}
-        var table = $.createResultTableHtml(result, sql, rowUpdateReady, queryResultId, contextMenuHolder)
-        if (resultId && resultId > 0) {
-            $('#executionResultDiv' + resultId).html(table)
+        var table = $.createResultTableHtml(result, sql, rowUpdateReady, newResultId, contextMenuHolder, tid, tname)
+        if (oldResultId && oldResultId > 0) {
+            $('#executionResultDiv' + oldResultId).replaceWith(table)
         } else {
             $(table).prependTo($('.result'))
         }
 
-        $('#queryResult' + queryResultId + ' tbody tr:odd').addClass('rowOdd')
-        $.attachSearchTableEvent(queryResultId, 1)
-        attachExpandRowsEvent(queryResultId)
-        attachOpsResultDivEvent(queryResultId)
-        $.createLinkToTableContextMenu(contextMenuHolder)
+        $('#queryResult' + newResultId + ' tbody tr:odd').addClass('rowOdd')
+        $.attachSearchTableEvent(newResultId, 1)
+        attachExpandRowsEvent(newResultId)
+        attachOpsResultDivEvent(newResultId)
+        $.createLinkToTableContextMenu(contextMenuHolder, tid, tname)
 
         if (rowUpdateReady) {
-            $.attachEditableEvent(queryResultId)
-            attachCopyRowsEvent(queryResultId)
-            attachDeleteRowsEvent(queryResultId)
-            $.attachRowTransposesEvent(queryResultId)
-            $.attachSaveUpdatesEvent(result, queryResultId)
+            $.attachEditableEvent(newResultId)
+            attachCopyRowsEvent(newResultId)
+            attachDeleteRowsEvent(newResultId)
+            $.attachRowTransposesEvent(newResultId)
+            $.attachSaveUpdatesEvent(result, newResultId)
         }
     }
 })()

@@ -3,7 +3,7 @@
     $.executeMultiSqlsAjax = function (sql, resultId) {
         var sqls = $.splitSqls(sql, ';')
         var executeResultContext = []
-        $.executeQueryAjax(sqls[0], null, sqls, 0, executeResultContext)
+        $.executeQueryAjax(activeMerchantId, activeMerchantName, sqls[0], null, sqls, 0, executeResultContext)
     }
 
     /*
@@ -85,7 +85,7 @@
         return sql;
     }
 
-    $.executeQueryAjax = function (sql, resultId, sqls, nextIndex, executeResultContext) {
+    $.executeQueryAjax = function (tid, tname, sql, resultId, sqls, nextIndex, executeResultContext) {
         if (sqls && nextIndex > 0) {
             sql = translateSqlWithLastResults(sql, executeResultContext, nextIndex)
         }
@@ -93,9 +93,9 @@
         $.ajax({
             type: 'POST',
             url: pathname + "/query",
-            data: {tid: activeMerchantId, sql: sql},
+            data: {tid: tid, sql: sql},
             success: function (content, textStatus, request) {
-                $.tableCreate(content, sql, resultId)
+                $.tableCreate(content, sql, resultId, tid, tname)
 
                 if (sqls) {
                     executeResultContext['_result_' + nextIndex] = content
@@ -103,7 +103,7 @@
                 }
 
                 if (sqls && (nextIndex + 1) < sqls.length) {
-                    $.executeQueryAjax(sqls[nextIndex + 1], resultId, sqls, nextIndex + 1, executeResultContext)
+                    $.executeQueryAjax(tid, tname, sqls[nextIndex + 1], resultId, sqls, nextIndex + 1, executeResultContext)
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

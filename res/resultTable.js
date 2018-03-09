@@ -146,10 +146,10 @@
         return false
     }
 
-    function createSummaryTable(queryResultId, result, hasRows) {
+    function createSummaryTable(tname, queryResultId, result, hasRows) {
         return '<div class="executionResult" id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
             '<table class="executionSummary"><tr>' +
-            '<td>Tenant:&nbsp;' + activeMerchantName + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
+            '<td>Tenant:&nbsp;' + tname + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
@@ -199,39 +199,39 @@
         return table
     }
 
-    $.createResultTableHtml = function (result, sql, rowUpdateReady, queryResultId, contextMenuHolder) {
+    $.createResultTableHtml = function (result, sql, rowUpdateReady, resultId, contextMenuHolder, tid, tname) {
         var hasRows = result.Rows && result.Rows.length > 0
-        var table = createSummaryTable(queryResultId, result, hasRows)
-        table += '<div id="divTranspose' + queryResultId + '" class="divTranspose"></div>'
-        table += '<div id="divResult' + queryResultId + '" class="divResult">'
+        var table = createSummaryTable(tname, resultId, result, hasRows)
+        table += '<div id="divTranspose' + resultId + '" class="divTranspose"></div>'
+        table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
         if (hasRows) {
-            table += '<input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search">'
+            table += '<input id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
         }
-        table += '<button id="expandRows' + queryResultId + '">Expand Rows</button>'
+        table += '<button id="expandRows' + resultId + '">Expand Rows</button>'
         if (rowUpdateReady) {
-            table += '<input type="checkbox" id="checkboxEditable' + queryResultId + '" class="checkboxEditable">'
-                + '<label for="checkboxEditable' + queryResultId + '">Editable?</label>'
-                + '<span class="editButtons"><button id="copyRow' + queryResultId + '" class="copyRow">Copy Rows</button>'
-                + '<button id="deleteRows' + queryResultId + '">Delete Rows</button>'
-                + '<button id="saveUpdates' + queryResultId + '">Commit</button>'
-                + '<button id="rowTranspose' + queryResultId + '">Transpose</button>'
+            table += '<input type="checkbox" id="checkboxEditable' + resultId + '" class="checkboxEditable">'
+                + '<label for="checkboxEditable' + resultId + '">Editable?</label>'
+                + '<span class="editButtons"><button id="copyRow' + resultId + '" class="copyRow">Copy Rows</button>'
+                + '<button id="deleteRows' + resultId + '">Delete Rows</button>'
+                + '<button id="saveUpdates' + resultId + '">Commit</button>'
+                + '<button id="rowTranspose' + resultId + '">Transpose</button>'
                 + '</span>'
         }
-        table += '<span class="opsSpan" id="reExecuteSql' + queryResultId + '">Re Run:</span>'
+        table += '<span class="opsSpan" id="reExecuteSql' + resultId + '" tid="' + tid + '" tname="' + tname + '">Re Run:</span>'
         table += '<span class="sqlTd" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 
-        contextMenuHolder.queryResultId = queryResultId
+        contextMenuHolder.queryResultId = resultId
         contextMenuHolder.tableName = result.TableName
         contextMenuHolder.hasRows = hasRows
 
-        table += '<div id="collapseDiv' + queryResultId + '" class="collapseDiv">' +
-            '<table id="queryResult' + queryResultId + '" class="queryResult">'
+        table += '<div id="collapseDiv' + resultId + '" class="collapseDiv">' +
+            '<table id="queryResult' + resultId + '" class="queryResult">'
 
         if (result.Headers && result.Headers.length > 0) {
             var isTableInLinked = hasRows && result.TableName !== '' && $.isInLinkedTable(result.TableName)
-            table += createHead(queryResultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder)
+            table += createHead(resultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder)
         }
 
         table += '<tbody>'

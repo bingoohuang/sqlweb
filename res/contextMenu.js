@@ -1,7 +1,7 @@
 (function () {
-    $.createLinkToTableContextMenu = function (contextMenuHolder) {
+    $.createLinkToTableContextMenu = function (contextMenuHolder, tid, tname) {
         $.each(contextMenuHolder.allColumnNames, function (key, value) {
-            createLinkToTableColumnContextMenu(contextMenuHolder.queryResultId, contextMenuHolder.tableName, key, contextMenuHolder.columnNames)
+            createLinkToTableColumnContextMenu(tid, tname, contextMenuHolder.queryResultId, contextMenuHolder.tableName, key, contextMenuHolder.columnNames)
         })
     }
 
@@ -32,7 +32,7 @@
         return inPart
     }
 
-    var linkTo = function (queryResultId, columnName, key, linkedToTables, cell) {
+    var linkTo = function (tid, tname, queryResultId, columnName, key, linkedToTables, cell) {
         var linkedTableName = key.substring(4)
         var linkedField = linkedToTables[linkedTableName]
 
@@ -40,10 +40,10 @@
             ? " in (" + createInPart(queryResultId, columnName) + ")"
             : " = '" + cell.text() + "'")
 
-        $.executeQueryAjax(sql)
+        $.executeQueryAjax(tid, tname, sql)
     }
 
-    var createLinkToTableColumnContextMenu = function (queryResultId, tableName, columnName, linkColumnNames) {
+    var createLinkToTableColumnContextMenu = function (tid, tname, queryResultId, tableName, columnName, linkColumnNames) {
         var itemsHead = {}
         var itemsData = {}
 
@@ -95,7 +95,7 @@
                 selector: selector + '.dataCell',
                 callback: function (key, options) {
                     if (key.indexOf('link') == 0) {
-                        linkTo(queryResultId, columnName, key, linkedToTables, $(this))
+                        linkTo(tid, tname, queryResultId, columnName, key, linkedToTables, $(this))
                     } else if (key === 'Copy Where') {
                         $.copyTextToClipboard(' where ' + columnName + " = '" + $(this).text() + "'")
                     }
@@ -120,7 +120,7 @@
             selector: selector + '.headCell',
             callback: function (key, options) {
                 if (key.indexOf('link') == 0) {
-                    linkTo(queryResultId, columnName, key, linkedToTables, $(this))
+                    linkTo(tid, tname, queryResultId, columnName, key, linkedToTables, $(this))
                 } else if (key === 'sqlInPart') {
                     var inPart = columnName + " in (" + createInPart(queryResultId, columnName) + ")"
                     $.copyTextToClipboard(inPart)

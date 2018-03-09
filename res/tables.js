@@ -15,7 +15,7 @@
             callback: function (key, options) {
                 var tableName = $(this).text()
                 if (key === 'ShowFullColumns') {
-                    $.executeQueryAjax('show full columns from ' + tableName)
+                    $.executeQueryAjax(activeMerchantId, activeMerchantName, 'show full columns from ' + tableName)
                 } else if (key == 'ShowCreateTable') {
                     $.showCreateTableAjax(tableName)
                 }
@@ -58,6 +58,6 @@
 
     $('.tables').on('click', 'span', function (event) {
         var tableName = $(this).text()
-        $.executeQueryAjax('select * from ' + tableName)
+        $.executeQueryAjax(activeMerchantId, activeMerchantName, 'select * from ' + tableName)
     })
 })()
