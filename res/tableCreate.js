@@ -77,7 +77,7 @@
             }
 
             var $this = $(this)
-            
+
             var merchantIdIndex = parseInt($this.attr('merchantIdIndex'))
             var merchantNameIndex = parseInt($this.attr('merchantNameIndex'))
             var merchantCodeIndex = parseInt($this.attr('merchantCodeIndex'))
@@ -135,6 +135,14 @@
             url: pathname + "/multipleTenantsQuery",
             data: {multipleTenantIds: multipleTenantIds, sql: sql},
             success: function (content, textStatus, request) {
+                if (content && content.length === 1 && content[0].Tid === "" && content[0].Error !== "") {
+                    // Maybe :
+                    // [{"Headers":null,"Rows":null,"Error":"dangerous sql, please get authorized first!","ExecutionTime":"2018-03-09 13:41:06.443",
+                    // "CostTime":"8.591µs","DatabaseName":"","TableName":"","PrimaryKeysIndex":null,"Msg":"","Tid":""}]
+                    alert(content[0].Error)
+                    return
+                }
+
                 var headerHolder = {}
                 var resortedContent = sortContent(content, currentGroup, headerHolder, groupIndex)
                 if (groupIndex == 0) {
