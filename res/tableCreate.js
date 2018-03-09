@@ -62,10 +62,12 @@
         })
 
         $('#reExecuteSql' + resultId).click(function () {
-            var tid = $(this).attr('tid')
-            var tname = $(this).attr('tname')
+            var $this = $(this);
+            var classifier = $this.attr('classifier')
+            var tid = $this.attr('tid')
+            var tname = $this.attr('tname')
             var sql = $(divId).find('.sqlTd').text()
-            $.executeQueryAjax(tid, tname, sql, resultId)
+            $.executeQueryAjax(classifier, tid, tname, sql, resultId)
         })
 
         var multipleTenantsExecutable = $('#multipleTenantsExecutable' + resultId);
@@ -213,12 +215,12 @@
         $(table).prependTo($('.result'))
     }
 
-    $.tableCreate = function (result, sql, oldResultId, tid, tname) {
+    $.tableCreate = function (result, sql, oldResultId, classifier, tid, tname) {
         var rowUpdateReady = result.TableName && result.TableName != ""
 
         var newResultId = ++queryResultId
         var contextMenuHolder = {}
-        var table = $.createResultTableHtml(result, sql, rowUpdateReady, newResultId, contextMenuHolder, tid, tname)
+        var table = $.createResultTableHtml(result, sql, rowUpdateReady, newResultId, contextMenuHolder, classifier, tid, tname)
         if (oldResultId && oldResultId > 0) {
             $('#executionResultDiv' + oldResultId).replaceWith(table)
         } else {
@@ -229,7 +231,7 @@
         $.attachSearchTableEvent(newResultId, 1)
         attachExpandRowsEvent(newResultId)
         attachOpsResultDivEvent(newResultId)
-        $.createLinkToTableContextMenu(contextMenuHolder, tid, tname)
+        $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tname)
 
         if (rowUpdateReady) {
             $.attachEditableEvent(newResultId)

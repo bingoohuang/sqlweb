@@ -35,7 +35,7 @@
                 var cellValue = result.Rows[i][j]
 
                 rowHtml += '<td class="dataCell '
-                 if (result.Headers) {
+                if (result.Headers) {
                     rowHtml += $.escapeContextMenuCssName(result.Headers[j - 1])
                 }
 
@@ -139,8 +139,8 @@
         return false
     }
 
-    function createSummaryTable(tname, queryResultId, result, hasRows) {
-        return '<div class="executionResult" id="executionResultDiv' + queryResultId + '" merchantId="' + activeMerchantId + '">' +
+    function createSummaryTable(classifier, tid, tname, queryResultId, result, hasRows) {
+        return '<div class="executionResult" id="executionResultDiv' + queryResultId + '" tid="' + tid + '" classifier="' + classifier + '">' +
             '<table class="executionSummary"><tr>' +
             '<td>Tenant:&nbsp;' + tname + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
@@ -192,9 +192,9 @@
         return table
     }
 
-    $.createResultTableHtml = function (result, sql, rowUpdateReady, resultId, contextMenuHolder, tid, tname) {
+    $.createResultTableHtml = function (result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tname) {
         var hasRows = result.Rows && result.Rows.length > 0
-        var table = createSummaryTable(tname, resultId, result, hasRows)
+        var table = createSummaryTable(classifier, tid, tname, resultId, result, hasRows)
         table += '<div id="divTranspose' + resultId + '" class="divTranspose"></div>'
         table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
@@ -211,7 +211,7 @@
                 + '<button id="rowTranspose' + resultId + '">Transpose</button>'
                 + '</span>'
         }
-        table += '<span class="opsSpan" id="reExecuteSql' + resultId + '" tid="' + tid + '" tname="' + tname + '">Re Run:</span>'
+        table += '<span class="opsSpan" id="reExecuteSql' + resultId + '" tid="' + tid + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
         table += '<span class="sqlTd" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 

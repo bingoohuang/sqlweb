@@ -1,9 +1,8 @@
 (function () {
-
     $.executeMultiSqlsAjax = function (sql, resultId) {
         var sqls = $.splitSqls(sql, ';')
         var executeResultContext = []
-        $.executeQueryAjax(activeMerchantId, activeMerchantName, sqls[0], null, sqls, 0, executeResultContext)
+        $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantName, sqls[0], null, sqls, 0, executeResultContext)
     }
 
     /*
@@ -73,7 +72,7 @@
                 return translateOne(result, sql, executeResultContext, lastIndex, resultPos, '_result_last.'.length)
             } else {
                 for (var i = lastIndex - 1; i >= 0; --i) {
-                    var key = '_result_' + i + '.';
+                    var key = '_result_' + i + '.'
                     if (sql.indexOf(key) === resultPos) {
                         var result = executeResultContext['_result_' + i]
                         return translateOne(result, sql, executeResultContext, lastIndex, resultPos, key.length)
@@ -82,10 +81,10 @@
             }
         }
 
-        return sql;
+        return sql
     }
 
-    $.executeQueryAjax = function (tid, tname, sql, resultId, sqls, nextIndex, executeResultContext) {
+    $.executeQueryAjax = function (classifier, tid, tname, sql, resultId, sqls, nextIndex, executeResultContext) {
         if (sqls && nextIndex > 0) {
             sql = translateSqlWithLastResults(sql, executeResultContext, nextIndex)
         }
@@ -95,7 +94,7 @@
             url: pathname + "/query",
             data: {tid: tid, sql: sql},
             success: function (content, textStatus, request) {
-                $.tableCreate(content, sql, resultId, tid, tname)
+                $.tableCreate(content, sql, resultId, classifier, tid, tname)
 
                 if (sqls) {
                     executeResultContext['_result_' + nextIndex] = content
@@ -103,7 +102,7 @@
                 }
 
                 if (sqls && (nextIndex + 1) < sqls.length) {
-                    $.executeQueryAjax(tid, tname, sqls[nextIndex + 1], resultId, sqls, nextIndex + 1, executeResultContext)
+                    $.executeQueryAjax(classifier, tid, tname, sqls[nextIndex + 1], resultId, sqls, nextIndex + 1, executeResultContext)
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

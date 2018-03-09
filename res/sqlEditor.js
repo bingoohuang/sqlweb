@@ -48,7 +48,7 @@
                     var word = codeMirror.findWordAt(codeMirror.getCursor())
                     tableName = codeMirror.getRange(word.anchor, word.head)
                 }
-                $.executeQueryAjax(activeMerchantId, activeMerchantName, 'show full columns from ' + tableName)
+                $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantName, 'show full columns from ' + tableName)
             }
         },
         items: {

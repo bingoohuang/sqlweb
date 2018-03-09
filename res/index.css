@@ -267,3 +267,9 @@ table.executionSummary tr:first-child {
     top: 3px;
     right: 3px;
 }
+
+#rightBottomFloatingDiv {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
