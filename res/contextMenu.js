@@ -174,6 +174,48 @@
         })
     }
 
+    $.createTableToolsContextMenu = function (classifier, tid, tname, result, resultId) {
+        if (result.TableName === '') return
+
+        var selectSql = $.createSelectSql(result)
+        var insertSqlPrefix = $.createInsertSqlPrefix(result)
+        $.contextMenu({
+            selector: '#tableTools' + resultId,
+            trigger: 'left',
+            callback: function (key, options) {
+                if (key === 'CreateSelectSQL') {
+                    $.appendSqlToSqlEditor(selectSql, true)
+                } else if (key === 'CreateInsertSQLsHighlighted') {
+                    var values = $.createInsertValuesHighlighted(resultId)
+                    if (values !== '') {
+                        $.appendSqlToSqlEditor(insertSqlPrefix + '\n' + values, true)
+                    }
+                } else if (key === 'CreateInsertSQLsAll') {
+                    var values = $.createInsertValuesAll(resultId)
+                    $.appendSqlToSqlEditor(insertSqlPrefix + '\n' + values, true)
+                } else if (key === 'CreateDeleteSQLs') {
+                    var deleteSqls = $.createDeleteSqls(result, resultId)
+                    if (deleteSqls !== '') {
+                        $.appendSqlToSqlEditor(deleteSqls, true)
+                    }
+                } else if (key === 'ShowFullColumns') {
+                    $.executeQueryAjax(classifier, tid, tname, 'show full columns from ' + result.TableName)
+                } else if (key === 'ShowCreateTable') {
+                    $.showSqlAjax('show create table ' + result.TableName)
+                }
+            },
+            items: {
+                CreateInsertSQLsHighlighted: {name: "Create Insert SQLs for Highlighted", icon: "columns"},
+                CreateInsertSQLsAll: {name: "Create Insert SQLs for All", icon: "columns"},
+                CreateSelectSQL: {name: "Create Select SQL", icon: "columns"},
+                CreateDeleteSQLs: {name: "Create Delete SQLs for Highlighted", icon: "columns"},
+                ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
+                ShowCreateTable: {name: 'Show Create Table', icon: 'create-table'}
+            }
+        });
+
+    }
+
     $.isInLinkedTable = function (tableName) {
         if (!tableName) return false
 

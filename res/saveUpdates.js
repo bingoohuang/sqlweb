@@ -1,8 +1,7 @@
 (function () {
-    $.attachSaveUpdatesEvent = function (result, queryResultId) {
-        var thisQueryResult = queryResultId
-        $('#saveUpdates' + thisQueryResult).click(function () {
-            var table = $('#queryResult' + thisQueryResult)
+    $.attachSaveUpdatesEvent = function (result, resultId) {
+        $('#saveUpdates' + resultId).click(function () {
+            var table = $('#queryResult' + resultId)
             var headRow = table.find('tr.headRow').first().find('td')
 
             var sqls = []

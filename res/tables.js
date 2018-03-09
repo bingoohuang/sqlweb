@@ -17,7 +17,7 @@
                 if (key === 'ShowFullColumns') {
                     $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantName, 'show full columns from ' + tableName)
                 } else if (key == 'ShowCreateTable') {
-                    $.showCreateTableAjax(tableName)
+                    $.showSqlAjax('show create table ' + tableName)
                 }
             },
             items: {

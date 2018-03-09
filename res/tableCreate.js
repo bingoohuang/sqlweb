@@ -129,6 +129,7 @@
         $.attachExpandRowsEvent(newResultId)
         $.attachOpsResultDivEvent(newResultId)
         $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tname)
+        $.createTableToolsContextMenu(classifier, tid, tname, result, newResultId)
 
         if (rowUpdateReady) {
             $.attachEditableEvent(newResultId)

@@ -79,17 +79,17 @@
         return holder.tiIndex >= 0 && holder.tnameIndex >= 0 && holder.tcodeIndex >= 0
     }
 
-    function createSummaryTable(classifier, tid, tname, queryResultId, result, hasRows) {
-        return '<div class="executionResult" id="executionResultDiv' + queryResultId + '" tid="' + tid + '" classifier="' + classifier + '">' +
+    function createSummaryTable(classifier, tid, tname, resultId, result, hasRows) {
+        return '<div class="executionResult" id="executionResultDiv' + resultId + '" tid="' + tid + '" classifier="' + classifier + '">' +
             '<table class="executionSummary"><tr>' +
             '<td>Tenant:&nbsp;' + tname + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
-            (result.TableName !== '' ? '<td>Table:&nbsp;' + result.TableName + '</td>' : '') +
+            (result.TableName !== '' ? '<td>Table:&nbsp;<span>' + result.TableName + '</span><span class="opsSpan" id="tableTools' + resultId + '">...</span></td>' : '') +
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
             '<td>' +
-            '<span class="opsSpan" id="closeResult' + queryResultId + '">Close</span>' +
-            createMultipleTenantsExecutable(queryResultId, result, hasRows) +
+            '<span class="opsSpan" id="closeResult' + resultId + '">Close</span>' +
+            createMultipleTenantsExecutable(resultId, result, hasRows) +
             '</td>' +
             '<td' + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
             '</tr></table>'

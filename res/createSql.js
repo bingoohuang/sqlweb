@@ -3,26 +3,113 @@
     var regex = new RegExp(/[\0\x08\x09\x1a\n\r'\\\%]/g)
     var escaper = function (char) {
         var m = ['\\0', '\\x08', '\\x09', '\\x1a', '\\n', '\\r', "'", /*'"',*/ "\\", '\\\\', "%"]
-        var r = ['\\\\0', '\\\\b', '\\\\t', '\\\\z', '\\\\n', '\\\\r', "''",/* '""',*/ '\\\\', '\\\\\\\\', '\\%']
+        var r = ['\\\\0', '\\\\b', '\\\\t', '\\\\z', '\\\\n', '\\\\r', "''", /* '""',*/ '\\\\', '\\\\\\\\', '\\%']
         return r[m.indexOf(char)]
     }
 
-    $.createInsert = function (cells, result) {
-        var insertSql = 'insert into ' + wrapFieldName(result.TableName) + '('
-        for (var i = 0; i < result.Headers.length; ++i) {
-            insertSql += i > 0 ? ', ' : ''
-            insertSql += wrapFieldName(result.Headers[i])
-        }
-        insertSql += ') values ('
-
-        cells.each(function (jndex, cell) {
-            insertSql += jndex > 1 ? ', ' : ''
-            if (jndex > 0) {
+    function createValuePart(cells) {
+        var valueSql = '('
+        cells.each(function (index, cell) {
+            valueSql += index > 1 ? ', ' : ''
+            if (index > 0) {
                 var newValue = $(cell).text()
-                insertSql += "(null)" == newValue ? 'null' : ('\'' + newValue.replace(regex, escaper) + '\'')
+                valueSql += "(null)" == newValue ? 'null' : ('\'' + newValue.replace(regex, escaper) + '\'')
             }
         })
-        return insertSql + ')'
+        return valueSql + ')'
+    }
+
+    $.createInsert = function (cells, result) {
+        return $.createInsertSqlPrefix(result) + createValuePart(cells)
+
+    }
+
+    $.createInsertSqlPrefix = function (result) {
+        var prefix = 'insert into ' + wrapFieldName(result.TableName) + '('
+        for (var i = 0; i < result.Headers.length; ++i) {
+            prefix += i > 0 ? ', ' : ''
+            prefix += wrapFieldName(result.Headers[i])
+        }
+        return prefix + ') values'
+    }
+
+    $.createSelectSql = function (result) {
+        var sql = 'select '
+
+        for (var i = 0; i < result.Headers.length; ++i) {
+            sql += i > 0 ? ', ' : ''
+            sql += wrapFieldName(result.Headers[i])
+        }
+
+        return sql + ' from ' + result.TableName
+    }
+
+    $.createDeleteSqls = function (result, resultId) {
+        var tbody = $('#queryResult' + resultId + ' tbody')
+        var values = []
+        tbody.find('tr.highlightRow:visible').each(function (index, tr) {
+            var cells = $(tr).find('td.dataCell')
+            var valuePart = createNormalWhere(result, cells)
+            values.push(valuePart)
+        })
+
+        return values.join(';\n')
+    }
+
+    var createNormalWhere = function (result, cells) {
+        var sql = 'delete * from ' + wrapFieldName(result.TableName) + ' where '
+        if (result.PrimaryKeysIndex.length > 0) {
+            for (var i = 0; i < result.PrimaryKeysIndex.length; ++i) {
+                var ki = result.PrimaryKeysIndex[i]
+                sql += i > 0 ? ' and ' : ''
+
+                var pkName = result.Headers[ki]
+                var $cell = cells.eq(ki + 1)
+                var pkValue = $cell.text()
+                sql += wrapFieldName(pkName) + ' = \'' + pkValue.replace(regex, escaper) + '\''
+            }
+            return sql
+        } else {
+            var wherePart = ''
+            cells.each(function (index, cell) {
+                if (index > 0) {
+                    var whereValue = $(cell).text()
+                    wherePart += wherePart != '' ? ' and ' : ''
+
+                    var fieldName = result.Headers[index - 1]
+                    wherePart += wrapFieldName(fieldName)
+                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + whereValue.replace(regex, escaper) + '\''
+                }
+            })
+
+            sql += wherePart
+        }
+
+        return sql
+    }
+
+    $.createInsertValuesHighlighted = function (resultId) {
+        var tbody = $('#queryResult' + resultId + ' tbody')
+        var values = []
+        tbody.find('tr.highlightRow:visible').each(function (index, tr) {
+            var cells = $(tr).find('td.dataCell')
+            var valuePart = createValuePart(cells)
+            values.push(valuePart)
+        })
+
+        return values.join('\n')
+    }
+
+    $.createInsertValuesAll = function (resultId) {
+        var tbody = $('#queryResult' + resultId + ' tbody')
+        var values = []
+        tbody.find('tr:visible').each(function (index, tr) {
+            var cells = $(tr).find('td.dataCell')
+            var valuePart = createValuePart(cells)
+            values.push(valuePart)
+        })
+
+        return values.join('\n')
     }
 
     $.createUpdateSetPart = function (cells, result, headRow) {
