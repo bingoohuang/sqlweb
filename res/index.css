@@ -61,7 +61,7 @@ table td {
     user-select: none;
 }
 
-input.batchSize{
+input.batchSize {
     width: 22px;
 }
 
@@ -136,6 +136,10 @@ table.executionSummary tr:first-child {
     display: none;
 }
 
+.highlightRow {
+    background-color: rgba(20, 255, 20, .5);
+}
+
 .hide {
     display: none;
 }
@@ -164,10 +168,6 @@ table.executionSummary tr:first-child {
 
 .rowOdd {
     background-color: #eeeeee;
-}
-
-.nullCell {
-    background-color: lightyellow;
 }
 
 .deletedRow {

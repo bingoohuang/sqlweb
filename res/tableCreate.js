@@ -158,7 +158,7 @@
 
                 $('#queryResult' + resultId + " tbody").append(rows)
 
-                setTimeout(function () {
+                setTimeout(function () { // Leave time for rendering, and then continue to next batch.
                     multipleTenantsQueryAjax(sql, tenantsMap, resultId, groupIndex + 1, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime, batchConfirm)
                 }, 100)
             },

@@ -35,9 +35,7 @@
                 var cellValue = result.Rows[i][j]
 
                 rowHtml += '<td class="dataCell '
-                if ('(null)' == cellValue) {
-                    rowHtml += 'nullCell '
-                } else if (result.Headers) {
+                 if (result.Headers) {
                     rowHtml += $.escapeContextMenuCssName(result.Headers[j - 1])
                 }
 
@@ -76,12 +74,7 @@
                 for (var j = 0; j < result.Rows[i].length; ++j) {
                     var cellValue = result.Rows[i][j]
 
-                    rowHtml += '<td class="dataCell '
-                    if ('(null)' == cellValue) {
-                        rowHtml += 'nullCell '
-                    }
-
-                    rowHtml += '">' + cellValue + '</td>'
+                    rowHtml += '<td class="dataCell">' + cellValue + '</td>'
                 }
 
                 rowHtml += '</tr>'

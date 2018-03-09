@@ -29,8 +29,6 @@
             } else {
                 $this.addClass('changedCell')
             }
-
-            $this.toggleClass('nullCell', '(null)' == $this.text())
         })
     }
 
