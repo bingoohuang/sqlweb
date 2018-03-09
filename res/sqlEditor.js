@@ -59,11 +59,17 @@
         }
     })
 
-    $.getEditorSql = function() {
+    $.getEditorSql = function () {
         return codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()
     }
 
     $('.executeQuery').prop("disabled", true).click(function () {
-        $.executeMultiSqlsAjax($.getEditorSql())
+        var sql = $.getEditorSql()
+        if ($.trim(sql) === '') {
+            alert("Please input sql!")
+            return
+        }
+        
+        $.executeMultiSqlsAjax(sql)
     })
 })()
