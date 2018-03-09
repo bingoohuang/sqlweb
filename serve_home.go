@@ -82,7 +82,7 @@ func mergeScripts() string {
 		"sql-formatter-2.0.0.min.js",
 		"searchTenants.js", "tables.js", "rowFilter.js", "createSql.js", "showCreateTable.js",
 		"transposeRows.js", "login.js", "sqlAjax.js", "checkboxEditable.js", "saveUpdates.js",
-		"resultTable.js", "tableCreate.js", "showColumn.js",
+		"resultTable.js", "tableCreate.js", "showColumn.js", "multipleTenantsQueryAjax.js",
 		"contextMenu.js", "jquery.contextMenu.js", "jquery.ui.position.js", "fastEntries.js",
 		"SqlsVersion.js",
 		"index.js", "sqlEditor.js", "utils.js", "jquery.loading.js")
