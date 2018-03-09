@@ -69,7 +69,7 @@
             alert("Please input sql!")
             return
         }
-        
+
         $.executeMultiSqlsAjax(sql)
     })
 })()

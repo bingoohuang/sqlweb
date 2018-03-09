@@ -7,7 +7,7 @@
             success: function (content, textStatus, request) {
                 var createTableSql = content.Rows[0][2]
                 var formattedSql = sqlFormatter.format(createTableSql, { language: 'sql' })
-                $.sqlCodeMirror.setValue(formattedSql)
+                $.sqlCodeMirror.setValue(formattedSql + ';\n')
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
