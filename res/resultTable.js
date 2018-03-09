@@ -83,6 +83,7 @@
         return '<div class="executionResult" id="executionResultDiv' + queryResultId + '" tid="' + tid + '" classifier="' + classifier + '">' +
             '<table class="executionSummary"><tr>' +
             '<td>Tenant:&nbsp;' + tname + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
+            (result.TableName !== '' ? '<td>Table:&nbsp;' + result.TableName + '</td>' : '') +
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
