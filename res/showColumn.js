@@ -33,9 +33,9 @@
 
     function createColumnInfo(row, classifier, tableName) {
         var columnInfo = '<div>' + row[1] + '&nbsp;' + row[2] + '&nbsp;'
-            + (row[4] === 'NO' ? 'NOT NULL' : 'NULL') + '&nbsp;'
-            + row[5] + '&nbsp;'
-            + (row[6] ? ('default \'' + row[6] + '\'') : '') + '&nbsp; '
+            + (row[4] === 'NO' ? 'NOT NULL&nbsp;' : 'NULL&nbsp;')
+            + (row[5] ? row[5] + '&nbsp;' : '') // Key
+            + (row[6] && row[6] !== '(null)' ? ('default \'' + row[6] + '\'&nbsp;') : '') // default
             + (row[9] ? 'COMMENT \'' + row[9] + '\'' : '') + '</div>'
 
         var key = classifier + '.' + tableName + '.' + row[1]
