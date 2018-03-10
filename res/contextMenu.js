@@ -202,6 +202,14 @@
                     $.executeQueryAjax(classifier, tid, tname, 'show full columns from ' + result.TableName)
                 } else if (key === 'ShowCreateTable') {
                     $.showSqlAjax('show create table ' + result.TableName)
+                } else if (key === 'ShowEqlTemplates') {
+                    var insertEqlTemplate = $.createInsertEqlTemplate(result)
+                    var deleteEqlTemplate = $.createDeleteEqlTemplate(result)
+                    var updateEqlTemplate = $.createUpdateEqlTemplate(result)
+                    var selectEqlTemplate = $.createSelectEqlTemplate(result)
+
+                    $.appendSqlToSqlEditor(insertEqlTemplate + ';\n\n' + deleteEqlTemplate + ';\n\n'
+                        + updateEqlTemplate + ';\n\n' + selectEqlTemplate, true)
                 }
             },
             items: {
@@ -209,6 +217,7 @@
                 CreateInsertSQLsAll: {name: "Create Insert SQLs for All", icon: "columns"},
                 CreateSelectSQL: {name: "Create Select SQL", icon: "columns"},
                 CreateDeleteSQLs: {name: "Create Delete SQLs for Highlighted", icon: "columns"},
+                ShowEqlTemplates: {name: 'Show Eql Templates', icon: 'columns'},
                 ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
                 ShowCreateTable: {name: 'Show Create Table', icon: 'create-table'}
             }

@@ -24,21 +24,94 @@
 
     }
 
-    $.createInsertSqlPrefix = function (result) {
-        var prefix = 'insert into ' + wrapFieldName(result.TableName) + '('
-        for (var i = 0; i < result.Headers.length; ++i) {
-            prefix += i > 0 ? ', ' : ''
-            prefix += wrapFieldName(result.Headers[i])
+    function createFieldNamesList(result) {
+        var headers = result.Headers
+        var fieldNames = ''
+        for (var i = 0; i < headers.length; ++i) {
+            fieldNames += i > 0 ? ', ' : ''
+            fieldNames += wrapFieldName(headers[i])
         }
-        return prefix + ') values'
+
+        return fieldNames
+    }
+
+    $.createInsertSqlPrefix = function (result) {
+        return 'insert into ' + wrapFieldName(result.TableName) + '(' + createFieldNamesList(result) + ') values'
+    }
+
+    $.createSelectEqlTemplate = function (result) {
+        return 'select ' + createFieldNamesList(result) + '\nfrom ' + wrapFieldName(result.TableName) + '\nwhere ' + createWhereItems(result)
+    }
+    $.createUpdateEqlTemplate = function (result) {
+        return 'update ' + wrapFieldName(result.TableName) + '\nset ' + createSetItems(result) + '\nwhere ' + createWhereItems(result)
+    }
+    $.createDeleteEqlTemplate = function (result) {
+        return 'delete from ' + wrapFieldName(result.TableName) + '\nwhere ' + createWhereItems(result)
+    }
+
+    function createSetItems(result) {
+        var headers = result.Headers
+
+        var sql = ''
+        for (var i = 0; i < headers.length; ++i) {
+            sql += sql != '' ? ',\n' : ''
+            var fieldName = headers[i]
+            sql += wrapFieldName(fieldName) + ' = \'#' + camelCased(fieldName) + '#\''
+        }
+
+        return sql
+    }
+
+    function createWhereItems(result) {
+        var pkIndexes = result.PrimaryKeysIndex;
+        var headers = result.Headers
+
+        var sql = ''
+        if (pkIndexes.length > 0) {
+            for (var i = 0; i < pkIndexes.length; ++i) {
+                var ki = pkIndexes[i]
+                sql += i > 0 ? '\nand ' : ''
+
+                var pkName = headers[ki]
+                sql += wrapFieldName(pkName) + ' = \'#' + camelCased(pkName) + '#\''
+            }
+            return sql
+        } else {
+            var wherePart = ''
+            for (var i = 0; i < headers.length; ++i) {
+                wherePart += wherePart != '' ? '\nand ' : ''
+                var fieldName = headers[i]
+                wherePart += wrapFieldName(fieldName) + ' = \'#' + camelCased(fieldName) + '#\''
+            }
+            sql += wherePart
+        }
+
+        return sql
+    }
+
+    function camelCased(str) {
+        return str.toLowerCase().replace(/_([a-z])/g, function (g) {
+            return g[1].toUpperCase()
+        })
+    }
+
+    $.createInsertEqlTemplate = function (result) {
+        var values = 'insert into ' + wrapFieldName(result.TableName) + '(' + createFieldNamesList(result) + ')\nvalues('
+        var headers = result.Headers
+        for (var i = 0; i < headers.length; ++i) {
+            values += i > 0 ? ', ' : ''
+            values += '\'#' + camelCased(headers[i]) + '#\''
+        }
+        return values + ')'
     }
 
     $.createSelectSql = function (result) {
         var sql = 'select '
 
-        for (var i = 0; i < result.Headers.length; ++i) {
+        var headers = result.Headers
+        for (var i = 0; i < headers.length; ++i) {
             sql += i > 0 ? ', ' : ''
-            sql += wrapFieldName(result.Headers[i])
+            sql += wrapFieldName(headers[i])
         }
 
         return sql + ' from ' + result.TableName
@@ -49,21 +122,22 @@
         var values = []
         tbody.find('tr.highlightRow:visible').each(function (index, tr) {
             var cells = $(tr).find('td.dataCell')
-            var valuePart = createNormalWhere(result, cells)
+            var valuePart = createDeleteForRow(result, cells)
             values.push(valuePart)
         })
 
         return values.join(';\n')
     }
 
-    var createNormalWhere = function (result, cells) {
-        var sql = 'delete * from ' + wrapFieldName(result.TableName) + ' where '
+    var createDeleteForRow = function (result, cells) {
+        var headers = result.Headers;
+        var sql = 'delete from ' + wrapFieldName(result.TableName) + ' where '
         if (result.PrimaryKeysIndex.length > 0) {
             for (var i = 0; i < result.PrimaryKeysIndex.length; ++i) {
                 var ki = result.PrimaryKeysIndex[i]
                 sql += i > 0 ? ' and ' : ''
 
-                var pkName = result.Headers[ki]
+                var pkName = headers[ki]
                 var $cell = cells.eq(ki + 1)
                 var pkValue = $cell.text()
                 sql += wrapFieldName(pkName) + ' = \'' + pkValue.replace(regex, escaper) + '\''
@@ -76,12 +150,11 @@
                     var whereValue = $(cell).text()
                     wherePart += wherePart != '' ? ' and ' : ''
 
-                    var fieldName = result.Headers[index - 1]
+                    var fieldName = headers[index - 1]
                     wherePart += wrapFieldName(fieldName)
                     wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + whereValue.replace(regex, escaper) + '\''
                 }
             })
-
             sql += wherePart
         }
 
