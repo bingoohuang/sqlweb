@@ -6,7 +6,7 @@
 
         $.ajax({
             type: 'POST',
-            url: pathname + "/query",
+            url: contextPath + "/query",
             data: {tid: tid, sql: 'show full columns from ' + tableName},
             success: function (content, textStatus, request) {
                 showColumnInfo(classifier, content, tableName, columnName)

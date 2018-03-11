@@ -30,7 +30,7 @@
     $.showTablesAjax = function (activeMerchantId) {
         $.ajax({
             type: 'POST',
-            url: pathname + "/query",
+            url: contextPath + "/query",
             data: {tid: activeMerchantId, sql: 'show tables'},
             success: function (content, textStatus, request) {
                 showTables(content)

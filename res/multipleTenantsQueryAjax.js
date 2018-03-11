@@ -17,7 +17,7 @@
         var multipleTenantIds = currentGroup.join(',')
         $.ajax({
             type: 'POST',
-            url: pathname + "/multipleTenantsQuery",
+            url: contextPath + "/multipleTenantsQuery",
             data: {multipleTenantIds: multipleTenantIds, sql: sql},
             success: function (content, textStatus, request) {
                 if (content && content.length === 1 && content[0].Tid === "" && content[0].Error !== "") {

@@ -91,7 +91,7 @@
 
         $.ajax({
             type: 'POST',
-            url: pathname + "/query",
+            url: contextPath + "/query",
             data: {tid: tid, sql: sql},
             success: function (content, textStatus, request) {
                 $.tableCreate(content, sql, resultId, classifier, tid, tname)
@@ -115,7 +115,7 @@
     $.executeUpdate = function (sqlRowIndices, sqls, $rows) {
         $.ajax({
             type: 'POST',
-            url: pathname + "/update",
+            url: contextPath + "/update",
             data: {tid: activeMerchantId, sqls: sqls},
             success: function (content, textStatus, request) {
                 if (!content.Ok) {

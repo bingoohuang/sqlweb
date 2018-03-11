@@ -19,7 +19,7 @@
 
         $.ajax({
             type: 'POST',
-            url: pathname + "/searchDb",
+            url: contextPath + "/searchDb",
             data: {searchKey: searchKey},
             success: function (content, textStatus, request) {
                 var searchResult = $('.searchResult')

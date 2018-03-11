@@ -40,7 +40,7 @@
     $('#SaveConfig').click(function () {
         $.ajax({
             type: 'POST',
-            url: pathname + "/saveLinksConfig",
+            url: contextPath + "/saveLinksConfig",
             data: {linksConfig: tomlEditor.getValue(), activeClassifier: activeClassifier},
             success: function (content, textStatus, request) {
                 if (content.OK === "OK") {
@@ -60,7 +60,7 @@
     function FindTablesByColumn(columnName) {
         $.ajax({
             type: 'POST',
-            url: pathname + "/tablesByColumn",
+            url: contextPath + "/tablesByColumn",
             data: {tid: activeMerchantId, columnName: columnName},
             success: function (content, textStatus, request) {
                 var tablesHtml = ''
@@ -94,7 +94,7 @@
 
         $.ajax({
             type: 'POST',
-            url: pathname + "/loadLinksConfig",
+            url: contextPath + "/loadLinksConfig",
             data: {activeClassifier: lastActiveClassifier},
             success: function (content, textStatus, request) {
                 if (tomlEditor != null) {

@@ -10,6 +10,7 @@ import (
 	"time"
 	"runtime"
 	"github.com/skratchdot/open-golang/open"
+	"github.com/bingoohuang/go-utils"
 )
 
 var (
@@ -62,29 +63,28 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 
-	r.HandleFunc(contextPath+"/", gzipWrapper(serveHome))
-	r.HandleFunc(contextPath+"/query", gzipWrapper(serveQuery))
-	r.HandleFunc(contextPath+"/multipleTenantsQuery", gzipWrapper(multipleTenantsQuery))
-	r.HandleFunc(contextPath+"/tablesByColumn", serveTablesByColumn)
-	r.HandleFunc(contextPath+"/loadLinksConfig", serveLoadLinksConfig)
-	r.HandleFunc(contextPath+"/saveLinksConfig", serveSaveLinksConfig)
+	r.HandleFunc(contextPath+"/", serveWelcome)
+	r.HandleFunc(contextPath+"/home", gzipWrapper(go_utils.RandomPoemBasicAuth(serveHome)))
+	r.HandleFunc(contextPath+"/query", gzipWrapper(go_utils.RandomPoemBasicAuth(serveQuery)))
+	r.HandleFunc(contextPath+"/multipleTenantsQuery", gzipWrapper(go_utils.RandomPoemBasicAuth(multipleTenantsQuery)))
+	r.HandleFunc(contextPath+"/tablesByColumn", go_utils.RandomPoemBasicAuth(serveTablesByColumn))
+	r.HandleFunc(contextPath+"/loadLinksConfig", go_utils.RandomPoemBasicAuth(serveLoadLinksConfig))
+	r.HandleFunc(contextPath+"/saveLinksConfig", go_utils.RandomPoemBasicAuth(serveSaveLinksConfig))
 	r.HandleFunc(contextPath+"/iconfont.{extension}", serveFont)
 	r.HandleFunc(contextPath+"/favicon.ico", serveFavicon)
-	r.HandleFunc(contextPath+"/update", serveUpdate)
-	r.HandleFunc(contextPath+"/searchDb", serveSearchDb)
-	r.HandleFunc(contextPath+"/login", serveLogin)
+	r.HandleFunc(contextPath+"/update", go_utils.RandomPoemBasicAuth(serveUpdate))
+	r.HandleFunc(contextPath+"/searchDb", go_utils.RandomPoemBasicAuth(serveSearchDb))
+	r.HandleFunc(contextPath+"/login", go_utils.RandomPoemBasicAuth(serveLogin))
 
-	r.HandleFunc(contextPath+"/listVersion", serveListVersions)
-	r.HandleFunc(contextPath+"/addVersion", serveAddVersion)
-	r.HandleFunc(contextPath+"/updateVersion", serveUpdateVersion)
-
-	r.HandleFunc(contextPath+"/listVersionSqls", serveListVersionSqls)
-	r.HandleFunc(contextPath+"/addVersionSql", serveAddVersionSql)
-	r.HandleFunc(contextPath+"/updateVersionSql", serveUpdateVersionSql)
-	r.HandleFunc(contextPath+"/deleteVersionSql", serveDeleteVersionSql)
-
-	r.HandleFunc(contextPath+"/prepareExecuteVersionSql", servePrepareExecuteVersionSql)
-	r.HandleFunc(contextPath+"/runExecuteVersionSql", serveRunExecuteVersionSql)
+	r.HandleFunc(contextPath+"/listVersion", go_utils.RandomPoemBasicAuth(serveListVersions))
+	r.HandleFunc(contextPath+"/addVersion", go_utils.RandomPoemBasicAuth((serveAddVersion)))
+	r.HandleFunc(contextPath+"/updateVersion", go_utils.RandomPoemBasicAuth(serveUpdateVersion))
+	r.HandleFunc(contextPath+"/listVersionSqls", go_utils.RandomPoemBasicAuth(serveListVersionSqls))
+	r.HandleFunc(contextPath+"/addVersionSql", go_utils.RandomPoemBasicAuth(serveAddVersionSql))
+	r.HandleFunc(contextPath+"/updateVersionSql", go_utils.RandomPoemBasicAuth(serveUpdateVersionSql))
+	r.HandleFunc(contextPath+"/deleteVersionSql", go_utils.RandomPoemBasicAuth(serveDeleteVersionSql))
+	r.HandleFunc(contextPath+"/prepareExecuteVersionSql", go_utils.RandomPoemBasicAuth(servePrepareExecuteVersionSql))
+	r.HandleFunc(contextPath+"/runExecuteVersionSql", go_utils.RandomPoemBasicAuth(serveRunExecuteVersionSql))
 
 	http.Handle("/", r)
 
@@ -106,4 +106,10 @@ func openExplorer(port string) {
 	case "darwin":
 		open.Run("http://127.0.0.1:" + port)
 	}
+}
+
+func serveWelcome(w http.ResponseWriter, r *http.Request) {
+	welcome := MustAsset("res/welcome.html")
+
+	go_utils.ServeWelcome(w, welcome, contextPath)
 }

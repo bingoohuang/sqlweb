@@ -18,7 +18,7 @@
     $.showSqlAjax = function (sql) {
         $.ajax({
             type: 'POST',
-            url: pathname + "/query",
+            url: contextPath + "/query",
             data: {tid: activeMerchantId, sql: sql},
             success: function (content, textStatus, request) {
                 var createTableSql = content.Rows[0][2]
