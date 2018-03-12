@@ -199,7 +199,7 @@
             values.push(valuePart)
         })
 
-        return values.join('\n')
+        return values.join(',\n')
     }
 
     $.createInsertValuesAll = function (resultId) {
@@ -211,7 +211,7 @@
             values.push(valuePart)
         })
 
-        return values.join('\n')
+        return values.join(',\n')
     }
 
     $.createUpdateSetPart = function (cells, result, headRow) {
