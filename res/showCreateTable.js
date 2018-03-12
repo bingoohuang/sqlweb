@@ -1,5 +1,5 @@
 (function () {
-    $.appendSqlToSqlEditor = function (sql, withoutFormat) {
+    $.appendSqlToSqlEditor = function (sql, withoutFormat, withoutLastComma) {
         var formattedSql = !withoutFormat ? sqlFormatter.format(sql, {language: 'sql'}) : sql
         var codeMirror = $.sqlCodeMirror
         var value = $.trim(codeMirror.getValue())
@@ -12,7 +12,7 @@
             }
 
         }
-        codeMirror.setValue(newValue + formattedSql + ';')
+        codeMirror.setValue(newValue + formattedSql + (!withoutLastComma ? ';' : ''))
     }
 
     $.showSqlAjax = function (sql) {

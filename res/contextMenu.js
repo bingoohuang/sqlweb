@@ -210,6 +210,10 @@
 
                     $.appendSqlToSqlEditor(insertEqlTemplate + ';\n\n' + deleteEqlTemplate + ';\n\n'
                         + updateEqlTemplate + ';\n\n' + selectEqlTemplate, true)
+                } else if (key === 'CreateJavaBean') {
+                    var javabean = $.createJavaBean(result)
+                    $.appendSqlToSqlEditor(javabean, true, true
+                    )
                 }
             },
             items: {
@@ -218,6 +222,7 @@
                 CreateSelectSQL: {name: "Create Select SQL", icon: "columns"},
                 CreateDeleteSQLs: {name: "Create Delete SQLs for Highlighted", icon: "columns"},
                 ShowEqlTemplates: {name: 'Show Eql Templates', icon: 'columns'},
+                CreateJavaBean: {name: 'Create JavaBean', icon: 'columns'},
                 ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
                 ShowCreateTable: {name: 'Show Create Table', icon: 'create-table'}
             }

@@ -35,6 +35,16 @@
         return fieldNames
     }
 
+    function createJavaBeanFieldNamesList(result) {
+        var headers = result.Headers
+        var fieldNames = ''
+        for (var i = 0; i < headers.length; ++i) {
+            fieldNames += '    private String ' + camelCased(headers[i]) + ';\n'
+        }
+
+        return fieldNames
+    }
+
     $.createInsertSqlPrefix = function (result) {
         return 'insert into ' + wrapFieldName(result.TableName) + '(' + createFieldNamesList(result) + ') values'
     }
@@ -47,6 +57,17 @@
     }
     $.createDeleteEqlTemplate = function (result) {
         return 'delete from ' + wrapFieldName(result.TableName) + '\nwhere ' + createWhereItems(result)
+    }
+
+    $.createJavaBean = function (result) {
+        var bean = 'import lombok.*;\n' +
+            '\n' +
+            '@Data @AllArgsConstructor @NoArgsConstructor @Builder\n' +
+            'public class ' + CamelCased(result.TableName) + ' {\n'
+        bean += createJavaBeanFieldNamesList(result)
+        bean += '}'
+
+        return bean
     }
 
     function createSetItems(result) {
@@ -93,6 +114,14 @@
         return str.toLowerCase().replace(/_([a-z])/g, function (g) {
             return g[1].toUpperCase()
         })
+    }
+
+    function CamelCased(str) {
+        var camelCasedStr = str.toLowerCase().replace(/_([a-z])/g, function (g) {
+            return g[1].toUpperCase()
+        })
+
+        return camelCasedStr.substr(0, 1).toUpperCase() + camelCasedStr.substring(1)
     }
 
     $.createInsertEqlTemplate = function (result) {
