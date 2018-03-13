@@ -1,9 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"github.com/bingoohuang/go-utils"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -74,17 +76,17 @@ func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	sql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
+	sqlString := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
 	multipleTenantIds := strings.FieldsFunc(req.FormValue("multipleTenantIds"), func(c rune) bool { return c == ',' })
 
 	tenantsSize := len(multipleTenantIds)
 	resultChan := make(chan *QueryResult, tenantsSize)
-	saveHistory(sql)
+	saveHistory(sqlString)
 
 	for _, tid := range multipleTenantIds {
-		go executeSqlInTid(tid, resultChan, sql)
+		go executeSqlInTid(tid, resultChan, sqlString)
 	}
 
 	results := make([]*QueryResult, tenantsSize)
@@ -95,7 +97,7 @@ func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(results)
 }
 
-func executeSqlInTid(tid string, resultChan chan *QueryResult, sql string) {
+func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string) {
 	dbDataSource, databaseName, err := selectDbByTid(tid, dataSource)
 	if err != nil {
 		resultChan <- &QueryResult{
@@ -105,13 +107,80 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sql string) {
 		return
 	}
 
-	headers, rows, executionTime, costTime, err, msg := executeQuery(sql, dbDataSource)
+	db, err := sql.Open("mysql", dbDataSource)
+	if err != nil {
+		resultChan <- &QueryResult{
+			Error:        go_utils.Error(err),
+			DatabaseName: databaseName,
+			Tid:          tid,
+		}
+
+		return
+	}
+	defer db.Close()
+
+	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
+
+	sqls := go_utils.SplitSqls(sqlString, ';')
+	sqlsLen := len(sqls)
+
+	if sqlsLen == 1 {
+		sqlResult := go_utils.ExecuteSql(db, sqls[0], 0)
+		msg := ""
+		if !sqlResult.IsQuerySql {
+			msg = strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
+		}
+		resultChan <- &QueryResult{
+			Headers:       sqlResult.Headers,
+			Rows:          sqlResult.Rows,
+			Error:         go_utils.Error(err),
+			ExecutionTime: executionTime,
+			CostTime:      sqlResult.CostTime.String(),
+			DatabaseName:  databaseName,
+			Tid:           tid,
+			Msg:           msg,
+		}
+
+		return
+	}
+
+	querySqlMixed := false
+	if sqlsLen > 1 {
+		for _, oneSql := range sqls {
+			if go_utils.IsQuerySql(oneSql) {
+				querySqlMixed = true
+				break
+			}
+		}
+	}
+
+	if querySqlMixed {
+		resultChan <- &QueryResult{
+			Error:        "select sql should be executed one by one in single time",
+			DatabaseName: databaseName,
+			Tid:          tid,
+		}
+
+		return
+	}
+
+	start := time.Now()
+	msg := ""
+	for _, oneSql := range sqls {
+		sqlResult := go_utils.ExecuteSql(db, oneSql, 0)
+		if msg != "" {
+			msg += "\n"
+		}
+		if sqlResult.Error != nil {
+			msg += sqlResult.Error.Error()
+		} else {
+			msg += strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows affected"
+		}
+	}
+
 	resultChan <- &QueryResult{
-		Headers:       headers,
-		Rows:          rows,
-		Error:         go_utils.Error(err),
 		ExecutionTime: executionTime,
-		CostTime:      costTime,
+		CostTime:      time.Since(start).String(),
 		DatabaseName:  databaseName,
 		Msg:           msg,
 		Tid:           tid,

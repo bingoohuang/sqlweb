@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"fmt"
 	"github.com/bingoohuang/go-utils"
 	_ "github.com/go-sql-driver/mysql"
 	"net/http"
@@ -61,7 +62,18 @@ func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string,
 	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
 
 	sqlResult := go_utils.ExecuteSql(db, query, maxRows)
+	data := addRowsSeq(&sqlResult)
+	fmt.Println("IsQuerySql:", sqlResult.IsQuerySql)
 
+	msg := ""
+	if !sqlResult.IsQuerySql {
+		msg = strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
+	}
+
+	return sqlResult.Headers, data, executionTime, sqlResult.CostTime.String(), sqlResult.Error, msg
+}
+
+func addRowsSeq(sqlResult *go_utils.ExecuteSqlResult) [][]string {
 	data := make([][]string, 0)
 	if sqlResult.Rows != nil {
 		for index, row := range sqlResult.Rows {
@@ -73,8 +85,5 @@ func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string,
 			data = append(data, r)
 		}
 	}
-
-	costTime := sqlResult.CostTime.String()
-	return sqlResult.Headers, data, executionTime, costTime, sqlResult.Error,
-		strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
+	return data
 }

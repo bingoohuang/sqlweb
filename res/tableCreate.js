@@ -113,6 +113,10 @@
     }
 
     $.tableCreate = function (result, sql, oldResultId, classifier, tid, tname) {
+        if (!result.Headers) {
+            result.Headers = []
+        }
+
         var rowUpdateReady = result.TableName && result.TableName != ""
 
         var newResultId = ++queryResultId

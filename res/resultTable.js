@@ -138,7 +138,7 @@
             if (rowUpdateReady) {
                 table += '<td><div class="chk checkMe"><input type="checkbox"></div></td>'
             }
-            table += '<td class="dataCell">' + new Array(result.Headers.length + 1).join('</td><td class="dataCell">') + '</td></tr>'
+            table += '<td class="dataCell">' + new Array((result.Headers ? result.Headers.length : 0) + 1).join('</td><td class="dataCell">') + '</td></tr>'
         }
         table += '</tbody></table></div><br/><div></div>'
 
