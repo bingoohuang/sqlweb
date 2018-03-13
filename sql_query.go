@@ -23,7 +23,8 @@ func selectDb(tid string, req *http.Request) (string, string, error) {
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {
-	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "' AND STATE = '2'"
+	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
+		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "' AND STATE = '2'"
 
 	_, data, _, _, err, _ := executeQuery(queryDbSql, ds)
 	if err != nil {
@@ -40,12 +41,13 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 	row := data[0]
 
 	// user:pass@tcp(127.0.0.1:3306)/db?charset=utf8
-	return row[1] + ":" + row[2] + "@tcp(" + row[3] + ":" + row[4] + ")/" + row[5] + "?charset=utf8mb4,utf8&timeout=3s", row[5], nil
+	return row[1] + ":" + row[2] + "@tcp(" + row[3] + ":" + row[4] + ")/" + row[5] +
+		"?charset=utf8mb4,utf8&timeout=3s", row[5], nil
 }
 
 func executeQuery(querySql, dataSource string) (
-	[]string /*header*/ , [][]string, /*data*/
-	string   /*executionTime*/ , string /*costTime*/ , error, string /* msg */) {
+	[]string /*header*/, [][]string, /*data*/
+	string /*executionTime*/, string /*costTime*/, error, string /* msg */) {
 	db, err := sql.Open("mysql", dataSource)
 	if err != nil {
 		return nil, nil, "", "", err, ""
@@ -53,22 +55,6 @@ func executeQuery(querySql, dataSource string) (
 	defer db.Close()
 
 	return query(db, querySql, maxRows)
-}
-
-func update(db *sql.DB, sql string) (string, string, int64, error) {
-	saveHistory(sql)
-	log.Printf("execute sql: %s", sql)
-	start := time.Now()
-	executionTime := start.Format("2006-01-02 15:04:05.000")
-	r, err := db.Exec(sql)
-
-	costTime := time.Since(start).String()
-	if err != nil {
-		return executionTime, costTime, 0, err
-	}
-
-	rowsAffected, err := r.RowsAffected()
-	return executionTime, costTime, rowsAffected, err
 }
 
 func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string, string, error, string) {
@@ -89,5 +75,6 @@ func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string,
 	}
 
 	costTime := sqlResult.CostTime.String()
-	return sqlResult.Headers, data, executionTime, costTime, sqlResult.Error, strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
+	return sqlResult.Headers, data, executionTime, costTime, sqlResult.Error,
+		strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
 }

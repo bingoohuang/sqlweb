@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/bingoohuang/go-utils"
 	"net/http"
 	"strconv"
 	"strings"
@@ -46,14 +47,14 @@ func serveUpdate(w http.ResponseWriter, req *http.Request) {
 	defer db.Close()
 
 	resultRows := make([]UpdateResultRow, 0)
-	for _, sql := range strings.Split(sqls, ";\n") {
-		_, _, rowsAffected, err := update(db, sql)
-		if err != nil {
-			resultRows = append(resultRows, UpdateResultRow{Ok: false, Message: err.Error()})
-		} else if rowsAffected == 1 {
+	for _, s := range strings.Split(sqls, ";\n") {
+		sqlResult := go_utils.ExecuteSql(db, s, 0)
+		if sqlResult.Error != nil {
+			resultRows = append(resultRows, UpdateResultRow{Ok: false, Message: sqlResult.Error.Error()})
+		} else if sqlResult.RowsAffected == 1 {
 			resultRows = append(resultRows, UpdateResultRow{Ok: true, Message: "1 rows affected!"})
 		} else {
-			resultRows = append(resultRows, UpdateResultRow{Ok: false, Message: strconv.FormatInt(rowsAffected, 10) + " rows affected!"})
+			resultRows = append(resultRows, UpdateResultRow{Ok: false, Message: strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows affected!"})
 		}
 	}
 
