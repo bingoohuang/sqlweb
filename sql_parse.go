@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/bingoohuang/go-utils"
 	"github.com/xwb1989/sqlparser"
 	"log"
 	"net/http"
@@ -9,24 +10,20 @@ import (
 	"time"
 )
 
-func isSelectSql(querySql string) (bool) {
-	return "SELECT" == strings.ToUpper(FirstWord(querySql))
-}
-
 func parseSql(w http.ResponseWriter, r *http.Request, querySql, dbDataSource string) (bool, string, []string, bool) {
 	var tableName string
 	var primaryKeys []string
 	start := time.Now()
 	isSelect := false
 
-	firstWord := strings.ToUpper(FirstWord(querySql))
+	firstWord := strings.ToUpper(go_utils.FirstWord(querySql))
 	switch firstWord {
 	case "INSERT", "DELETE", "UPDATE", "SET":
 		if !authOk(r) {
 			json.NewEncoder(w).Encode(QueryResult{Headers: nil, Rows: nil,
-				Error: "dangerous sql, please get authorized first!",
+				Error:         "dangerous sql, please get authorized first!",
 				ExecutionTime: start.Format("2006-01-02 15:04:05.000"),
-				CostTime: time.Since(start).String(),
+				CostTime:      time.Since(start).String(),
 			})
 			log.Println("sql", querySql, "is not allowed because of insert/delete/update/set")
 			return isSelect, "", nil, false
@@ -67,7 +64,7 @@ func findPrimaryKeysIndex(tableName string, primaryKeys, headers []string) []int
 
 func findTablePrimaryKeys(tableName string, dbDataSource string) []string {
 	primaryKeys := make([]string, 0)
-	_, data, _, _, err, _ := executeQuery(true, "desc "+tableName, dbDataSource)
+	_, data, _, _, err, _ := executeQuery("desc "+tableName, dbDataSource)
 	if err != nil {
 		return primaryKeys
 	}

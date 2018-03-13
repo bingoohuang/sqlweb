@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/bingoohuang/go-utils"
 	"net/http"
 	"strings"
 	"time"
@@ -297,7 +298,7 @@ func GetVersionSqlSubs(VersionName string) ([]VersionSqlSub, error) {
 			continue
 		}
 
-		subsSqls := SplitSubSqls(versionSql.Sqls)
+		subsSqls := go_utils.SplitSqls(versionSql.Sqls, ';')
 		for j, subSql := range subsSqls {
 			versionSqlSubs = append(versionSqlSubs, VersionSqlSub{
 				VersionName: VersionName,

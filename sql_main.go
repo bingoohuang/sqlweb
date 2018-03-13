@@ -3,14 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/bingoohuang/go-utils"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"strconv"
-	"time"
-	"runtime"
-	"github.com/skratchdot/open-golang/open"
-	"github.com/bingoohuang/go-utils"
 )
 
 var (
@@ -28,6 +25,7 @@ var (
 
 	cookieName string
 	devMode    bool // to disable css/js minify
+	authBasic  bool
 )
 
 func init() {
@@ -43,6 +41,7 @@ func init() {
 	redirectUriArg := flag.String("redirectUri", "", "redirectUri")
 	cookieNameArg := flag.String("cookieName", "easyhi_qyapi", "cookieName")
 	devModeArg := flag.Bool("devMode", false, "devMode(disable js/css minify)")
+	authBasicArg := flag.Bool("authBasic", false, "authBasic based on poems")
 
 	flag.Parse()
 
@@ -58,58 +57,64 @@ func init() {
 	redirectUri = *redirectUriArg
 	cookieName = *cookieNameArg
 	devMode = *devModeArg
+	authBasic = *authBasicArg
 }
 
 func main() {
 	r := mux.NewRouter()
 
-	r.HandleFunc(contextPath+"/", serveWelcome)
-	r.HandleFunc(contextPath+"/home", gzipWrapper(go_utils.RandomPoemBasicAuth(serveHome)))
-	r.HandleFunc(contextPath+"/query", gzipWrapper(go_utils.RandomPoemBasicAuth(serveQuery)))
-	r.HandleFunc(contextPath+"/multipleTenantsQuery", gzipWrapper(go_utils.RandomPoemBasicAuth(multipleTenantsQuery)))
-	r.HandleFunc(contextPath+"/tablesByColumn", go_utils.RandomPoemBasicAuth(serveTablesByColumn))
-	r.HandleFunc(contextPath+"/loadLinksConfig", go_utils.RandomPoemBasicAuth(serveLoadLinksConfig))
-	r.HandleFunc(contextPath+"/saveLinksConfig", go_utils.RandomPoemBasicAuth(serveSaveLinksConfig))
-	r.HandleFunc(contextPath+"/iconfont.{extension}", serveFont)
-	r.HandleFunc(contextPath+"/favicon.ico", serveFavicon)
-	r.HandleFunc(contextPath+"/update", go_utils.RandomPoemBasicAuth(serveUpdate))
-	r.HandleFunc(contextPath+"/searchDb", go_utils.RandomPoemBasicAuth(serveSearchDb))
-	r.HandleFunc(contextPath+"/login", go_utils.RandomPoemBasicAuth(serveLogin))
+	handleFunc(r, "/", serveWelcome, false, false)
+	handleFunc(r, "/home", serveHome, true, true)
+	handleFunc(r, "/query", serveQuery, true, true)
+	handleFunc(r, "/multipleTenantsQuery", multipleTenantsQuery, true, true)
+	handleFunc(r, "/tablesByColumn", serveTablesByColumn, false, true)
+	handleFunc(r, "/loadLinksConfig", serveLoadLinksConfig, false, true)
+	handleFunc(r, "/saveLinksConfig", serveSaveLinksConfig, false, true)
+	handleFunc(r, "/iconfont.{extension}", serveFont, true, false)
+	handleFunc(r, "/favicon.ico", serveFavicon, true, false)
+	handleFunc(r, "/update", serveUpdate, false, true)
+	handleFunc(r, "/searchDb", serveSearchDb, false, true)
+	handleFunc(r, "/login", serveLogin, false, true)
 
-	r.HandleFunc(contextPath+"/listVersion", go_utils.RandomPoemBasicAuth(serveListVersions))
-	r.HandleFunc(contextPath+"/addVersion", go_utils.RandomPoemBasicAuth((serveAddVersion)))
-	r.HandleFunc(contextPath+"/updateVersion", go_utils.RandomPoemBasicAuth(serveUpdateVersion))
-	r.HandleFunc(contextPath+"/listVersionSqls", go_utils.RandomPoemBasicAuth(serveListVersionSqls))
-	r.HandleFunc(contextPath+"/addVersionSql", go_utils.RandomPoemBasicAuth(serveAddVersionSql))
-	r.HandleFunc(contextPath+"/updateVersionSql", go_utils.RandomPoemBasicAuth(serveUpdateVersionSql))
-	r.HandleFunc(contextPath+"/deleteVersionSql", go_utils.RandomPoemBasicAuth(serveDeleteVersionSql))
-	r.HandleFunc(contextPath+"/prepareExecuteVersionSql", go_utils.RandomPoemBasicAuth(servePrepareExecuteVersionSql))
-	r.HandleFunc(contextPath+"/runExecuteVersionSql", go_utils.RandomPoemBasicAuth(serveRunExecuteVersionSql))
+	handleFunc(r, "/listVersion", serveListVersions, false, true)
+	handleFunc(r, "/addVersion", serveAddVersion, false, true)
+	handleFunc(r, "/updateVersion", serveUpdateVersion, false, true)
+	handleFunc(r, "/listVersionSqls", serveListVersionSqls, false, true)
+	handleFunc(r, "/addVersionSql", serveAddVersionSql, false, true)
+	handleFunc(r, "/updateVersionSql", serveUpdateVersionSql, false, true)
+	handleFunc(r, "/deleteVersionSql", serveDeleteVersionSql, false, true)
+	handleFunc(r, "/prepareExecuteVersionSql", servePrepareExecuteVersionSql, false, true)
+	handleFunc(r, "/runExecuteVersionSql", serveRunExecuteVersionSql, false, true)
 
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", port)
-	go openExplorer(port)
+	go_utils.OpenExplorer(port)
 
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
 }
 
-
-func openExplorer(port string) {
-	time.Sleep(100 * time.Millisecond)
-
-	switch runtime.GOOS {
-	case "windows":
-		fallthrough
-	case "darwin":
-		open.Run("http://127.0.0.1:" + port)
+func handleFunc(r *mux.Router, path string, f func(http.ResponseWriter, *http.Request), requiredGzip, requiredBasicAuth bool) {
+	wrap := go_utils.DumpRequest(f)
+	if requiredBasicAuth && authBasic {
+		wrap = go_utils.RandomPoemBasicAuth(wrap)
 	}
+
+	if requiredGzip {
+		wrap = go_utils.GzipHandlerFunc(wrap)
+	}
+
+	r.HandleFunc(contextPath+path, wrap)
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	welcome := MustAsset("res/welcome.html")
-
-	go_utils.ServeWelcome(w, welcome, contextPath)
+	if !authBasic {
+		fmt.Println("Redirect to", contextPath+"/home")
+		http.Redirect(w, r, contextPath+"/home", 301)
+	} else {
+		welcome := MustAsset("res/welcome.html")
+		go_utils.ServeWelcome(w, welcome, contextPath)
+	}
 }

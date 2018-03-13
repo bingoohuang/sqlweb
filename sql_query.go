@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bingoohuang/go-utils"
 	_ "github.com/go-sql-driver/mysql"
 	"net/http"
 )
@@ -24,7 +25,7 @@ func selectDb(tid string, req *http.Request) (string, string, error) {
 func selectDbByTid(tid string, ds string) (string, string, error) {
 	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "' AND STATE = '2'"
 
-	_, data, _, _, err, _ := executeQuery(true, queryDbSql, ds)
+	_, data, _, _, err, _ := executeQuery(queryDbSql, ds)
 	if err != nil {
 		return "", "", err
 	}
@@ -42,7 +43,7 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 	return row[1] + ":" + row[2] + "@tcp(" + row[3] + ":" + row[4] + ")/" + row[5] + "?charset=utf8mb4,utf8&timeout=3s", row[5], nil
 }
 
-func executeQuery(isSelect bool, querySql, dataSource string) (
+func executeQuery(querySql, dataSource string) (
 	[]string /*header*/ , [][]string, /*data*/
 	string   /*executionTime*/ , string /*costTime*/ , error, string /* msg */) {
 	db, err := sql.Open("mysql", dataSource)
@@ -51,7 +52,7 @@ func executeQuery(isSelect bool, querySql, dataSource string) (
 	}
 	defer db.Close()
 
-	return query(isSelect, db, querySql, maxRows)
+	return query(db, querySql, maxRows)
 }
 
 func update(db *sql.DB, sql string) (string, string, int64, error) {
@@ -70,61 +71,23 @@ func update(db *sql.DB, sql string) (string, string, int64, error) {
 	return executionTime, costTime, rowsAffected, err
 }
 
-func query(isSelect bool, db *sql.DB, query string, maxRows int) ([]string, [][]string, string, string, error, string) {
-	log.Printf("querying: %s", query)
-	start := time.Now()
-	executionTime := start.Format("2006-01-02 15:04:05.000")
+func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string, string, error, string) {
+	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
 
-	if !isSelect {
-		r, err := db.Exec(query)
-		costTime := time.Since(start).String()
-		if err != nil {
-			return nil, nil, executionTime, costTime, err, ""
-		}
-
-		affected, _ := r.RowsAffected()
-		return nil, nil, executionTime, costTime, err, strconv.FormatInt(affected, 10) + " rows were affected"
-	}
-
-	rows, err := db.Query(query)
-
-	costTime := time.Since(start).String()
-	if err != nil {
-		return nil, nil, executionTime, costTime, err, ""
-	}
-
-	columns, err := rows.Columns()
-	if err != nil {
-		return nil, nil, executionTime, costTime, err, ""
-	}
-
-	columnSize := len(columns)
+	sqlResult := go_utils.ExecuteSql(db, query, maxRows)
 
 	data := make([][]string, 0)
-
-	for row := 1; rows.Next() && (maxRows == 0 || row <= maxRows); row++ {
-		strValues := make([]sql.NullString, columnSize+1)
-		strValues[0] = sql.NullString{String: strconv.Itoa(row), Valid: true}
-		pointers := make([]interface{}, columnSize)
-		for i := 0; i < columnSize; i++ {
-			pointers[i] = &strValues[i+1]
-		}
-		if err := rows.Scan(pointers...); err != nil {
-			return columns, data, executionTime, "", err, ""
-		}
-
-		values := make([]string, columnSize+1)
-		for i, v := range strValues {
-			if v.Valid {
-				values[i] = v.String
-			} else {
-				values[i] = "(null)"
+	if sqlResult.Rows != nil {
+		for index, row := range sqlResult.Rows {
+			r := make([]string, len(row)+1)
+			r[0] = strconv.Itoa(index + 1)
+			for j, cell := range row {
+				r[j+1] = cell
 			}
+			data = append(data, r)
 		}
-
-		data = append(data, values)
 	}
 
-	costTime = time.Since(start).String()
-	return columns, data, executionTime, costTime, nil, ""
+	costTime := sqlResult.CostTime.String()
+	return sqlResult.Headers, data, executionTime, costTime, sqlResult.Error, strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
 }

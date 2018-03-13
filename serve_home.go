@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/bingoohuang/go-utils"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/html"
@@ -100,7 +101,7 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 		return `<button id="SqlsVersion">Sqls Version</button>`
 	}
 
-	loginCookie := readLoginCookie(r)
+	loginCookie := go_utils.ReadLoginCookie(r, encryptKey, cookieName)
 	if loginCookie == nil || loginCookie.Name == "" {
 		loginCookie, _ = tryLogin(loginCookie, w, r)
 	}
@@ -114,24 +115,24 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 		`"/><span class="loginName">` + loginCookie.Name + `</span>`
 }
 
-func tryLogin(loginCookie *CookieValue, w http.ResponseWriter, r *http.Request) (*CookieValue, error) {
+func tryLogin(loginCookie *go_utils.CookieValue, w http.ResponseWriter, r *http.Request) (*go_utils.CookieValue, error) {
 	code := r.FormValue("code")
 	state := r.FormValue("state")
 	log.Println("code:", code, ",state:", state)
 	if loginCookie != nil && code != "" && state == loginCookie.CsrfToken {
-		accessToken, err := getAccessToken(corpId, corpSecret)
+		accessToken, err := go_utils.GetAccessToken(corpId, corpSecret)
 		if err != nil {
 			return nil, err
 		}
-		userId, err := getLoginUserId(accessToken, code)
+		userId, err := go_utils.GetLoginUserId(accessToken, code)
 		if err != nil {
 			return nil, err
 		}
-		userInfo, err := getUserInfo(accessToken, userId)
+		userInfo, err := go_utils.GetUserInfo(accessToken, userId)
 		if err != nil {
 			return nil, err
 		}
-		cookie := writeUserInfoCookie(w, userInfo)
+		cookie := go_utils.WriteUserInfoCookie(w, userInfo, encryptKey, cookieName)
 		return cookie, nil
 	}
 
