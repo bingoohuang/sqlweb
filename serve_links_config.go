@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/bingoohuang/go-utils"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -15,7 +16,7 @@ func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 	activeClassifier := r.FormValue("activeClassifier")
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	configFile := aclassifiedLinksConfigFile(activeClassifier)
+	configFile := classifiedLinksConfigFile(activeClassifier)
 	err := ioutil.WriteFile(configFile, []byte(linksConfig), 0644)
 	if err != nil {
 		json.NewEncoder(w).Encode(struct {
@@ -27,7 +28,7 @@ func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 		})
 		w.Write([]byte(err.Error()))
 	} else {
-		jsonBytes, err := tomlToJson([]byte(linksConfig))
+		jsonBytes, err := go_utils.TomlToJson([]byte(linksConfig))
 		ok := "OK"
 		if err != nil {
 			ok = err.Error()
@@ -43,7 +44,7 @@ func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func aclassifiedLinksConfigFile(activeClassifier string) string {
+func classifiedLinksConfigFile(activeClassifier string) string {
 	return activeClassifier + "-" + linksConfigFile
 }
 
@@ -51,7 +52,7 @@ func serveLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	activeClassifier := r.FormValue("activeClassifier")
-	configFile := aclassifiedLinksConfigFile(activeClassifier)
+	configFile := classifiedLinksConfigFile(activeClassifier)
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		json.NewEncoder(w).Encode(struct {
 			LinksConfig string
@@ -64,7 +65,7 @@ func serveLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	linksConfig, _ := ioutil.ReadFile(configFile)
-	jsonBytes, err := tomlToJson([]byte(linksConfig))
+	jsonBytes, err := go_utils.TomlToJson([]byte(linksConfig))
 	if err != nil {
 		fmt.Println("tomlToJson err:", err.Error())
 	}
