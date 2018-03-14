@@ -61,7 +61,8 @@
             $(divId).remove()
         })
 
-        $('#reExecuteSql' + resultId).click(function () {
+        var reExecuteSql = '#reExecuteSql' + resultId;
+        $(reExecuteSql).click(function () {
             var $this = $(this);
             var classifier = $this.attr('classifier')
             var tid = $this.attr('tid')
@@ -69,6 +70,12 @@
             var sql = $(divId).find('.sqlTd').text()
             $.executeQueryAjax(classifier, tid, tname, sql, resultId)
         })
+
+        $('#sqlDiv' + resultId).keydown(function (event) {
+            if ((event.metaKey || event.ctrlKey) && event.keyCode == 13) {
+                $(reExecuteSql).click()
+            }
+        });
 
         var multipleTenantsExecutable = $('#multipleTenantsExecutable' + resultId);
         multipleTenantsExecutable.find('.opsSpan').click(function () {

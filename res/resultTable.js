@@ -115,7 +115,7 @@
                 + '</span>'
         }
         table += '<span class="opsSpan" id="reExecuteSql' + resultId + '" tid="' + tid + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
-        table += '<span class="sqlTd" contenteditable="true">' + sql + '</span>'
+        table += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 
         contextMenuHolder.queryResultId = resultId
