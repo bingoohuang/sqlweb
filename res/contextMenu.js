@@ -5,6 +5,40 @@
         })
     }
 
+    function copiedTips(tipsContent) {
+        $('#tipsDiv').html(tipsContent).show()
+        setTimeout(function () {
+            $('#tipsDiv').hide()
+        }, 3000)
+    }
+
+    var createColumnsValue = function (queryResultId, columnName) {
+        var inPart = ''
+        var checkboxEditable = $('#checkboxEditable' + queryResultId).prop('checked')
+        var chosenRows = checkboxEditable
+            ? $('#queryResult' + queryResultId + ' :checked').parents('tr:visible')
+            : $('#queryResult' + queryResultId + ' tr:visible')
+
+        var duplicate = {}
+        chosenRows.find('td.' + $.escapeContextMenuCssName(columnName)).each(
+            function (index, td) {
+                if (checkboxEditable || index > 0 /*ignore head cell*/) {
+                    var val = $(td).text()
+
+                    if (val !== '(null)' && !duplicate[val]) {
+                        if (inPart != '') {
+                            inPart += '\n'
+                        }
+
+                        inPart += val
+                        duplicate[val] = true
+                    }
+                }
+            })
+
+        return inPart
+    }
+
     var createInPart = function (queryResultId, columnName) {
         var inPart = ''
         var checkboxEditable = $('#checkboxEditable' + queryResultId).prop('checked')
@@ -32,6 +66,7 @@
         return inPart
     }
 
+
     var linkTo = function (classifier, tid, tname, queryResultId, columnName, key, linkedToTables, cell) {
         var linkedTableName = key.substring(4)
         var linkedField = linkedToTables[linkedTableName]
@@ -46,6 +81,7 @@
     function processCopyWhere(columnName, cellValue) {
         $.copyTextToClipboard(' where ' + columnName + " = '" + cellValue + "'")
     }
+
 
     var createLinkToTableColumnContextMenu = function (classifier, tid, tname, queryResultId, tableName, columnName, linkColumnNames) {
         var itemsHead = {}
@@ -86,7 +122,11 @@
         var selector = '#queryResult' + queryResultId + ' td.' + $.escapeContextMenuCssName(columnName)
 
         itemsHead['sqlInPart'] = {
-            name: 'Copy Columns As In Clause',
+            name: 'Copy Columns As In Clause To Clipboard',
+            icon: 'link'
+        }
+        itemsHead['copyColumns'] = {
+            name: 'Copy Columns Values To Clipboard',
             icon: 'link'
         }
         itemsHead['orderByAsc'] = {
@@ -106,6 +146,7 @@
                         linkTo(classifier, tid, tname, queryResultId, columnName, key, linkedToTables, $(this))
                     } else if (key === 'Copy Where') {
                         processCopyWhere(columnName, $(this).text())
+                        copiedTips('Where clause copied.')
                     } else if (key === 'Show Column') {
                         $.processShowColumn(classifier, tid, tableName, columnName)
                     }
@@ -136,6 +177,11 @@
                 } else if (key === 'sqlInPart') {
                     var inPart = columnName + " in (" + createInPart(queryResultId, columnName) + ")"
                     $.copyTextToClipboard(inPart)
+                    copiedTips('In clause copied.')
+                } else if (key === 'copyColumns') {
+                    var columnsValue = createColumnsValue(queryResultId, columnName)
+                    $.copyTextToClipboard(columnsValue)
+                    copiedTips('Column values copied.')
                 } else if (key === 'orderByAsc') {
                     $.sortingTable('queryResult' + queryResultId, columnIndex, true, 1)
                 } else if (key === 'orderByDesc') {
