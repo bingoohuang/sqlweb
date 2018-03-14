@@ -79,9 +79,19 @@
         return holder.tiIndex >= 0 && holder.tnameIndex >= 0 && holder.tcodeIndex >= 0
     }
 
+    function convertSeqNum(resultId) {
+        if (resultId >= 0 && resultId <= 9) return resultId
+        // since 97 is the ascii value for 'a',
+        if (resultId >= 10 && resultId <= 35) return String.fromCharCode('a'.charCodeAt(0) + (resultId - 10))
+
+        return resultId
+    }
+
     function createSummaryTable(classifier, tid, tname, resultId, result, hasRows) {
+        var seqNum = convertSeqNum(resultId);
         return '<div class="executionResult" id="executionResultDiv' + resultId + '" tid="' + tid + '" classifier="' + classifier + '">' +
             '<table class="executionSummary"><tr>' +
+            '<td class="resultId" id="resultId' + seqNum + '">#' + seqNum + '</td>' +
             '<td>Tenant:&nbsp;' + tname + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
             (result.TableName !== '' ? '<td>Table:&nbsp;<span>' + result.TableName + '</span><span class="opsSpan" id="tableTools' + resultId + '">...</span></td>' : '') +
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +

@@ -1,4 +1,4 @@
-var queryResultId = 0
+var queryResultId = -1
 
 var activeMerchantId = null
 var activeMerchantCode = null

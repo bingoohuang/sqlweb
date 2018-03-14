@@ -75,7 +75,7 @@
             if ((event.metaKey || event.ctrlKey) && event.keyCode == 13) {
                 $(reExecuteSql).click()
             }
-        });
+        })
 
         var multipleTenantsExecutable = $('#multipleTenantsExecutable' + resultId);
         multipleTenantsExecutable.find('.opsSpan').click(function () {
@@ -104,9 +104,9 @@
         })
     }
 
-    $.attachExpandRowsEvent = function (queryResultId) {
-        var buttonId = '#expandRows' + queryResultId
-        var collapseDiv = '#collapseDiv' + queryResultId
+    $.attachExpandRowsEvent = function (resultId) {
+        var buttonId = '#expandRows' + resultId
+        var collapseDiv = '#collapseDiv' + resultId
 
         $(buttonId).click(function () {
             if ($(this).text() == 'Expand Rows') {
