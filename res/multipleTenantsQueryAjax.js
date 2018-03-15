@@ -53,26 +53,28 @@
         })
     }
 
-    var tableCreateSimpleHeadHtml = function (headers, sql, queryResultId) {
-        var table = '<div class="executionResult" id="executionResultDiv' + queryResultId + '">' +
+    var tableCreateSimpleHeadHtml = function (headers, sql, resultId) {
+        var seqNum = $.convertSeqNum(resultId)
+        var table = '<div class="executionResult" id="executionResultDiv' + resultId + '">' +
             '<table class="executionSummary"><tr>' +
+            '<td class="resultId" id="resultId' + seqNum + '">#' + seqNum + '</td>' +
             '<td>Tenant:&nbsp;N/A</td><td>Db:&nbsp;N/A</td>' +
-            '<td>Rows:&nbsp;<span id="summaryRows' + queryResultId + '">0</span></td>' +
+            '<td>Rows:&nbsp;<span id="summaryRows' + resultId + '">0</span></td>' +
             '<td>Time:&nbsp;' + $.js_yyyy_mm_dd_hh_mm_ss_SSS() + '</td>' +
-            '<td>Cost:&nbsp;<span id="summaryCostTime' + queryResultId + '">0</span></td>' +
-            '<td><span class="opsSpan" id="closeResult' + queryResultId + '">Close</span></td>' +
+            '<td>Cost:&nbsp;<span id="summaryCostTime' + resultId + '">0</span></td>' +
+            '<td><span class="opsSpan" id="closeResult' + resultId + '">Close</span></td>' +
             '</tr>' +
             '</table>'
-        table += '<div id="divResult' + queryResultId + '" class="divResult">'
+        table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
-        table += '<input id="searchTable' + queryResultId + '" class="searchTable" placeholder="Type to search">'
-        table += '<button id="expandRows' + queryResultId + '">Expand Rows</button>'
+        table += '<input id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
+        table += '<button id="expandRows' + resultId + '">Expand Rows</button>'
         table += '<span class="sqlTd">' + sql + '</span>'
         table += '</div>'
-        table += '<div id="collapseDiv' + queryResultId + '" class="collapseDiv">'
+        table += '<div id="collapseDiv' + resultId + '" class="collapseDiv">'
 
-        table += '<table id="queryResult' + queryResultId + '" class="queryResult">'
-        table += '<thead><tr class="headRow" queryResultId="' + queryResultId + '">'
+        table += '<table id="queryResult' + resultId + '" class="queryResult">'
+        table += '<thead><tr class="headRow">'
         table += '<td class="headCell">#</td><td class="headCell">MERCHANT_ID</td>' +
             '<td class="headCell">MERCHANT_NAME</td>' +
             '<td class="headCell">MERCHANT_CODE</td><td class="headCell">##</td>'
@@ -114,6 +116,9 @@
                         '<td class="dataCell hide">' + tenant.merchantName + '</td>' +
                         '<td class="dataCell hide">' + tenant.merchantCode + '</td>'
                 }
+
+                rowHtml += '<td>' + (i + 1) + '</td>'
+
                 for (var j = 0; j < result.Rows[i].length; ++j) {
                     var cellValue = result.Rows[i][j]
 

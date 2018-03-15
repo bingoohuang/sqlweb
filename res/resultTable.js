@@ -1,6 +1,6 @@
 (function () {
     function createHead(queryResultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder) {
-        var head = '<thead><tr class="headRow" queryResultId="' + queryResultId + '">'
+        var head = '<thead><tr class="headRow">'
         if (rowUpdateReady) {
             head += '<td><div class="chk checkAll"></div></td>'
         }
@@ -79,7 +79,7 @@
         return holder.tiIndex >= 0 && holder.tnameIndex >= 0 && holder.tcodeIndex >= 0
     }
 
-    function convertSeqNum(resultId) {
+    $.convertSeqNum = function(resultId) {
         if (resultId >= 0 && resultId <= 9) return resultId
         // since 97 is the ascii value for 'a',
         if (resultId >= 10 && resultId <= 35) return String.fromCharCode('a'.charCodeAt(0) + (resultId - 10))
@@ -88,7 +88,7 @@
     }
 
     function createSummaryTable(classifier, tid, tname, resultId, result, hasRows) {
-        var seqNum = convertSeqNum(resultId);
+        var seqNum = $.convertSeqNum(resultId)
         return '<div class="executionResult" id="executionResultDiv' + resultId + '" tid="' + tid + '" classifier="' + classifier + '">' +
             '<table class="executionSummary"><tr>' +
             '<td class="resultId" id="resultId' + seqNum + '">#' + seqNum + '</td>' +

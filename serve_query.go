@@ -130,16 +130,17 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 		if !sqlResult.IsQuerySql {
 			msg = strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
 		}
-		resultChan <- &QueryResult{
+		result := QueryResult{
 			Headers:       sqlResult.Headers,
 			Rows:          sqlResult.Rows,
-			Error:         go_utils.Error(err),
+			Error:         go_utils.Error(sqlResult.Error),
 			ExecutionTime: executionTime,
 			CostTime:      sqlResult.CostTime.String(),
 			DatabaseName:  databaseName,
 			Tid:           tid,
 			Msg:           msg,
 		}
+		resultChan <- &result
 
 		return
 	}
