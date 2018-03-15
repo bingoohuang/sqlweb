@@ -24,7 +24,9 @@
             success: function (content, textStatus, request) {
                 var searchResult = $('.searchResult')
                 var searchHtml = ''
-                if (content && content.length) {
+                var hasContent = content && content.length
+                $('#editorDiv').toggleClass('bottomMargin', !hasContent)
+                if (hasContent) {
                     for (var j = 0; j < content.length; j++) {
                         searchHtml += '<span tid="' + content[j].MerchantId
                             + '" tcode="' + content[j].MerchantCode

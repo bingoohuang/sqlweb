@@ -105,6 +105,10 @@ div.executionResult {
     margin-top: -18px;
 }
 
+.bottomMargin {
+    margin-bottom: 18px;
+}
+
 thead {
     background-color: aliceblue;
 }
