@@ -277,6 +277,7 @@ table.executionSummary tr:first-child {
     right: 10px;
     bottom: 10px;
     color: blue;
+    background: yellow;
 }
 
 #tipsDiv {
