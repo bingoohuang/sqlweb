@@ -112,11 +112,11 @@
         $('.tablesWrapper').hide()
     }
 
-    $.executeUpdate = function (sqlRowIndices, sqls, $rows) {
+    $.executeUpdate = function (tid, sqlRowIndices, sqls, $rows) {
         $.ajax({
             type: 'POST',
             url: contextPath + "/update",
-            data: {tid: activeMerchantId, sqls: sqls},
+            data: {tid: tid, sqls: sqls},
             success: function (content, textStatus, request) {
                 if (!content.Ok) {
                     alert(content.Message)

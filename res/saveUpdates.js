@@ -1,5 +1,5 @@
 (function () {
-    $.attachSaveUpdatesEvent = function (result, resultId) {
+    $.attachSaveUpdatesEvent = function (tid, result, resultId) {
         $('#saveUpdates' + resultId).click(function () {
             var table = $('#queryResult' + resultId)
             var headRow = table.find('tr.headRow').first().find('td')
@@ -35,7 +35,7 @@
 
             var joinedSqls = sqls.join(';\n')
             if (confirm(joinedSqls + ';\n\nAre you sure to save ?')) {
-                $.executeUpdate(sqlRowIndices, joinedSqls, $rows)
+                $.executeUpdate(tid, sqlRowIndices, joinedSqls, $rows)
             }
         })
     }

@@ -147,7 +147,7 @@
             attachCopyRowsEvent(newResultId)
             attachDeleteRowsEvent(newResultId)
             $.attachRowTransposesEvent(newResultId)
-            $.attachSaveUpdatesEvent(result, newResultId)
+            $.attachSaveUpdatesEvent(tid, result, newResultId)
         }
     }
 })()
