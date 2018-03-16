@@ -52,6 +52,20 @@ LinksTo & Fast Entries Config:
 
 ![image](https://user-images.githubusercontent.com/1940588/34432497-b9dd4d9c-ecb2-11e7-95a2-2fb8f8bdd229.png)
 
+Show table column info（Right click on the cell）:
+
+![image](https://user-images.githubusercontent.com/1940588/37504346-b0c7c0f0-2918-11e8-8eee-c8e67d12b249.png)
+
+
+Table head context menu:
+
+![image](https://user-images.githubusercontent.com/1940588/37504433-440c1fd2-2919-11e8-848e-0ba7e85b11bb.png)
+
+More Tools for single table (Left click on the ...) :
+
+![image](https://user-images.githubusercontent.com/1940588/37504406-120e6314-2919-11e8-8ba1-18c1a4c103b9.png)
+
+
 
 # others
 ## 如何在Mac上关闭后退和前进触控板手势
