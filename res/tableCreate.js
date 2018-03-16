@@ -1,28 +1,29 @@
 (function () {
-    function copyRows($checkboxes) {
-        $checkboxes.each(function (index, checkbox) {
-            var $tr = $(checkbox).parents('tr')
+    function copyRows($checkedRows) {
+        $checkedRows.each(function (index, tr) {
+            var $tr = $(tr)
             $tr.find(':checked').prop("checked", false)
             var $clone = $tr.clone().addClass('clonedRow')
             $clone.insertAfter($tr)
-            $clone.find('input[type=checkbox]').click($.toggleRowEditable).click()
+            $clone.find('input[type=checkbox]').click(function () {
+                $.toggleRowEditable($(this))
+            }).click()
         })
     }
 
-    function attachDeleteRowsEvent(queryResultId) {
-        var cssChoser = '#queryResult' + queryResultId + ' :checked'
-        $('#deleteRows' + queryResultId).click(function () {
-            $(cssChoser).parents('tr').addClass('deletedRow')
+    function attachDeleteRowsEvent(resultId) {
+        $('#deleteRows' + resultId).click(function () {
+            $.chosenRows(resultId).addClass('deletedRow')
         })
     }
 
-    function attachCopyRowsEvent(thisQueryResult) {
-        $('#copyRow' + thisQueryResult).click(function () {
-            var checkboxes = $('#queryResult' + thisQueryResult + ' :checked')
-            if (checkboxes.length == 0) {
+    function attachCopyRowsEvent(resultId) {
+        $('#copyRow' + resultId).click(function () {
+            var $checkedRows = $.chosenRows(resultId)
+            if ($checkedRows.length == 0) {
                 alert('please specify which row to copy')
             } else {
-                copyRows($(checkboxes))
+                copyRows($checkedRows)
             }
         })
     }
@@ -123,31 +124,28 @@
         if (!result.Headers) {
             result.Headers = []
         }
-
         var rowUpdateReady = result.TableName && result.TableName != ""
-
-        var newResultId = ++queryResultId
+        var resultId = oldResultId !== null && oldResultId >= 0 ? oldResultId : ++queryResultId
         var contextMenuHolder = {}
-        var table = $.createResultTableHtml(result, sql, rowUpdateReady, newResultId, contextMenuHolder, classifier, tid, tname)
-        if (oldResultId && oldResultId > 0) {
+        var table = $.createResultTableHtml(result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tname)
+        if (resultId === oldResultId) {
             $('#executionResultDiv' + oldResultId).replaceWith(table)
         } else {
             $(table).prependTo($('.result'))
         }
-
-        $('#queryResult' + newResultId + ' tbody tr:odd').addClass('rowOdd').attr('rowOdd', 'true')
-        $.attachSearchTableEvent(newResultId, 1)
-        $.attachExpandRowsEvent(newResultId)
-        $.attachOpsResultDivEvent(newResultId)
+        $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd').attr('rowOdd', 'true')
+        $.attachSearchTableEvent(resultId, 1)
+        $.attachExpandRowsEvent(resultId)
+        $.attachOpsResultDivEvent(resultId)
         $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tname)
-        $.createTableToolsContextMenu(classifier, tid, tname, result, newResultId)
+        $.createTableToolsContextMenu(classifier, tid, tname, result, resultId)
 
         if (rowUpdateReady) {
-            $.attachEditableEvent(newResultId)
-            attachCopyRowsEvent(newResultId)
-            attachDeleteRowsEvent(newResultId)
-            $.attachRowTransposesEvent(newResultId)
-            $.attachSaveUpdatesEvent(tid, result, newResultId)
+            $.attachEditableEvent(resultId)
+            attachCopyRowsEvent(resultId)
+            attachDeleteRowsEvent(resultId)
+            $.attachRowTransposesEvent(resultId)
+            $.attachSaveUpdatesEvent(tid, result, resultId)
         }
     }
 })()

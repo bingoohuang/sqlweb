@@ -126,7 +126,7 @@
                 for (var i = 0; i < content.RowsResult.length; ++i) {
                     var rowResult = content.RowsResult[i]
                     if (!rowResult.Ok) {
-                        alert(rowResult.Message)
+                        $.copiedTips(rowResult.Message)
                     } else {
                         var rowIndex = sqlRowIndices[i]
                         var $row = $($rows[rowIndex])

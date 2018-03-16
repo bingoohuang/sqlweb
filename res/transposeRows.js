@@ -1,42 +1,41 @@
 (function () {
-    function transposeRows(queryResultId, checkboxes) {
-        var rowHtml = '<button id="returnToNormalView' + queryResultId + '">Return to Normal View</button>'
+    function transposeRows(resultId, $chosenRows) {
+        var rowHtml = '<button id="returnToNormalView' + resultId + '">Return to Normal View</button>'
             + '<table><tr><td>Column Name</td>'
 
-        checkboxes.each(function (index, chk) {
-            rowHtml += '<td>#' + $(chk).parents('tr').find('td:eq(1)').text() + '</td>'
+        $chosenRows.each(function (index, tr) {
+            rowHtml += '<td>#' + $(tr).find('td:eq(1)').text() + '</td>'
         })
         rowHtml += '</tr>'
 
-        var table = $('#queryResult' + queryResultId)
+        var table = $('#queryResult' + resultId)
         var headRow = table.find('tr.headRow').first().find('td')
 
         for (var i = 2; i < headRow.length; ++i) {
             rowHtml += '<tr><td>' + $(headRow[i]).text() + '</td>'
-            checkboxes.each(function (chkIndex, chk) {
-                rowHtml += '<td>' + $(chk).parents('tr').find('td').eq(i).text() + '</td>'
+            $chosenRows.each(function (index, tr) {
+                rowHtml += '<td>' + $(tr).find('td').eq(i).text() + '</td>'
             })
             rowHtml += '</tr>'
         }
 
         rowHtml += '</table>'
 
-        var $divTranspose = $('#divTranspose' + queryResultId)
+        var $divTranspose = $('#divTranspose' + resultId)
         $divTranspose.html(rowHtml).show()
-        var $divResult = $('#divResult' + queryResultId)
+        var $divResult = $('#divResult' + resultId)
         $divResult.hide()
 
-        $('#returnToNormalView' + queryResultId).click(function () {
+        $('#returnToNormalView' + resultId).click(function () {
             $divTranspose.hide()
             $divResult.show()
         })
     }
 
-    $.attachRowTransposesEvent = function (queryResultId) {
-        var thisQueryResult = queryResultId
-        $('#rowTranspose' + thisQueryResult).click(function () {
-            var checkboxes = $('#queryResult' + thisQueryResult + ' :checked')
-            transposeRows(thisQueryResult, checkboxes)
+    $.attachRowTransposesEvent = function (resultId) {
+        $('#rowTranspose' + resultId).click(function () {
+            var $chosenRows = $.chosenRows(resultId)
+            transposeRows(resultId, $chosenRows)
         })
     }
 })()

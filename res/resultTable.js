@@ -1,8 +1,8 @@
 (function () {
-    function createHead(queryResultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder) {
+    function createHead(resultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder) {
         var head = '<thead><tr class="headRow">'
         if (rowUpdateReady) {
-            head += '<td><div class="chk checkAll"></div></td>'
+            head += '<td><div class="chk checkAll"><input type="checkbox"></div></td>'
         }
         head += '<td class="headCell">#</td>'
 
@@ -79,7 +79,7 @@
         return holder.tiIndex >= 0 && holder.tnameIndex >= 0 && holder.tcodeIndex >= 0
     }
 
-    $.convertSeqNum = function(resultId) {
+    $.convertSeqNum = function (resultId) {
         if (resultId >= 0 && resultId <= 9) return resultId
         // since 97 is the ascii value for 'a',
         if (resultId >= 10 && resultId <= 35) return String.fromCharCode('a'.charCodeAt(0) + (resultId - 10))

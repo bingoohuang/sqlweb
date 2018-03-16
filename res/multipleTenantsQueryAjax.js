@@ -152,11 +152,9 @@
     }
 
 
-    $.findTenants = function (queryResultId, merchantIdIndex, merchantNameIndex, merchantCodeIndex) {
-        var checkboxEditable = $('#checkboxEditable' + queryResultId).prop('checked')
-        var chosenRows = checkboxEditable
-            ? $('#queryResult' + queryResultId + ' :checked').parents('tr:visible')
-            : $('#queryResult' + queryResultId + ' tr.dataRow:visible')
+    $.findTenants = function (resultId, merchantIdIndex, merchantNameIndex, merchantCodeIndex) {
+        var checkboxEditable = $('#checkboxEditable' + resultId).prop('checked')
+        var chosenRows = $.chosenRows(resultId)
 
         var offset = 2
         var tenants = []
