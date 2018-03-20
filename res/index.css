@@ -130,6 +130,8 @@ table.executionSummary tr:first-child {
     text-decoration: underline;
     margin-left: 10px;
     margin-right: 10px;
+    display: table-cell;
+    white-space: nowrap;
 }
 
 .divTranspose {
@@ -212,8 +214,18 @@ table.executionSummary tr:first-child {
 }
 
 .sqlTd {
-    max-width: 600px;
-    white-space: normal !important;
+    display: table-cell;
+    max-width: 800px;
+    /* white-space: pre; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.sqlTd:focus {
+    white-space: pre;
+    overflow: auto;
 }
 
 #linksConfigDiv {
@@ -226,9 +238,10 @@ table.executionSummary tr:first-child {
     text-align: right;
 }
 
-/* .operateAreaDiv {
-     text-align: right;
- }*/
+.operateAreaDiv {
+    /*text-align: right;*/
+    display: table;
+}
 
 .highlightCell {
     background: yellow;
