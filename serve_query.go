@@ -39,7 +39,7 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 		"WHERE TABLE_SCHEMA NOT IN('information_schema','mysql','performance_schema') " +
 		"AND COLUMN_NAME = '" + columnName + "'"
 
-	_, rows, executionTime, costTime, err, msg := processSql(querySql, dbDataSource)
+	_, rows, executionTime, costTime, err, msg := processSql(tid, querySql, dbDataSource)
 
 	queryResult := struct {
 		Rows          [][]string
@@ -79,11 +79,12 @@ func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 	sqlString := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
-	multipleTenantIds := strings.FieldsFunc(req.FormValue("multipleTenantIds"), func(c rune) bool { return c == ',' })
+	tids := req.FormValue("multipleTenantIds")
+	multipleTenantIds := strings.FieldsFunc(tids, func(c rune) bool { return c == ',' })
 
 	tenantsSize := len(multipleTenantIds)
 	resultChan := make(chan *QueryResult, tenantsSize)
-	saveHistory(sqlString)
+	saveHistory(tids, sqlString)
 
 	for _, tid := range multipleTenantIds {
 		go executeSqlInTid(tid, resultChan, sqlString)
@@ -206,7 +207,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	headers, rows, executionTime, costTime, err, msg := processSql(querySql, dbDataSource)
+	headers, rows, executionTime, costTime, err, msg := processSql(tid, querySql, dbDataSource)
 	primaryKeysIndex := findPrimaryKeysIndex(tableName, primaryKeys, headers)
 
 	queryResult := QueryResult{
@@ -224,12 +225,12 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(queryResult)
 }
 
-func processSql(querySql, dbDataSource string) ([]string, [][]string, string, string, error, string) {
+func processSql(tid, querySql, dbDataSource string) ([]string, [][]string, string, string, error, string) {
 	isShowHistory := strings.EqualFold("show history", querySql)
 	if isShowHistory {
 		return showHistory()
 	} else {
-		saveHistory(querySql)
+		saveHistory(tid, querySql)
 		return executeQuery(querySql, dbDataSource)
 	}
 }

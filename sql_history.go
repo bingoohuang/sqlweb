@@ -12,12 +12,14 @@ import (
 type SqlHistory struct {
 	SqlTime string
 	Sql     string
+	Tids    string
 }
 
-func saveHistory(sql string) {
+func saveHistory(tids, sql string) {
 	sqlHistory := SqlHistory{
-		time.Now().Format("2006-01-02 15:04:05.000"),
-		sql,
+		SqlTime: time.Now().Format("2006-01-02 15:04:05.000"),
+		Sql:     sql,
+		Tids:    tids,
 	}
 	json, _ := json.Marshal(sqlHistory)
 	file, _ := os.OpenFile("sqlHistory.json", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -40,7 +42,7 @@ func showHistory() (header []string, data [][]string, executionTime, costTime st
 	}
 	defer file.Close()
 
-	header = []string{"ExecutionTime", "Sql"}
+	header = []string{"ExecutionTime", "Tenant IDs", "Sql"}
 	data = make([][]string, 0)
 
 	reader := bufio.NewReader(file)
@@ -57,9 +59,9 @@ func showHistory() (header []string, data [][]string, executionTime, costTime st
 		}
 
 		rowIndex++
-		var sqlHistory SqlHistory
-		json.Unmarshal(rowData, &sqlHistory)
-		row := []string{strconv.Itoa(rowIndex), sqlHistory.SqlTime, sqlHistory.Sql}
+		var history SqlHistory
+		json.Unmarshal(rowData, &history)
+		row := []string{strconv.Itoa(rowIndex), history.SqlTime, history.Tids, history.Sql}
 
 		data = append([][]string{row}, data...)
 	}
