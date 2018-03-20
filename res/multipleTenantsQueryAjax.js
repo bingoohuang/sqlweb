@@ -2,7 +2,7 @@
     $.multipleTenantsQueryAjax = function (sql, tenantsMap, resultId, groupIndex, tenantIdsGroup, headerColumnsLen, dataRowsIndex, startTime, batchConfirm) {
         if (groupIndex >= tenantIdsGroup.length || (groupIndex > 0 && batchConfirm && !window.confirm('Continue?'))) {
             $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd').attr('rowOdd', true)
-            $.attachSearchTableEvent(resultId, 0)
+            $.attachSearchTableEvent(resultId)
             $.attachExpandRowsEvent(resultId)
             $.attachOpsResultDivEvent(resultId)
 

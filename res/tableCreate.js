@@ -134,7 +134,7 @@
             $(table).prependTo($('.result'))
         }
         $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd').attr('rowOdd', 'true')
-        $.attachSearchTableEvent(resultId, 1)
+        $.attachSearchTableEvent(resultId)
         $.attachExpandRowsEvent(resultId)
         $.attachOpsResultDivEvent(resultId)
         $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tname)

@@ -1,9 +1,7 @@
 (function () {
-    function createHead(resultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder) {
+    function createHead(resultId, result, isTableInLinked, contextMenuHolder) {
         var head = '<thead><tr class="headRow">'
-        if (rowUpdateReady) {
-            head += '<td><div class="chk checkAll"><input type="checkbox"></div></td>'
-        }
+        head += '<td><div class="chk checkAll"><input type="checkbox"></div></td>'
         head += '<td class="headCell">#</td>'
 
         contextMenuHolder.columnNames = contextMenuHolder.columnNames || {}
@@ -20,13 +18,11 @@
         return head + '</tr></thead>'
     }
 
-    function createRows(result, rowUpdateReady) {
+    function createRows(result) {
         var rowHtml = ''
         for (var i = 0; i < result.Rows.length; i++) {
             rowHtml += '<tr class="dataRow">'
-            if (rowUpdateReady) {
-                rowHtml += '<td><div class="chk checkMe"><input type="checkbox"></div></td>'
-            }
+            rowHtml += '<td><div class="chk checkMe"><input type="checkbox"></div></td>'
 
             for (var j = 0; j < result.Rows[i].length; ++j) {
                 var cellValue = result.Rows[i][j]
@@ -137,17 +133,15 @@
 
         if (result.Headers && result.Headers.length > 0) {
             var isTableInLinked = hasRows && result.TableName !== '' && $.isInLinkedTable(result.TableName)
-            table += createHead(resultId, rowUpdateReady, result, isTableInLinked, contextMenuHolder)
+            table += createHead(resultId, result, isTableInLinked, contextMenuHolder)
         }
 
         table += '<tbody>'
         if (hasRows) {
-            table += createRows(result, rowUpdateReady)
+            table += createRows(result)
         } else if (result.Rows && result.Rows.length == 0) {
             table += '<tr class="dataRow clonedRow">'
-            if (rowUpdateReady) {
-                table += '<td><div class="chk checkMe"><input type="checkbox"></div></td>'
-            }
+            table += '<td><div class="chk checkMe"><input type="checkbox"></div></td>'
             table += '<td class="dataCell">' + new Array((result.Headers ? result.Headers.length : 0) + 1).join('</td><td class="dataCell">') + '</td></tr>'
         }
         table += '</tbody></table></div><br/><div></div>'

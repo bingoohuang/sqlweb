@@ -74,7 +74,7 @@
         return foundColumnIndex;
     }
 
-    $.attachSearchTableEvent = function (resultId, seqIndex) {
+    $.attachSearchTableEvent = function (resultId) {
         $('#searchTable' + resultId).on('keyup change', function () {
             var dataTable = $(this).parents('div.divResult').find('table.queryResult')
 
@@ -105,7 +105,7 @@
             }
 
             dataTable.find('tbody tr:visible').each(function (index, tr) {
-                $(tr).find('td').eq(seqIndex).text(index + 1)
+                $(tr).find('td').eq(1).text(index + 1)
             }).removeAttr('rowOdd').removeClass('rowOdd').filter(':odd').addClass('rowOdd').attr('rowOdd', 'true')
 
             $.changeCheckAllState(resultId)
