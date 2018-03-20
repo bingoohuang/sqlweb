@@ -13,29 +13,31 @@
     }
 
     $.chosenRows = function (resultId) {
-        var checkboxEditable = $('#checkboxEditable' + resultId).prop('checked')
-        return checkboxEditable
+        return $.isCheckboxEditable(resultId)
             ? $('#queryResult' + resultId + ' tbody :checked').parents('tr:visible')
             : $('#queryResult' + resultId + ' tbody tr:visible')
+    }
+
+    $.isCheckboxEditable = function (resultId) {
+        return $('#checkboxEditable' + resultId).prop('checked')
     }
 
     var createColumnsValue = function (resultId, columnName) {
         var inPart = ''
         var chosenRows = $.chosenRows(resultId)
         var duplicate = {}
-        chosenRows.find('td.' + $.escapeContextMenuCssName(columnName)).each(
+        var cssName = $.escapeContextMenuCssName(columnName)
+        chosenRows.find('td.' + cssName).each(
             function (index, td) {
-                if (checkboxEditable || index > 0 /*ignore head cell*/) {
-                    var val = $(td).text()
+                var val = $(td).text()
 
-                    if (val !== '(null)' && !duplicate[val]) {
-                        if (inPart != '') {
-                            inPart += '\n'
-                        }
-
-                        inPart += val
-                        duplicate[val] = true
+                if (val !== '(null)' && !duplicate[val]) {
+                    if (inPart != '') {
+                        inPart += '\n'
                     }
+
+                    inPart += val
+                    duplicate[val] = true
                 }
             })
 
@@ -47,19 +49,18 @@
         var $chosenRows = $.chosenRows(resultId)
 
         var duplicate = {}
-        $chosenRows.find('td.' + $.escapeContextMenuCssName(columnName)).each(
+        var cssName = $.escapeContextMenuCssName(columnName)
+        $chosenRows.find('td.' + cssName).each(
             function (index, td) {
-                if (checkboxEditable || index > 0 /*ignore head cell*/) {
-                    var val = $(td).text()
+                var val = $(td).text()
 
-                    if (val !== '(null)' && !duplicate[val]) {
-                        if (inPart != '') {
-                            inPart += ','
-                        }
-
-                        inPart += "'" + val + "'"
-                        duplicate[val] = true
+                if (val !== '(null)' && !duplicate[val]) {
+                    if (inPart != '') {
+                        inPart += ','
                     }
+
+                    inPart += "'" + val + "'"
+                    duplicate[val] = true
                 }
             })
 

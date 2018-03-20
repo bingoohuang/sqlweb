@@ -93,7 +93,7 @@
             '<table class="executionSummary"><tr>' +
             '<td class="resultId" id="resultId' + seqNum + '">#' + seqNum + '</td>' +
             '<td>Tenant:&nbsp;' + tname + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
-            (result.TableName !== '' ? '<td>Table:&nbsp;<span>' + result.TableName + '</span><span class="opsSpan" id="tableTools' + resultId + '">...</span></td>' : '') +
+            (result.TableName !== '' ? '<td>Table:&nbsp;<span>' + result.TableName + '</span><span class="tableTools" id="tableTools' + resultId + '">...</span></td>' : '') +
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
@@ -124,7 +124,7 @@
                 + '<button id="rowTranspose' + resultId + '">Transpose</button>'
                 + '</span>'
         }
-        table += '<span class="opsSpan" id="reExecuteSql' + resultId + '" tid="' + tid + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
+        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
         table += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 

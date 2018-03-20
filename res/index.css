@@ -134,6 +134,12 @@ table.executionSummary tr:first-child {
     white-space: nowrap;
 }
 
+.tableTools {
+    cursor: pointer;
+    margin-left: 10px;
+    text-decoration: underline;
+}
+
 .divTranspose {
     display: none;
 }
@@ -213,7 +219,7 @@ table.executionSummary tr:first-child {
     overflow: auto;
 }
 
-.sqlTd {
+.reRunSql {
     display: table-cell;
     max-width: 800px;
     /* white-space: pre; */
@@ -223,7 +229,7 @@ table.executionSummary tr:first-child {
     white-space: nowrap;
 }
 
-.sqlTd:focus {
+.reRunSql:focus {
     white-space: pre;
     overflow: auto;
 }
