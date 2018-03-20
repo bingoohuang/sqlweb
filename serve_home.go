@@ -3,15 +3,11 @@ package main
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"github.com/bingoohuang/go-utils"
-	"github.com/tdewolff/minify"
-	"github.com/tdewolff/minify/css"
-	"github.com/tdewolff/minify/html"
-	"github.com/tdewolff/minify/js"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
@@ -25,46 +21,15 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	indexHtml := string(MustAsset("res/index.html"))
 	indexHtml = strings.Replace(indexHtml, "<LOGIN/>", loginHtml(w, r), 1)
 
-	html := minifyHtml(indexHtml, devMode)
+	html := go_utils.MinifyHtml(indexHtml, devMode)
 
-	css, js := minifyCssJs(mergeCss(), mergeScripts(), devMode)
+	css := go_utils.MinifyCss(mergeCss(), devMode)
+	js := go_utils.MinifyJs(mergeScripts(), devMode)
 	html = strings.Replace(html, "/*.CSS*/", css, 1)
 	html = strings.Replace(html, "/*.SCRIPT*/", js, 1)
 	html = strings.Replace(html, "${ContextPath}", contextPath, -1)
 
 	w.Write([]byte(html))
-}
-
-func minifyHtml(htmlStr string, devMode bool) string {
-	if devMode {
-		return htmlStr
-	}
-
-	mini := minify.New()
-	mini.AddFunc("text/html", html.Minify)
-	minified, _ := mini.String("text/html", htmlStr)
-	return minified
-}
-
-func minifyCssJs(mergedCss, mergedJs string, devMode bool) (string, string) {
-	if devMode {
-		return mergedCss, mergedJs
-	}
-
-	mini := minify.New()
-	mini.AddFunc("text/css", css.Minify)
-	mini.AddFunc("text/javascript", js.Minify)
-
-	minifiedCss, err := mini.String("text/css", mergedCss)
-	if err != nil {
-		fmt.Println("mini css:", err.Error())
-	}
-	minifiedJs, err := mini.String("text/javascript", mergedJs)
-	if err != nil {
-		fmt.Println("mini js:", err.Error())
-	}
-
-	return minifiedCss, minifiedJs
 }
 
 func mergeCss() string {
@@ -101,12 +66,13 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 		return `<button id="SqlsVersion">Sqls Version</button>`
 	}
 
-	loginCookie := go_utils.ReadLoginCookie(r, encryptKey, cookieName)
-	if loginCookie == nil || loginCookie.Name == "" {
-		loginCookie, _ = tryLogin(loginCookie, w, r)
+	loginCookie := &CookieValue{}
+	err := go_utils.ReadCookie(r, encryptKey, cookieName, loginCookie)
+	if err == nil || loginCookie.Name == "" {
+		err = tryLogin(loginCookie, w, r)
 	}
 
-	if loginCookie == nil {
+	if err != nil {
 		return `<button class="loginButton">Login</button>`
 	}
 
@@ -115,26 +81,45 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 		`"/><span class="loginName">` + loginCookie.Name + `</span>`
 }
 
-func tryLogin(loginCookie *go_utils.CookieValue, w http.ResponseWriter, r *http.Request) (*go_utils.CookieValue, error) {
+type CookieValue struct {
+	UserId    string
+	Name      string
+	Avatar    string
+	CsrfToken string
+	Expired   time.Time
+}
+
+func (t *CookieValue) ExpiredTime() time.Time {
+	return t.Expired
+}
+
+func tryLogin(loginCookie *CookieValue, w http.ResponseWriter, r *http.Request) error {
 	code := r.FormValue("code")
 	state := r.FormValue("state")
 	log.Println("code:", code, ",state:", state)
 	if loginCookie != nil && code != "" && state == loginCookie.CsrfToken {
 		accessToken, err := go_utils.GetAccessToken(corpId, corpSecret)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		userId, err := go_utils.GetLoginUserId(accessToken, code)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		userInfo, err := go_utils.GetUserInfo(accessToken, userId)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		cookie := go_utils.WriteUserInfoCookie(w, userInfo, encryptKey, cookieName)
-		return cookie, nil
+
+		loginCookie.UserId = userInfo.UserId
+		loginCookie.Name = userInfo.Name
+		loginCookie.Avatar = userInfo.Avatar
+		loginCookie.CsrfToken = ""
+		loginCookie.Expired = time.Now().Add(time.Duration(24) * time.Hour)
+
+		go_utils.WriteCookie(w, encryptKey, cookieName, loginCookie)
+		return nil
 	}
 
-	return nil, errors.New("no login")
+	return errors.New("no login")
 }

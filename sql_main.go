@@ -76,16 +76,6 @@ func main() {
 	handleFunc(r, "/searchDb", serveSearchDb, false, true)
 	handleFunc(r, "/login", serveLogin, false, true)
 
-	handleFunc(r, "/listVersion", serveListVersions, false, true)
-	handleFunc(r, "/addVersion", serveAddVersion, false, true)
-	handleFunc(r, "/updateVersion", serveUpdateVersion, false, true)
-	handleFunc(r, "/listVersionSqls", serveListVersionSqls, false, true)
-	handleFunc(r, "/addVersionSql", serveAddVersionSql, false, true)
-	handleFunc(r, "/updateVersionSql", serveUpdateVersionSql, false, true)
-	handleFunc(r, "/deleteVersionSql", serveDeleteVersionSql, false, true)
-	handleFunc(r, "/prepareExecuteVersionSql", servePrepareExecuteVersionSql, false, true)
-	handleFunc(r, "/runExecuteVersionSql", serveRunExecuteVersionSql, false, true)
-
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", port)

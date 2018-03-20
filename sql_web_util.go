@@ -9,11 +9,7 @@ func authOk(r *http.Request) bool {
 	if !writeAuthRequired {
 		return true
 	}
-
-	loginCookie := go_utils.ReadLoginCookie(r, encryptKey, cookieName)
-	if loginCookie != nil && loginCookie.Name != "" {
-		return true
-	}
-
-	return false
+	loginCookie := &CookieValue{}
+	err := go_utils.ReadCookie(r, encryptKey, cookieName, loginCookie)
+	return err == nil && loginCookie.Name != ""
 }
