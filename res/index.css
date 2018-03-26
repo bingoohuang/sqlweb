@@ -219,7 +219,7 @@ table.executionSummary tr:first-child {
     overflow: auto;
 }
 
-.reRunSql {
+.sqlTd {
     display: table-cell;
     max-width: 800px;
     /* white-space: pre; */
@@ -229,7 +229,7 @@ table.executionSummary tr:first-child {
     white-space: nowrap;
 }
 
-.reRunSql:focus {
+.sqlTd:focus {
     white-space: pre;
     overflow: auto;
 }
