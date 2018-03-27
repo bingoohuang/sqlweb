@@ -67,9 +67,10 @@
             var $this = $(this);
             var classifier = $this.attr('classifier')
             var tid = $this.attr('tid')
+            var tcode = $this.attr('tcode')
             var tname = $this.attr('tname')
             var sql = $(divId).find('.sqlTd').text()
-            $.executeQueryAjax(classifier, tid, tname, sql, resultId)
+            $.executeQueryAjax(classifier, tid, tcode, tname, sql, resultId)
         })
 
         $('#sqlDiv' + resultId).keydown(function (event) {
@@ -120,14 +121,14 @@
         }).toggle($(collapseDiv).height() >= 300)
     }
 
-    $.tableCreate = function (result, sql, oldResultId, classifier, tid, tname) {
+    $.tableCreate = function (result, sql, oldResultId, classifier, tid, tcode, tname) {
         if (!result.Headers) {
             result.Headers = []
         }
         var rowUpdateReady = result.TableName && result.TableName != ""
         var resultId = oldResultId !== null && oldResultId >= 0 ? oldResultId : ++queryResultId
         var contextMenuHolder = {}
-        var table = $.createResultTableHtml(result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tname)
+        var table = $.createResultTableHtml(result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tcode, tname)
         if (resultId === oldResultId) {
             $('#executionResultDiv' + oldResultId).replaceWith(table)
         } else {
@@ -138,7 +139,7 @@
         $.attachExpandRowsEvent(resultId)
         $.attachOpsResultDivEvent(resultId)
         $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tname)
-        $.createTableToolsContextMenu(classifier, tid, tname, result, resultId)
+        $.createTableToolsContextMenu(classifier, tid, tcode, tname, result, resultId)
 
         if (rowUpdateReady) {
             $.attachEditableEvent(resultId)

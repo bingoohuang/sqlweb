@@ -83,12 +83,12 @@
         return resultId
     }
 
-    function createSummaryTable(classifier, tid, tname, resultId, result, hasRows) {
+    function createSummaryTable(classifier, tid, tcode, tname, resultId, result, hasRows) {
         var seqNum = $.convertSeqNum(resultId)
-        return '<div class="executionResult" id="executionResultDiv' + resultId + '" tid="' + tid + '" classifier="' + classifier + '">' +
+        return '<div class="executionResult" id="executionResultDiv' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" classifier="' + classifier + '">' +
             '<table class="executionSummary"><tr>' +
             '<td class="resultId" id="resultId' + seqNum + '">#' + seqNum + '</td>' +
-            '<td>Tenant:&nbsp;' + tname + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
+            '<td>Tenant:&nbsp;' + tname + '&nbsp;' + tcode + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' +
             (result.TableName !== '' ? '<td>Table:&nbsp;<span>' + result.TableName + '</span><span class="tableTools" id="tableTools' + resultId + '">...</span></td>' : '') +
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
@@ -101,9 +101,9 @@
             '</tr></table>'
     }
 
-    $.createResultTableHtml = function (result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tname) {
+    $.createResultTableHtml = function (result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tcode, tname) {
         var hasRows = result.Rows && result.Rows.length > 0
-        var table = createSummaryTable(classifier, tid, tname, resultId, result, hasRows)
+        var table = createSummaryTable(classifier, tid, tcode, tname, resultId, result, hasRows)
         table += '<div id="divTranspose' + resultId + '" class="divTranspose"></div>'
         table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
@@ -120,7 +120,7 @@
                 + '<button id="rowTranspose' + resultId + '">Transpose</button>'
                 + '</span>'
         }
-        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
+        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
         table += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 

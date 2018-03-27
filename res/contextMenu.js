@@ -1,7 +1,7 @@
 (function () {
-    $.createLinkToTableContextMenu = function (contextMenuHolder, classifier, tid, tname) {
+    $.createLinkToTableContextMenu = function (contextMenuHolder, classifier, tid, tcode, tname) {
         $.each(contextMenuHolder.allColumnNames, function (key, value) {
-            createLinkToTableColumnContextMenu(classifier, tid, tname, contextMenuHolder.queryResultId, contextMenuHolder.tableName, key, contextMenuHolder.columnNames)
+            createLinkToTableColumnContextMenu(classifier, tid, tcode, tname, contextMenuHolder.queryResultId, contextMenuHolder.tableName, key, contextMenuHolder.columnNames)
         })
     }
 
@@ -68,7 +68,7 @@
     }
 
 
-    var linkTo = function (classifier, tid, tname, queryResultId, columnName, key, linkedToTables, cell) {
+    var linkTo = function (classifier, tid, tcode, tname, queryResultId, columnName, key, linkedToTables, cell) {
         var linkedTableName = key.substring(4)
         var linkedField = linkedToTables[linkedTableName]
 
@@ -76,7 +76,7 @@
             ? " in (" + createInPart(queryResultId, columnName) + ")"
             : " = '" + cell.text() + "'")
 
-        $.executeQueryAjax(classifier, tid, tname, sql)
+        $.executeQueryAjax(classifier, tid, tcode, tname, sql)
     }
 
     function processCopyWhere(columnName, cellValue) {
@@ -84,7 +84,7 @@
     }
 
 
-    var createLinkToTableColumnContextMenu = function (classifier, tid, tname, queryResultId, tableName, columnName, linkColumnNames) {
+    var createLinkToTableColumnContextMenu = function (classifier, tid, tcode, tname, queryResultId, tableName, columnName, linkColumnNames) {
         var itemsHead = {}
         var itemsData = {}
 
@@ -144,7 +144,7 @@
                 selector: selector + '.dataCell',
                 callback: function (key, options) {
                     if (key.indexOf('link') == 0) {
-                        linkTo(classifier, tid, tname, queryResultId, columnName, key, linkedToTables, $(this))
+                        linkTo(classifier, tid, tcode, tname, queryResultId, columnName, key, linkedToTables, $(this))
                     } else if (key === 'Copy Where') {
                         processCopyWhere(columnName, $(this).text())
                         $.copiedTips('Where clause copied.')
@@ -174,7 +174,7 @@
             selector: selector + '.headCell',
             callback: function (key, options) {
                 if (key.indexOf('link') == 0) {
-                    linkTo(classifier, tid, tname, queryResultId, columnName, key, linkedToTables, $(this))
+                    linkTo(classifier, tid, tcode, tname, queryResultId, columnName, key, linkedToTables, $(this))
                 } else if (key === 'sqlInPart') {
                     var inPart = columnName + " in (" + createInPart(queryResultId, columnName) + ")"
                     $.copyTextToClipboard(inPart)
@@ -221,7 +221,7 @@
         })
     }
 
-    $.createTableToolsContextMenu = function (classifier, tid, tname, result, resultId) {
+    $.createTableToolsContextMenu = function (classifier, tid, tcode, tname, result, resultId) {
         if (result.TableName === '') return
 
         var selectSql = $.createSelectSql(result)
@@ -246,7 +246,7 @@
                         $.appendSqlToSqlEditor(deleteSqls, true)
                     }
                 } else if (key === 'ShowFullColumns') {
-                    $.executeQueryAjax(classifier, tid, tname, 'show full columns from ' + result.TableName)
+                    $.executeQueryAjax(classifier, tid, tcode, tname, 'show full columns from ' + result.TableName)
                 } else if (key === 'ShowCreateTable') {
                     $.showSqlAjax('show create table ' + result.TableName)
                 } else if (key === 'ShowEqlTemplates') {
