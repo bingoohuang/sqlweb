@@ -138,7 +138,7 @@
         $.attachSearchTableEvent(resultId)
         $.attachExpandRowsEvent(resultId)
         $.attachOpsResultDivEvent(resultId)
-        $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tname)
+        $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tcode, tname)
         $.createTableToolsContextMenu(classifier, tid, tcode, tname, result, resultId)
 
         if (rowUpdateReady) {
