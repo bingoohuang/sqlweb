@@ -23,9 +23,10 @@ var (
 	agentId     string
 	redirectUri string
 
-	cookieName string
-	devMode    bool // to disable css/js minify
-	authBasic  bool
+	cookieName   string
+	devMode      bool // to disable css/js minify
+	authBasic    bool
+	multiTenants bool
 )
 
 func init() {
@@ -33,8 +34,8 @@ func init() {
 	portArg := flag.Int("port", 8381, "Port to serve.")
 	maxRowsArg := flag.Int("maxRows", 1000, "Max number of rows to return.")
 	dataSourceArg := flag.String("dataSource", "user:pass@tcp(127.0.0.1:3306)/db?charset=utf8", "dataSource string.")
-	writeAuthRequiredArg := flag.Bool("writeAuthRequired", true, "write auth required")
-	keyArg := flag.String("key", "", "key to encyption or decyption")
+	writeAuthRequiredArg := flag.Bool("writeAuthRequired", false, "write auth required")
+	keyArg := flag.String("key", "", "key to encryption or decryption")
 	corpIdArg := flag.String("corpId", "", "corpId")
 	corpSecretArg := flag.String("corpSecret", "", "cropId")
 	agentIdArg := flag.String("agentId", "", "agentId")
@@ -42,6 +43,7 @@ func init() {
 	cookieNameArg := flag.String("cookieName", "easyhi_qyapi", "cookieName")
 	devModeArg := flag.Bool("devMode", false, "devMode(disable js/css minify)")
 	authBasicArg := flag.Bool("authBasic", false, "authBasic based on poems")
+	multiTenantsArg := flag.Bool("multiTenants", false, "support multiTenants")
 
 	flag.Parse()
 
@@ -58,6 +60,7 @@ func init() {
 	cookieName = *cookieNameArg
 	devMode = *devModeArg
 	authBasic = *authBasicArg
+	multiTenants = *multiTenantsArg
 }
 
 func main() {
@@ -66,16 +69,19 @@ func main() {
 	handleFunc(r, "/", serveWelcome, false, false)
 	handleFunc(r, "/home", serveHome, true, true)
 	handleFunc(r, "/query", serveQuery, true, true)
-	handleFunc(r, "/multipleTenantsQuery", multipleTenantsQuery, true, true)
 	handleFunc(r, "/tablesByColumn", serveTablesByColumn, false, true)
 	handleFunc(r, "/loadLinksConfig", serveLoadLinksConfig, false, true)
 	handleFunc(r, "/saveLinksConfig", serveSaveLinksConfig, false, true)
 	handleFunc(r, "/iconfont.{extension}", serveFont, true, false)
 	handleFunc(r, "/favicon.ico", serveFavicon, true, false)
 	handleFunc(r, "/update", serveUpdate, false, true)
+	if multiTenants {
+		handleFunc(r, "/multipleTenantsQuery", multipleTenantsQuery, true, true)
+	}
 	handleFunc(r, "/searchDb", serveSearchDb, false, true)
-	handleFunc(r, "/login", serveLogin, false, true)
-
+	if writeAuthRequired {
+		handleFunc(r, "/login", serveLogin, false, true)
+	}
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", port)

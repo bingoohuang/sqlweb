@@ -6,6 +6,7 @@ import (
 	"github.com/bingoohuang/go-utils"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -27,7 +28,8 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	js := go_utils.MinifyJs(mergeScripts(), devMode)
 	html = strings.Replace(html, "/*.CSS*/", css, 1)
 	html = strings.Replace(html, "/*.SCRIPT*/", js, 1)
-	html = strings.Replace(html, "${ContextPath}", contextPath, -1)
+	html = strings.Replace(html, "${contextPath}", contextPath, -1)
+	html = strings.Replace(html, "${multiTenants}", strconv.FormatBool(multiTenants), -1)
 
 	w.Write([]byte(html))
 }
@@ -47,7 +49,6 @@ func mergeScripts() string {
 		"transposeRows.js", "login.js", "sqlAjax.js", "checkboxEditable.js", "saveUpdates.js",
 		"resultTable.js", "tableCreate.js", "showColumn.js", "multipleTenantsQueryAjax.js",
 		"contextMenu.js", "jquery.contextMenu.js", "jquery.ui.position.js", "fastEntries.js",
-		"SqlsVersion.js",
 		"index.js", "sqlEditor.js", "utils.js", "jquery.loading.js")
 }
 
@@ -63,7 +64,7 @@ func mergeStatic(seperate string, statics ...string) string {
 
 func loginHtml(w http.ResponseWriter, r *http.Request) string {
 	if !writeAuthRequired {
-		return `<button id="SqlsVersion">Sqls Version</button>`
+		return ``
 	}
 
 	loginCookie := &CookieValue{}
@@ -76,8 +77,7 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 		return `<button class="loginButton">Login</button>`
 	}
 
-	return `<button id="SqlsVersion">Sqls Version</button>` +
-		`<img class="loginAvatar" src="` + loginCookie.Avatar +
+	return `<img class="loginAvatar" src="` + loginCookie.Avatar +
 		`"/><span class="loginName">` + loginCookie.Name + `</span>`
 }
 

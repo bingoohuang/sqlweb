@@ -1,22 +1,23 @@
 (function () {
     $('.searchKey').keydown(function (event) {
         var keyCode = event.keyCode || event.which
-        if (keyCode == 13) searchTenants()
+        if (keyCode == 13) {
+            $('.tablesWrapper').hide()
+            $('#fastEntriesDiv').hide()
+
+            $('#tidtcodeSpan').text('')
+            var searchKey = $.trim($('.searchKey').val())
+            if (searchKey === '') {
+                alert("please input tid/tcode/tname")
+                return
+            }
+            $.searchTenants(searchKey)
+        }
     }).focus(function () {
         $(this).select()
     })
 
-    function searchTenants() {
-        $('.tablesWrapper').hide()
-        $('#fastEntriesDiv').hide()
-
-        $('#tidtcodeSpan').text('')
-        var searchKey = $.trim($('.searchKey').val())
-        if (searchKey === '') {
-            alert("please input tid/tcode/tname")
-            return
-        }
-
+    $.searchTenants = function(searchKey) {
         $.ajax({
             type: 'POST',
             url: contextPath + "/searchDb",

@@ -22,7 +22,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if searchKey == "trr" {
+	if searchKey == "trr" || !multiTenants {
 		if authOk(req) {
 			var searchResult [1]SearchResult
 			searchResult[0] = SearchResult{

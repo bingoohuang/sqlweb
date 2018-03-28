@@ -26,5 +26,12 @@
                 $('#closeResult' + (event.keyCode - 65 + 10)).click()
             }
         }
-    });
+    })
+
+
+    if (multiTenants === 'false') {
+        $.searchTenants('trr')
+    } else {
+        $('#multiTenantsDiv').show()
+    }
 })()

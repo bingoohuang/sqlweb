@@ -281,16 +281,6 @@ table.executionSummary tr:first-child {
     color: #999;
 }
 
-.SqlsVersionDiv {
-    display: none;
-}
-
-.SqlsVersionDivClose {
-    position: absolute;
-    top: 3px;
-    right: 3px;
-}
-
 #rightBottomFloatingDiv {
     position: fixed;
     right: 10px;

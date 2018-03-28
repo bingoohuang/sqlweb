@@ -10,21 +10,9 @@
     </style>
 </head>
 <body>
-<div class="MainDivs SqlsVersionDiv">
-    <span class="SqlsVersionDivClose">
-        <button id="CloseSqlsVersionDiv">Close</button>
-    </span>
 
-    <div id="VersionsDiv">
-
-    </div>
-
-    <div id="VersionSqlsDiv">
-
-    </div>
-</div>
 <div class="MainDivs SqlWebDiv">
-    <div>
+    <div id="multiTenantsDiv" class="hide">
         <input placeholder="Find tenants by tid/tcode/name" class="searchKey">
         <span class="searchResult"></span><span id="tidtcodeSpan"></span>
     </div>
@@ -76,7 +64,8 @@
 
 </div>
 <script>
-    var contextPath = '${ContextPath}'
+    var contextPath = '${contextPath}'
+    var multiTenants = '${multiTenants}'
 
     /*.SCRIPT*/
 </script>

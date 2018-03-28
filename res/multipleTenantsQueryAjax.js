@@ -58,7 +58,7 @@
         var table = '<div class="executionResult" id="executionResultDiv' + resultId + '">' +
             '<table class="executionSummary"><tr>' +
             '<td class="resultId" id="resultId' + seqNum + '">#' + seqNum + '</td>' +
-            '<td>Tenant:&nbsp;N/A</td><td>Db:&nbsp;N/A</td>' +
+            (multiTenants === 'true' ? table += '<td>Tenant:&nbsp;N/A</td><td>Db:&nbsp;N/A</td>' : '') +
             '<td>Rows:&nbsp;<span id="summaryRows' + resultId + '">0</span></td>' +
             '<td>Time:&nbsp;' + $.js_yyyy_mm_dd_hh_mm_ss_SSS() + '</td>' +
             '<td>Cost:&nbsp;<span id="summaryCostTime' + resultId + '">0</span></td>' +
