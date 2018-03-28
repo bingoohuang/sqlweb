@@ -140,10 +140,6 @@ table.executionSummary tr:first-child {
     text-decoration: underline;
 }
 
-.divTranspose {
-    display: none;
-}
-
 .chk {
     display: none;
 }

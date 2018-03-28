@@ -104,7 +104,7 @@
     $.createResultTableHtml = function (result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tcode, tname) {
         var hasRows = result.Rows && result.Rows.length > 0
         var table = createSummaryTable(classifier, tid, tcode, tname, resultId, result, hasRows)
-        table += '<div id="divTranspose' + resultId + '" class="divTranspose"></div>'
+        table += '<div id="divTranspose' + resultId + '" class="hide"></div>'
         table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
         if (hasRows) {

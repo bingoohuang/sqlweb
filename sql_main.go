@@ -33,7 +33,7 @@ func init() {
 	contextPathArg := flag.String("contextPath", "", "context path")
 	portArg := flag.Int("port", 8381, "Port to serve.")
 	maxRowsArg := flag.Int("maxRows", 1000, "Max number of rows to return.")
-	dataSourceArg := flag.String("dataSource", "user:pass@tcp(127.0.0.1:3306)/db?charset=utf8", "dataSource string.")
+	dataSourceArg := flag.String("dataSource", "user:pass@tcp(127.0.0.1:3306)/?charset=utf8", "dataSource string.")
 	writeAuthRequiredArg := flag.Bool("writeAuthRequired", false, "write auth required")
 	keyArg := flag.String("key", "", "key to encryption or decryption")
 	corpIdArg := flag.String("corpId", "", "corpId")
