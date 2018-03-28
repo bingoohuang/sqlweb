@@ -107,8 +107,9 @@ func handleFunc(r *mux.Router, path string, f func(http.ResponseWriter, *http.Re
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
 	if !authBasic {
-		fmt.Println("Redirect to", contextPath+"/home")
-		http.Redirect(w, r, contextPath+"/home", 301)
+		// fmt.Println("Redirect to", contextPath+"/home")
+		// http.Redirect(w, r, contextPath+"/home", 301)
+		serveHome(w, r)
 	} else {
 		welcome := MustAsset("res/welcome.html")
 		go_utils.ServeWelcome(w, welcome, contextPath)
