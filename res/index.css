@@ -230,7 +230,7 @@ table.executionSummary tr:first-child {
 }
 
 .sqlTd:focus {
-    white-space: pre;
+    white-space: pre-wrap;
     overflow: auto;
 }
 
