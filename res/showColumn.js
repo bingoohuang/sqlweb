@@ -9,6 +9,9 @@
             url: contextPath + "/query",
             data: {tid: tid, sql: 'show full columns from ' + tableName},
             success: function (content, textStatus, request) {
+                if (content && content.Error) {
+                    return alert(content.Error)
+                }
                 showColumnInfo(classifier, content, tableName, columnName)
             },
             error: function (jqXHR, textStatus, errorThrown) {

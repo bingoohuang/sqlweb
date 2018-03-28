@@ -33,6 +33,10 @@
             url: contextPath + "/query",
             data: {tid: activeMerchantId, sql: 'show tables'},
             success: function (content, textStatus, request) {
+                if (content && content.Error) {
+                    return alert(content.Error)
+                }
+
                 showTables(content)
                 $('.tablesWrapper').show()
             },

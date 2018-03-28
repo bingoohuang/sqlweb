@@ -94,6 +94,10 @@
             url: contextPath + "/query",
             data: {tid: tid, sql: sql},
             success: function (content, textStatus, request) {
+                if (content && content.Error) {
+                    return alert(content.Error)
+                }
+
                 $.tableCreate(content, sql, resultId, classifier, tid, tcode, tname)
 
                 if (sqls) {

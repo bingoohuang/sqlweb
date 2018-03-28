@@ -21,6 +21,10 @@
             url: contextPath + "/query",
             data: {tid: activeMerchantId, sql: sql},
             success: function (content, textStatus, request) {
+                if (content && content.Error) {
+                    return alert(content.Error)
+                }
+
                 var createTableSql = content.Rows[0][2]
                 $.appendSqlToSqlEditor(createTableSql);
             },
