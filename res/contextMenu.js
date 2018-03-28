@@ -232,6 +232,11 @@
             callback: function (key, options) {
                 if (key === 'CreateSelectSQL') {
                     $.appendSqlToSqlEditor(selectSql, true)
+                } else if (key === 'CreateSelectSQLHighlighted') {
+                    var deleteSqls = $.createSelectSqls(selectSql, result, resultId)
+                    if (deleteSqls !== '') {
+                        $.appendSqlToSqlEditor(deleteSqls, true)
+                    }
                 } else if (key === 'CreateInsertSQLsHighlighted') {
                     var values = $.createInsertValuesHighlighted(resultId)
                     if (values !== '') {
@@ -267,6 +272,7 @@
                 CreateInsertSQLsHighlighted: {name: "Create Insert SQLs for Highlighted", icon: "columns"},
                 CreateInsertSQLsAll: {name: "Create Insert SQLs for All", icon: "columns"},
                 CreateSelectSQL: {name: "Create Select SQL", icon: "columns"},
+                CreateSelectSQLHighlighted: {name: "Create Select SQL for Highlighted", icon: "columns"},
                 CreateDeleteSQLs: {name: "Create Delete SQLs for Highlighted", icon: "columns"},
                 ShowEqlTemplates: {name: 'Show Eql Templates', icon: 'columns'},
                 CreateJavaBean: {name: 'Create JavaBean', icon: 'columns'},

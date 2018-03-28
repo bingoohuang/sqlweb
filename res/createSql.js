@@ -110,6 +110,36 @@
         return sql
     }
 
+    function createWhereClause(result, cells) {
+        var headers = result.Headers
+        var where = ''
+        if (result.PrimaryKeysIndex.length > 0) {
+            for (var i = 0; i < result.PrimaryKeysIndex.length; ++i) {
+                var ki = result.PrimaryKeysIndex[i]
+                where += i > 0 ? ' and ' : ''
+
+                var pkName = headers[ki]
+                var $cell = cells.eq(ki + 1)
+                var pkValue = $cell.text()
+                where += wrapFieldName(pkName) + ' = \'' + pkValue.replace(regex, escaper) + '\''
+            }
+        } else {
+            var wherePart = ''
+            cells.each(function (index, cell) {
+                if (index > 0) {
+                    var whereValue = $(cell).text()
+                    wherePart += wherePart != '' ? ' and ' : ''
+
+                    var fieldName = headers[index - 1]
+                    wherePart += wrapFieldName(fieldName)
+                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + whereValue.replace(regex, escaper) + '\''
+                }
+            })
+            where += wherePart
+        }
+        return where;
+    }
+
     function camelCased(str) {
         return str.toLowerCase().replace(/_([a-z])/g, function (g) {
             return g[1].toUpperCase()
@@ -143,7 +173,26 @@
             sql += wrapFieldName(headers[i])
         }
 
-        return sql + ' from ' + result.TableName
+        return sql + ' from ' + wrapFieldName(result.TableName)
+    }
+
+    $.createSelectSqls = function (selectSql, result, resultId) {
+        var tbody = $('#queryResult' + resultId + ' tbody')
+        var values = []
+        tbody.find('tr.highlightRow:visible').each(function (index, tr) {
+            var cells = $(tr).find('td.dataCell')
+            var valuePart = createSelectForRow(selectSql, result, cells)
+            values.push(valuePart)
+        })
+
+        return values.join(';\n')
+    }
+
+
+    var createSelectForRow = function (selectSql, result, cells) {
+        var sql = selectSql + ' where '
+        var where = createWhereClause(result, cells)
+        return sql + where
     }
 
     $.createDeleteSqls = function (result, resultId) {
@@ -158,37 +207,13 @@
         return values.join(';\n')
     }
 
+
     var createDeleteForRow = function (result, cells) {
-        var headers = result.Headers;
         var sql = 'delete from ' + wrapFieldName(result.TableName) + ' where '
-        if (result.PrimaryKeysIndex.length > 0) {
-            for (var i = 0; i < result.PrimaryKeysIndex.length; ++i) {
-                var ki = result.PrimaryKeysIndex[i]
-                sql += i > 0 ? ' and ' : ''
-
-                var pkName = headers[ki]
-                var $cell = cells.eq(ki + 1)
-                var pkValue = $cell.text()
-                sql += wrapFieldName(pkName) + ' = \'' + pkValue.replace(regex, escaper) + '\''
-            }
-            return sql
-        } else {
-            var wherePart = ''
-            cells.each(function (index, cell) {
-                if (index > 0) {
-                    var whereValue = $(cell).text()
-                    wherePart += wherePart != '' ? ' and ' : ''
-
-                    var fieldName = headers[index - 1]
-                    wherePart += wrapFieldName(fieldName)
-                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + whereValue.replace(regex, escaper) + '\''
-                }
-            })
-            sql += wherePart
-        }
-
-        return sql
+        var where = createWhereClause(result, cells)
+        return sql + where
     }
+
 
     $.createInsertValuesHighlighted = function (resultId) {
         var tbody = $('#queryResult' + resultId + ' tbody')
