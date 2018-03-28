@@ -74,7 +74,7 @@
         table += '<div id="collapseDiv' + resultId + '" class="collapseDiv">'
 
         table += '<table id="queryResult' + resultId + '" class="queryResult">'
-        table += '<thead><tr class="headRow">'
+        table += '<thead><tr class="headRow"><td></td>'
         table += '<td class="headCell">#</td><td class="headCell">MERCHANT_ID</td>' +
             '<td class="headCell">MERCHANT_NAME</td>' +
             '<td class="headCell">MERCHANT_CODE</td><td class="headCell">##</td>'
@@ -102,7 +102,7 @@
             var beforeLen = parseInt(totalLen / 5) * 5
             var splitLen = totalLen - beforeLen
             for (var i = 0; i < totalLen; i++) {
-                rowHtml += '<tr class="dataRow">'
+                rowHtml += '<tr class="dataRow"><td></td>'
                 rowHtml += '<td class="dataCell">' + (dataRowsIndex + i + 1) + '</td>'
                 if (i % 5 == 0) {
                     var rowspan = i < beforeLen ? 5 : splitLen
@@ -128,7 +128,7 @@
                 rowHtml += '</tr>'
             }
         } else {
-            rowHtml += '<tr class="dataRow">'
+            rowHtml += '<tr class="dataRow"><td></td>'
             rowHtml += '<td class="dataCell">' + (dataRowsIndex + 1) + '</td>' +
                 '<td class="dataCell">' + tenant.merchantId + '</td>' +
                 '<td class="dataCell">' + tenant.merchantName + '</td>' +
