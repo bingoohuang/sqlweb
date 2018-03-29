@@ -116,7 +116,7 @@
         $('.tablesWrapper').hide()
     }
 
-    $.executeUpdate = function (tid, sqlRowIndices, sqls, $rows) {
+    $.executeUpdate = function (tid, sqlRowIndices, sqls, $rows, isDDl) {
         $.ajax({
             type: 'POST',
             url: contextPath + "/update",
@@ -129,7 +129,7 @@
 
                 for (var i = 0; i < content.RowsResult.length; ++i) {
                     var rowResult = content.RowsResult[i]
-                    if (!rowResult.Ok) {
+                    if (rowResult.Message.indexOf("Error") >= 0 || !isDDl && !rowResult.Ok) {
                         $.copiedTips(rowResult.Message)
                     } else {
                         var rowIndex = sqlRowIndices[i]

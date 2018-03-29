@@ -125,6 +125,10 @@
         if (!result.Headers) {
             result.Headers = []
         }
+        var showFullColumns = sql.startsWith("show full columns from ")
+        if (showFullColumns) {
+            result.TableName = sql.substring("show full columns from ".length)
+        }
         var rowUpdateReady = result.TableName && result.TableName != ""
         var resultId = oldResultId !== null && oldResultId >= 0 ? oldResultId : ++queryResultId
         var contextMenuHolder = {}
@@ -146,7 +150,11 @@
             attachCopyRowsEvent(resultId)
             attachDeleteRowsEvent(resultId)
             $.attachRowTransposesEvent(resultId)
-            $.attachSaveUpdatesEvent(tid, result, resultId)
+            if (showFullColumns) {
+                $.attachDdlEvent(tid, result, resultId)
+            } else {
+                $.attachSaveUpdatesEvent(tid, result, resultId)
+            }
         }
     }
 })()

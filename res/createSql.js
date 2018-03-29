@@ -13,7 +13,7 @@
             valueSql += index > 1 ? ', ' : ''
             if (index > 0) {
                 var newValue = $(cell).text()
-                valueSql += "(null)" == newValue ? 'null' : ('\'' + newValue.replace(regex, escaper) + '\'')
+                valueSql += "(null)" == newValue ? 'null' : ('\'' + $.escapeSqlValue(newValue) + '\'')
             }
         })
         return valueSql + ')'
@@ -21,7 +21,6 @@
 
     $.createInsert = function (cells, result) {
         return $.createInsertSqlPrefix(result) + createValuePart(cells)
-
     }
 
     function createFieldNamesList(result) {
@@ -121,7 +120,7 @@
                 var pkName = headers[ki]
                 var $cell = cells.eq(ki + 1)
                 var pkValue = $cell.text()
-                where += wrapFieldName(pkName) + ' = \'' + pkValue.replace(regex, escaper) + '\''
+                where += wrapFieldName(pkName) + ' = \'' + $.escapeSqlValue(pkValue) + '\''
             }
         } else {
             var wherePart = ''
@@ -132,12 +131,16 @@
 
                     var fieldName = headers[index - 1]
                     wherePart += wrapFieldName(fieldName)
-                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + whereValue.replace(regex, escaper) + '\''
+                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + $.escapeSqlValue(whereValue) + '\''
                 }
             })
             where += wherePart
         }
         return where;
+    }
+
+    $.escapeSqlValue = function (value) {
+        return value.replace(regex, escaper)
     }
 
     function camelCased(str) {
@@ -242,8 +245,8 @@
     $.createUpdateSetPart = function (cells, result, headRow) {
         var updateSql = null
         cells.each(function (jndex, cell) {
-            var oldValue = $(this).attr('old')
-            if (oldValue) {
+            var changedCell = $(this).hasClass('changedCell')
+            if (changedCell) {
                 if (updateSql == null) {
                     updateSql = 'update ' + wrapFieldName(result.TableName) + ' set '
                 } else {
@@ -253,7 +256,7 @@
                 updateSql += wrapFieldName(fieldName)
 
                 var newValue = $(cell).text()
-                updateSql += "(null)" == newValue ? ' = null' : ' = \'' + newValue.replace(regex, escaper) + '\''
+                updateSql += "(null)" == newValue ? ' = null' : ' = \'' + $.escapeSqlValue(newValue) + '\''
             }
         })
         return updateSql
@@ -263,6 +266,8 @@
         if (fieldName.indexOf('_') >= 0) return fieldName
         else return '`' + fieldName + '`'
     }
+
+    $.wrapFieldName = wrapFieldName
 
     $.createWherePart = function (result, headRow, cells) {
         var sql = ' where '
@@ -274,7 +279,7 @@
                 var pkName = $(headRow.get(ki + 1)).text()
                 var $cell = $(cells.get(ki))
                 var pkValue = $cell.attr('old') || $cell.text()
-                sql += wrapFieldName(pkName) + ' = \'' + pkValue.replace(regex, escaper) + '\''
+                sql += wrapFieldName(pkName) + ' = \'' + $.escapeSqlValue(pkValue) + '\''
             }
             return sql
         } else {
@@ -286,7 +291,7 @@
 
                     var fieldName = $(headRow.get(jndex + 1)).text()
                     wherePart += wrapFieldName(fieldName)
-                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + whereValue.replace(regex, escaper) + '\''
+                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + $.escapeSqlValue(whereValue) + '\''
                 }
             })
 
