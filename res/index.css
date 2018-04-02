@@ -240,6 +240,12 @@ table.executionSummary tr:first-child {
     text-align: right;
 }
 
+#fastEntriesDiv span + span:before {
+    content: " | ";
+    padding: 0 10px;
+    color: lightgray;
+}
+
 .operateAreaDiv {
     /*text-align: right;*/
     display: table;
