@@ -91,7 +91,6 @@ input.batchSize {
 span.clickable {
     text-decoration: underline;
     color: blue;
-    padding: 0 5px;
     cursor: pointer;
     user-select: none;
 }
@@ -240,8 +239,7 @@ table.executionSummary tr:first-child {
     text-align: right;
 }
 
-#fastEntriesDiv span + span:before {
-    content: " | ";
+.separator {
     padding: 0 10px;
     color: lightgray;
 }

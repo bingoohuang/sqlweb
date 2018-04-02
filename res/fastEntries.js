@@ -3,11 +3,17 @@
         var fastEnriesHtml = ''
 
         $.each(fastEntriesConfig, function (key, entry) {
+            if (fastEnriesHtml !== '') {
+                fastEnriesHtml += '<span class="separator">|</span>'
+            }
+
             if (entry.type === 'input') {
                 fastEnriesHtml += '<span>' + entry.label + ': <input placeholder="' + (entry.placeholder || '') + '" entryKey="' + key + '"></span>'
             } else if (entry.type = 'link') {
                 fastEnriesHtml += '<span class="clickable" entryKey="' + key + '">' + entry.label + '</span>'
             }
+
+
         })
 
         $('#fastEntriesDiv').html(fastEnriesHtml)
