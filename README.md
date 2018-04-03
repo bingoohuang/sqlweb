@@ -77,3 +77,6 @@ More Tools for single table (Left click on the ...) :
 ![image](https://user-images.githubusercontent.com/1940588/30794523-31e07604-a18e-11e7-9835-4bbf5c38cee5.png)
 
 方法2: 执行命令`defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool FALSE`
+
+## refer
+1. [使用 dep 管理 Go 套件](https://blog.boatswain.io/zh/post/manage-go-dependencies-using-dep/)
