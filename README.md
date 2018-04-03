@@ -5,6 +5,8 @@ sql web based on go-lang
 # build
 1. `go get -u github.com/jteeuwen/go-bindata/...`
 2. `go get golang.org/x/tools/cmd/goimports`
+3. `brew install dep`
+3. `dep ensure`
 3. `./gobin.sh & go build` 
 5. build for linux :`env GOOS=linux GOARCH=amd64 go build -o go-sql-web.linux.bin`
 

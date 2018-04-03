@@ -20,3 +20,4 @@ go-sql-web
 .DS_Store
 .idea
 sqlHistory.json
+vendor
