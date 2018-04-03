@@ -1,8 +1,3 @@
-/**
- * 2012, ParkMe Inc. - Keith Hackbarth
- *
- **/
-
 (function ($) {
     $.fn.loading = function () {
 
@@ -32,27 +27,25 @@
             of: window
         })
 
-        var intervalFn = null
-        var countSeconds = 0
+        var $loadingElement = $(loadingElement)
 
         // every time ajax is called
-        $(document).ajaxSend(function () {
-            $(loadingElement).html('Loading...').show()
-            intervalFn = setInterval(function () {
-                $(loadingElement).html('Loading(' + ++countSeconds + 's)...')
-            }, 1000)
-        })
-
-        // every time ajax is completed
-        $(document).ajaxComplete(function () {
-            $(loadingElement).hide()
-            clearInterval(intervalFn)
-            intervalFn = null
-            countSeconds = 0
-        })
+        $(document)
+            .ajaxSend(function (event, jqxhr, settings) {
+                $loadingElement.html('Loading...').show()
+                settings.countSeconds = 0
+                settings.intervalFn = setInterval(function () {
+                    $(loadingElement).html('Loading(' + ++settings.countSeconds + 's)...')
+                }, 1000)
+            })
+            .ajaxComplete(function (event, jqxhr, settings) {
+                $loadingElement.hide()
+                clearInterval(settings.intervalFn)
+                settings.intervalFn = null
+            })
     }
 
-})(jQuery);
+})(jQuery)
 
 $(document).ready(function () {
     $('body').loading()
