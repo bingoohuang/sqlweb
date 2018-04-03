@@ -110,6 +110,7 @@
         if (hasRows) {
             table += '<input id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
         }
+        table += '<button id="rowTranspose' + resultId + '">Transpose</button>'
         table += '<button id="expandRows' + resultId + '">Expand Rows</button>'
         if (rowUpdateReady) {
             table += '<input type="checkbox" id="checkboxEditable' + resultId + '" class="checkboxEditable">'
@@ -117,9 +118,10 @@
                 + '<span class="editButtons"><button id="copyRow' + resultId + '" class="copyRow">Copy Rows</button>'
                 + '<button id="deleteRows' + resultId + '">Delete Rows</button>'
                 + '<button id="saveUpdates' + resultId + '">Commit</button>'
-                + '<button id="rowTranspose' + resultId + '">Transpose</button>'
+
                 + '</span>'
         }
+
         table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
         table += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         table += '</div>'

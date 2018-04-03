@@ -34,7 +34,11 @@
 
     $.attachRowTransposesEvent = function (resultId) {
         $('#rowTranspose' + resultId).click(function () {
-            var $chosenRows = $.chosenRows(resultId)
+            var tbody = $('#queryResult' + resultId + ' tbody');
+            var $chosenRows = tbody.find('tr.highlightRow:visible')
+            if ($chosenRows.length == 0) {
+                $chosenRows = tbody.find('tr:visible')
+            }
             transposeRows(resultId, $chosenRows)
         })
     }
