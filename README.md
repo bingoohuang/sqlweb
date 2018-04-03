@@ -7,7 +7,7 @@ sql web based on go-lang
 2. `go get golang.org/x/tools/cmd/goimports`
 3. `brew install dep`
 3. `dep ensure`
-3. `./gobin.sh & go build` 
+3. `./gobin.sh & go build -x -v` 
 5. build for linux :`env GOOS=linux GOARCH=amd64 go build -o go-sql-web.linux.bin`
 
 # startup
