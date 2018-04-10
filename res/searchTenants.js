@@ -17,7 +17,7 @@
         $(this).select()
     })
 
-    $.searchTenants = function(searchKey) {
+    $.searchTenants = function (searchKey) {
         $.ajax({
             type: 'POST',
             url: contextPath + "/searchDb",
@@ -38,6 +38,7 @@
                 } else {
                     $('.executeQuery').prop("disabled", true)
                     $('.tables').html('')
+                    $('.exportDatabase').hide()
                 }
                 searchResult.html(searchHtml)
                 $('.searchResult span:first-child').click()
@@ -89,6 +90,7 @@
         $.showTablesAjax(activeMerchantId)
 
         $('#fastEntriesDiv').show()
+        $('.exportDatabase').show().attr('href', contextPath + '/exportDatabase?tid=' + activeMerchantId)
     })
 
 })()

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"github.com/bingoohuang/go-utils"
@@ -8,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 )
 
 var (
@@ -48,6 +51,10 @@ func init() {
 	flag.Parse()
 
 	contextPath = *contextPathArg
+	if strings.Index(contextPath, "/") < 0 {
+		contextPath = "/" + contextPath
+	}
+
 	port = strconv.Itoa(*portArg)
 	maxRows = *maxRowsArg
 	dataSource = *dataSourceArg
@@ -75,6 +82,7 @@ func main() {
 	handleFunc(r, "/iconfont.{extension}", serveFont, true, false)
 	handleFunc(r, "/favicon.ico", serveFavicon, true, false)
 	handleFunc(r, "/update", serveUpdate, false, true)
+	handleFunc(r, "/exportDatabase", exportDatabase, true, true)
 	if multiTenants {
 		handleFunc(r, "/multipleTenantsQuery", multipleTenantsQuery, true, true)
 	}
@@ -85,7 +93,7 @@ func main() {
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", port)
-	go_utils.OpenExplorer(port)
+	go_utils.OpenExplorerWithContext(contextPath, port)
 
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
@@ -103,6 +111,36 @@ func handleFunc(r *mux.Router, path string, f func(http.ResponseWriter, *http.Re
 	}
 
 	r.HandleFunc(contextPath+path, wrap)
+}
+
+func exportDatabase(w http.ResponseWriter, r *http.Request) {
+	if !authOk(r) {
+		http.Error(w, "auth required!", http.StatusForbidden)
+		return
+	}
+
+	tid := strings.TrimSpace(r.FormValue("tid"))
+	dataSource, _, err := selectDb(tid, r)
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
+	}
+	db, err := sql.Open("mysql", dataSource)
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
+	}
+	defer db.Close()
+
+	w.Header().Set("Content-Transfer-Encoding", "binary")
+	w.Header().Set("Content-Disposition", "attachment; filename="+tid+"."+time.Now().Format("20060102150405")+".sql")
+	w.Header().Set("Content-Type", "text/plain")
+
+	err = go_utils.MySqlDump(db, w)
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
+	}
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {

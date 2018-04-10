@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/bingoohuang/go-utils"
   packages = ["."]
-  revision = "83db5a24d5e8641b092a520e576784d8df4804ba"
+  revision = "1e0aad62ebafb8406db18063133301a47e336f61"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"

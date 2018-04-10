@@ -58,8 +58,9 @@ func mergeStatic(seperate string, statics ...string) string {
 }
 
 func loginHtml(w http.ResponseWriter, r *http.Request) string {
+	exportDatabase := `<a class="exportDatabase hide" target="_blank">Export Database</a>`
 	if !writeAuthRequired {
-		return ``
+		return exportDatabase
 	}
 
 	loginCookie := &CookieValue{}
@@ -72,7 +73,7 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 		return `<button class="loginButton">Login</button>`
 	}
 
-	return `<img class="loginAvatar" src="` + loginCookie.Avatar +
+	return exportDatabase + `<img class="loginAvatar" src="` + loginCookie.Avatar +
 		`"/><span class="loginName">` + loginCookie.Name + `</span>`
 }
 
