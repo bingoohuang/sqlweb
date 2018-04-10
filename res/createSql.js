@@ -1,10 +1,13 @@
 (function () {
-    // var regex = new RegExp(/[\0\x08\x09\x1a\n\r"'\\\%]/g)
-    var regex = new RegExp(/[\0\x08\x09\x1a\n\r'\\\%]/g)
+    var regex = new RegExp(/[\0\x08\x09\x1a\n\r'\\%]/g)
     var escaper = function (char) {
-        var m = ['\\0', '\\x08', '\\x09', '\\x1a', '\\n', '\\r', "'", /*'"',*/ "\\", '\\\\', "%"]
-        var r = ['\\\\0', '\\\\b', '\\\\t', '\\\\z', '\\\\n', '\\\\r', "''", /* '""',*/ '\\\\', '\\\\\\\\', '\\%']
+        var m = ['\0', '\x08', '\x09', '\x1a', '\n', '\r', "'", "\\", "%"]
+        var r = ['\\0', '\\b', '\\t', '\\z', '\\n', '\\r', "''", '\\\\', '\\%']
         return r[m.indexOf(char)]
+    }
+
+    $.escapeSqlValue = function (value) {
+        return value.replace(regex, escaper)
     }
 
     function createValuePart(cells) {
@@ -137,10 +140,6 @@
             where += wherePart
         }
         return where;
-    }
-
-    $.escapeSqlValue = function (value) {
-        return value.replace(regex, escaper)
     }
 
     function camelCased(str) {
