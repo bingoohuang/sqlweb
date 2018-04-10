@@ -51,7 +51,7 @@ func init() {
 	flag.Parse()
 
 	contextPath = *contextPathArg
-	if strings.Index(contextPath, "/") < 0 {
+	if contextPath != "" && strings.Index(contextPath, "/") < 0 {
 		contextPath = "/" + contextPath
 	}
 
