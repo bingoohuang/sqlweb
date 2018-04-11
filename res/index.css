@@ -112,6 +112,10 @@ thead {
     background-color: aliceblue;
 }
 
+.aliceblue {
+    background-color: aliceblue;
+}
+
 table.executionSummary tr:first-child {
     background-color: skyblue;
 }

@@ -1,7 +1,7 @@
 (function () {
     function transposeRows(resultId, $chosenRows) {
         var rowHtml = '<button id="returnToNormalView' + resultId + '">Return to Normal View</button>'
-            + '<table><tr><td>Column Name</td>'
+            + '<table><tr><td class="aliceblue">Column Name</td>'
 
         $chosenRows.each(function (index, tr) {
             rowHtml += '<td>#' + $(tr).find('td:eq(1)').text() + '</td>'
@@ -12,7 +12,7 @@
         var headRow = table.find('tr.headRow').first().find('td')
 
         for (var i = 2; i < headRow.length; ++i) {
-            rowHtml += '<tr><td>' + $(headRow[i]).text() + '</td>'
+            rowHtml += '<tr><td class="aliceblue">' + $(headRow[i]).text() + '</td>'
             $chosenRows.each(function (index, tr) {
                 rowHtml += '<td>' + $(tr).find('td').eq(i).text() + '</td>'
             })
