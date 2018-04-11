@@ -16,11 +16,11 @@ import (
 func selectDb(tid string, req *http.Request) (string, string, error) {
 	if tid == "trr" {
 		if authOk(req) {
-			return dataSource, "", nil
+			return g_dataSource, "", nil
 		}
 	}
 
-	return selectDbByTid(tid, dataSource)
+	return selectDbByTid(tid, g_dataSource)
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {

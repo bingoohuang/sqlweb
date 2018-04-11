@@ -17,7 +17,7 @@ var (
 	contextPath       string
 	port              string
 	maxRows           int
-	dataSource        string
+	g_dataSource      string
 	writeAuthRequired bool
 	encryptKey        string
 
@@ -57,7 +57,7 @@ func init() {
 
 	port = strconv.Itoa(*portArg)
 	maxRows = *maxRowsArg
-	dataSource = *dataSourceArg
+	g_dataSource = *dataSourceArg
 	writeAuthRequired = *writeAuthRequiredArg
 	encryptKey = *keyArg
 	corpId = *corpIdArg
@@ -120,12 +120,12 @@ func exportDatabase(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tid := strings.TrimSpace(r.FormValue("tid"))
-	dataSource, _, err := selectDb(tid, r)
+	tenantDataSource, _, err := selectDb(tid, r)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
 	}
-	db, err := sql.Open("mysql", dataSource)
+	db, err := sql.Open("mysql", tenantDataSource)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
