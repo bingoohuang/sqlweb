@@ -26,7 +26,7 @@
                 }
 
                 var createTableSql = content.Rows[0][2]
-                $.appendSqlToSqlEditor(createTableSql);
+                $.appendSqlToSqlEditor(createTableSql)
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)

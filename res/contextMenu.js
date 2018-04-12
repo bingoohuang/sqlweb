@@ -279,7 +279,7 @@
                 ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
                 ShowCreateTable: {name: 'Show Create Table', icon: 'create-table'}
             }
-        });
+        })
 
     }
 

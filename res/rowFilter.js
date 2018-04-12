@@ -71,7 +71,7 @@
                 return false
             }
         })
-        return foundColumnIndex;
+        return foundColumnIndex
     }
 
     $.attachSearchTableEvent = function (resultId) {
@@ -95,7 +95,7 @@
                     rowFilter(dataTable, filter)
                     return
                 }
-                var foundColumnIndex = $.findColumnIndex(dataTable, columnName);
+                var foundColumnIndex = $.findColumnIndex(dataTable, columnName)
                 if (foundColumnIndex < 0) {
                     rowFilter(dataTable, filter)
                     return

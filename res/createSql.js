@@ -181,7 +181,7 @@
     $.createSelectSqls = function (selectSql, result, resultId) {
         var tbody = $('#queryResult' + resultId + ' tbody')
         var values = []
-        tbody.find('tr.highlightRow:visible').each(function (index, tr) {
+        tbody.find('tr.highlight:visible').each(function (index, tr) {
             var cells = $(tr).find('td.dataCell')
             var valuePart = createSelectForRow(selectSql, result, cells)
             values.push(valuePart)
@@ -200,7 +200,7 @@
     $.createDeleteSqls = function (result, resultId) {
         var tbody = $('#queryResult' + resultId + ' tbody')
         var values = []
-        tbody.find('tr.highlightRow:visible').each(function (index, tr) {
+        tbody.find('tr.highlight:visible').each(function (index, tr) {
             var cells = $(tr).find('td.dataCell')
             var valuePart = createDeleteForRow(result, cells)
             values.push(valuePart)
@@ -220,7 +220,7 @@
     $.createInsertValuesHighlighted = function (resultId) {
         var tbody = $('#queryResult' + resultId + ' tbody')
         var values = []
-        tbody.find('tr.highlightRow:visible').each(function (index, tr) {
+        tbody.find('tr.highlight:visible').each(function (index, tr) {
             var cells = $(tr).find('td.dataCell')
             var valuePart = createValuePart(cells)
             values.push(valuePart)

@@ -2,8 +2,8 @@
     $(document).on('click', 'tbody tr', function () {
         var row = $(this)
 
-        if (row.hasClass('highlightRow')) {
-            row.removeClass('highlightRow')
+        if (row.hasClass('highlight')) {
+            row.removeClass('highlight')
             if (row.attr('rowOdd') === 'true') {
                 row.addClass('rowOdd')
             }
@@ -11,7 +11,7 @@
             if (row.attr('rowOdd') === 'true') {
                 row.removeClass('rowOdd')
             }
-            row.addClass('highlightRow')
+            row.addClass('highlight')
         }
     })
 

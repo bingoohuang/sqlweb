@@ -9,7 +9,7 @@
             $('#summaryRows' + resultId).text(dataRowsIndex)
             $('#summaryCostTime' + resultId).text($.costTime(startTime))
             $.createOrderByContextMenu(resultId)
-
+            $.attachHighlightColumnEvent(resultId)
             return
         }
 

@@ -49,8 +49,8 @@
         var nullable = cellValue(cells, 4)
         var defaultValue = cellValue(cells, 6)
         var commentValue = cellValue(cells, 9)
-        var tableName = $.wrapFieldName(result.TableName);
-        var wrapFieldName = $.wrapFieldName(cellValue(cells, 1));
+        var tableName = $.wrapFieldName(result.TableName)
+        var wrapFieldName = $.wrapFieldName(cellValue(cells, 1))
         return 'ALTER TABLE ' + tableName + ' ADD COLUMN ' + wrapFieldName + ' ' + dataType
             + ("YES" === nullable ? " NULL " : " NOT NULL ") + ("(null)" !== defaultValue ? " DEFAULT '" + defaultValue + "' " : "")
             + ("" === commentValue ? "" : " COMMENT '" + $.escapeSqlValue(commentValue) + "' ")
@@ -61,12 +61,12 @@
     function createModifyColumn(cells, result) {
         var changedCell = cells.eq(1).hasClass('changedCell')
         var dataType = cellValue(cells, 2)
-        var nullable = cellValue(cells, 4);
+        var nullable = cellValue(cells, 4)
         var defaultValue = cellValue(cells, 6)
         var commentValue = cellValue(cells, 9)
-        var tableName = $.wrapFieldName(result.TableName);
-        var wrapFieldName = $.wrapFieldName(cellValue(cells, 1));
-        var changeOrModifyColumn = changedCell ? ' CHANGE COLUMN ' + $.wrapFieldName(cells.eq(1).attr('old')) + '  ' : ' MODIFY COLUMN ';
+        var tableName = $.wrapFieldName(result.TableName)
+        var wrapFieldName = $.wrapFieldName(cellValue(cells, 1))
+        var changeOrModifyColumn = changedCell ? ' CHANGE COLUMN ' + $.wrapFieldName(cells.eq(1).attr('old')) + '  ' : ' MODIFY COLUMN '
         return 'ALTER TABLE ' + tableName + changeOrModifyColumn + wrapFieldName + ' ' + dataType
             + ("YES" === nullable ? " NULL " : " NOT NULL ") + ("(null)" !== defaultValue ? " DEFAULT '" + defaultValue + "' " : "")
             + ("" === commentValue ? "" : " COMMENT '" + $.escapeSqlValue(commentValue) + "' ")

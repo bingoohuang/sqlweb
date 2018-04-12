@@ -144,6 +144,7 @@
         $.attachOpsResultDivEvent(resultId)
         $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tcode, tname)
         $.createTableToolsContextMenu(classifier, tid, tcode, tname, result, resultId)
+        $.attachHighlightColumnEvent(resultId)
 
         if (rowUpdateReady) {
             $.attachEditableEvent(resultId)

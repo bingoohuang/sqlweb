@@ -147,7 +147,7 @@ table.executionSummary tr:first-child {
     display: none;
 }
 
-.highlightRow {
+.highlight {
     background-color: rgba(20, 255, 20, .5);
 }
 
