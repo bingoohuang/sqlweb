@@ -38,7 +38,7 @@ func mergeScripts() string {
 	return mergeStatic(";",
 		"jquery-3.2.1.min.js", "common.js",
 		"codemirror-5.33.0.min.js", "sql-5.33.0.min.js", "toml-5.33.0.min.js", "placeholder-5.33.0.js",
-		"linksConfig.js", "columns.js",
+		"linksConfig.js", "columns.js", "dragtable.js",
 		"sql-formatter-2.0.0.min.js",
 		"searchTenants.js", "tables.js", "rowFilter.js", "createSql.js", "showCreateTable.js",
 		"transposeRows.js", "login.js", "sqlAjax.js", "checkboxEditable.js", "saveUpdates.js",

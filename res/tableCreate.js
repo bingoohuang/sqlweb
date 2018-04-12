@@ -143,6 +143,7 @@
         $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tcode, tname)
         $.createTableToolsContextMenu(classifier, tid, tcode, tname, result, resultId)
         $.attachHighlightColumnEvent(resultId)
+        dragtable.makeDraggable($('#queryResult' + resultId)[0])
 
         if (rowUpdateReady) {
             $.attachEditableEvent(resultId)
