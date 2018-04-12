@@ -68,7 +68,7 @@
         table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
         table += '<input id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
-        table += '<button id="expandRows' + resultId + '">Expand Rows</button>'
+        table += '<button id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
         table += '<span class="sqlTd">' + sql + '</span>'
         table += '</div>'
         table += '<div id="collapseDiv' + resultId + '" class="collapseDiv">'

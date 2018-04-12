@@ -110,19 +110,18 @@
         if (hasRows) {
             table += '<input id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
         }
-        table += '<button id="rowTranspose' + resultId + '">Transpose</button>'
-        table += '<button id="expandRows' + resultId + '">Expand Rows</button>'
+        table += '<button title="Transpose Rows" id="rowTranspose' + resultId + '"><span class="context-menu-icons context-menu-icon-transpose"></span></button>'
+        table += '<button id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
         if (rowUpdateReady) {
             table += '<input type="checkbox" id="checkboxEditable' + resultId + '" class="checkboxEditable">'
-                + '<label for="checkboxEditable' + resultId + '">Editable?</label>'
-                + '<span class="editButtons"><button id="copyRow' + resultId + '" class="copyRow">Copy Rows</button>'
-                + '<button id="deleteRows' + resultId + '">Delete Rows</button>'
-                + '<button id="saveUpdates' + resultId + '">Commit</button>'
-
+                + '<label for="checkboxEditable' + resultId + '"><span class="context-menu-icons context-menu-icon-edit"></span></label>'
+                + '<span class="editButtons"><button title="Clone Rows" id="copyRow' + resultId + '" class="copyRow"><span class="context-menu-icons context-menu-icon-cloneRows"></span></button>'
+                + '<button title="Tag Rows As Deleted" id="deleteRows' + resultId + '"><span class="context-menu-icons context-menu-icon-deleteRows"></span></button>'
+                + '<button title="Commit Changes" id="saveUpdates' + resultId + '"><span class="context-menu-icons context-menu-icon-commitChanges"></span></button>'
                 + '</span>'
         }
 
-        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
+        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run</span>:'
         table += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 

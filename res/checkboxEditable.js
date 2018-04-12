@@ -8,13 +8,12 @@
             return
         }
 
-        dataCells.dblclick(function () {
+        dataCells.attr('contenteditable', true).click(function () {
             var $this = $(this)
             if (!$this.attr('old')) {
                 $this.attr('old', $this.text())
             }
-            $this.attr('contenteditable', true)
-                .focus()
+            $this.focus()
                 .keydown(function (event) {
                     var keyCode = event.keyCode || event.which
                     if (keyCode == 13 && event.ctrlKey) {
@@ -23,7 +22,6 @@
                 })
         }).blur(function () {
             var $this = $(this)
-            $this.attr('contenteditable', false)
             if ($this.attr('old') == $this.text()) {
                 $this.removeAttr('old').removeClass('changedCell')
             } else {

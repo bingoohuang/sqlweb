@@ -139,7 +139,7 @@
                             $(this).removeAttr('old').removeClass('changedCell')
                         })
                         $row.find('input[type=checkbox]').prop('checked', false)
-                        $row.remove('.deletedRow').removeClass('clonedRow')
+                        $row.remove('.deletedRow').removeClass('clonedRow').find('td').attr('contenteditable', false)
                     }
                 }
             },

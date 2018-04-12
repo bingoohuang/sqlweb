@@ -113,10 +113,8 @@
         $(buttonId).click(function () {
             if ($(this).text() == 'Expand Rows') {
                 $(collapseDiv).removeClass('collapseDiv')
-                $(this).text('Collapse Rows')
             } else {
                 $(collapseDiv).addClass('collapseDiv')
-                $(this).text('Expand Rows')
             }
         }).toggle($(collapseDiv).height() >= 300)
     }
