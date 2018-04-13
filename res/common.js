@@ -25,6 +25,7 @@ var activeClassifier = null
 
     $('.clearResult').click(function () {
         $('.result').html('')
+        queryResultId = -1
     })
 
     $(document).on('dblclick', 'table td', function (e) {

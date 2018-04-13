@@ -1,15 +1,15 @@
 [links]
     [links.user_id]
-    linksTo = ["tt_f_user", "tt_f_user_role", "tt_f_member", "tt_f_coach", "tt_f_staff", "tt_f_subscribe", "tt_f_login"]
+    linksTo = ["tt_f_mbr_card.member_id",  "tt_f_user", "tt_f_user_role", "tt_f_member", "tt_f_coach", "tt_f_staff", "tt_f_subscribe", "tt_f_login", "tt_l_remark.operate_user_id", "tt_f_schedule.coach_id"]
     
     [links.member_id]
     linksTo = ["tt_f_member", "tt_f_mbr_card", "tt_f_subscribe_card"]
      
     [links.MBR_CARD_ID]
-    linksTo = ["tt_f_mbr_card", "tt_l_mbrcard_chg"]
+    linksTo = ["tt_f_mbr_card", "tt_l_mbrcard_chg", "tt_f_subscribe_pay.PAY_ID"]
 
     [links.CARD_ID]
-    linksTo = ["tt_f_mbr_card", "tt_f_card", "tt_f_card_rule"]
+    linksTo = ["tt_f_mbr_card", "tt_f_card", "tt_f_card_rule", "tt_f_card_timeslot"]
     
     [links.COURSE_ID]
     linksTo = ["tt_f_card_rule", "tt_f_schedule", "tt_f_course"]
@@ -21,11 +21,19 @@
     linksTo = ["tt_f_user", "tt_f_login"]
     
     [links.SCHEDULE_ID]
-    linksTo = ["tt_f_schedule", "TT_F_SUBSCRIBE"]
+    linksTo = ["tt_f_schedule", "TT_F_SUBSCRIBE","tt_l_remark.ID_VALUE","tt_f_schedule_rule","TT_L_MBRCARD_CHG"]
     
     [links.role_id]
     linksTo = ["tt_f_role", "tt_f_user_role"]
     
+    [links.operate_user_id]
+    linksTo = ["tt_f_user.user_id", "tt_l_remark"]
+    
+    [links.COURSE_TYPE_ID]
+    linksTo = ["tt_d_course_type.COURSE_TYPE_ID", "tt_f_schedule.COURSE_TYPE_ID"]
+    
+    [links.SUBSCRIBE_ID]
+    linksTo = ["tt_f_subscribe", "tt_f_subscribe_pay"]
 [entries]
     [entries.member]
     type = "input"
