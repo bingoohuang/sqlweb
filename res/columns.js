@@ -29,7 +29,7 @@
             callback: function (key, options) {
                 if (key === 'HideHighlightedColumns') {
                     $resultTable.find('thead tr').each(function () {
-                        $(this).find('td:visible').each(function (index, td) {
+                        $(this).find('td').each(function (index, td) {
                             if ($(td).hasClass('highlight')) {
                                 $resultTable.find('tr').each(function () {
                                     $(this).find('td').eq(index).addClass('hide').removeClass('highlight')
