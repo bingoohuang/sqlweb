@@ -80,7 +80,7 @@
     }
 
     function processCopyWhere(columnName, cellValue) {
-        $.copyTextToClipboard(' where ' + columnName + " = '" + cellValue + "'")
+        $.copyTextToClipboard(' where ' + columnName + ("(null)" == cellValue ? "is null" : " = '" + $.escapeSqlValue(cellValue) + "'"))
     }
 
 

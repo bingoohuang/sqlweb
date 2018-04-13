@@ -111,11 +111,7 @@
         var collapseDiv = '#collapseDiv' + resultId
 
         $(buttonId).click(function () {
-            if ($(this).text() == 'Expand Rows') {
-                $(collapseDiv).removeClass('collapseDiv')
-            } else {
-                $(collapseDiv).addClass('collapseDiv')
-            }
+            $(collapseDiv).toggleClass('collapseDiv')
         }).toggle($(collapseDiv).height() >= 300)
     }
 
