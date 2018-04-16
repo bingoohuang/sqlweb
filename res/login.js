@@ -3,7 +3,6 @@
         $.ajax({
             type: 'POST',
             url: contextPath + "/login",
-            data: {tid: activeMerchantId, sql: 'show tables'},
             success: function (content, textStatus, request) {
                 window.location = content.RedirectUrl
             },

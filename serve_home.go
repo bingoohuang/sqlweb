@@ -65,7 +65,7 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 
 	loginCookie := &CookieValue{}
 	err := go_utils.ReadCookie(r, encryptKey, cookieName, loginCookie)
-	if err == nil || loginCookie.Name == "" {
+	if err != nil || loginCookie.Name == "" {
 		err = tryLogin(loginCookie, w, r)
 	}
 
