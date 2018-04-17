@@ -6,12 +6,6 @@ dragtable = {
         dragtable.dragRadius2 = x * x;
     },
 
-    // How long should cookies persist? (in days)
-    cookieDays: 365,
-    setCookieDays: function (x) {
-        dragtable.cookieDays = x;
-    },
-
     // Determine browser and version.
     // TODO: eliminate browser sniffing except where it's really necessary.
     Browser: function () {
@@ -79,12 +73,6 @@ dragtable = {
         var headers = table.tHead.rows[0].cells;
         for (var i = 0; i < headers.length; i++) {
             headers[i].onmousedown = dragtable.dragStart;
-        }
-
-        // Replay reorderings from cookies if there are any.
-        if (dragtable.cookiesEnabled() && table.id &&
-            table.className.search(/\bforget-ordering\b/) == -1) {
-            dragtable.replayDrags(table);
         }
     },
 
@@ -303,10 +291,6 @@ dragtable = {
         var targetCol = dragtable.findColumn(dragObj.table, pos.x);
         if (targetCol != -1 && targetCol != dragObj.startCol) {
             dragtable.moveColumn(dragObj.table, dragObj.startCol, targetCol);
-            if (dragObj.table.id && dragtable.cookiesEnabled() &&
-                dragObj.table.className.search(/\bforget-ordering\b/) == -1) {
-                dragtable.rememberDrag(dragObj.table.id, dragObj.startCol, targetCol);
-            }
         }
     },
 
@@ -346,72 +330,7 @@ dragtable = {
         for (var i = 0; i < headrow.length; i++) {
             headrow[i].sorttable_columnindex = i;
         }
-    },
-
-    // Are cookies enabled? We should not attempt to set cookies on a local file.
-    cookiesEnabled: function () {
-        return (window.location.protocol != 'file:') && navigator.cookieEnabled;
-    },
-
-    // Store a column swap in a cookie for posterity.
-    rememberDrag: function (id, a, b) {
-        var cookieName = "dragtable-" + id;
-        var prev = dragtable.readCookie(cookieName);
-        var new_val = "";
-        if (prev) new_val = prev + ",";
-        new_val += a + "/" + b;
-        dragtable.createCookie(cookieName, new_val, dragtable.cookieDays);
-    },
-
-    // Replay all column swaps for a table.
-    replayDrags: function (table) {
-        if (!dragtable.cookiesEnabled()) return;
-        var dragstr = dragtable.readCookie("dragtable-" + table.id);
-        if (!dragstr) return;
-        var drags = dragstr.split(',');
-        for (var i = 0; i < drags.length; i++) {
-            var pair = drags[i].split("/");
-            if (pair.length != 2) continue;
-            var a = parseInt(pair[0]);
-            var b = parseInt(pair[1]);
-            if (isNaN(a) || isNaN(b)) continue;
-            dragtable.moveColumn(table, a, b);
-        }
-    },
-
-    // Cookie functions based on http://www.quirksmode.org/js/cookies.html
-    // Cookies won't work for local files.
-    cookiesEnabled: function () {
-        return (window.location.protocol != 'file:') && navigator.cookieEnabled;
-    },
-
-    createCookie: function (name, value, days) {
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            var expires = "; expires=" + date.toGMTString();
-        }
-        else var expires = "";
-
-        var path = document.location.pathname;
-        document.cookie = name + "=" + value + expires + "; path=" + path
-    },
-
-    readCookie: function (name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-    },
-
-    eraseCookie: function (name) {
-        dragtable.createCookie(name, "", -1);
     }
-
 }
 
 /* ******************************************************************
