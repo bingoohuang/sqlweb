@@ -1,10 +1,14 @@
 (function () {
     $.toggleRowEditable = function ($this) {
         var rowChecked = $this.prop('checked')
-        var dataCells = $this.parents('tr').find('td.dataCell')
+        var $tr = $this.parents('tr')
+        switchRowEditable(rowChecked, $tr)
+    }
+
+    function switchRowEditable(rowChecked, $tr) {
+        var dataCells = $tr.find('td.dataCell')
         if (!rowChecked) {
-            dataCells.attr('contenteditable', false)
-                .unbind('dblclick').unbind('blur')
+            dataCells.attr('contenteditable', false).unbind('blur')
             return
         }
 
@@ -51,8 +55,14 @@
         var $checkAll = $(queryResultId + ' thead').find('input[type=checkbox]')
 
         $checkAll.click(function () {
-            var $visibleCheckboxes = $(queryResultId + ' tbody').find('tr:visible').find('input[type=checkbox]')
-            $visibleCheckboxes.prop('checked', $(this).prop('checked'))
+            var $trs = $(queryResultId + ' tbody').find('tr:visible');
+            var $visibleCheckboxes = $trs.find('input[type=checkbox]')
+            var $this = $(this);
+            var checkedOn = $this.prop('checked');
+            $visibleCheckboxes.prop('checked', checkedOn)
+            $trs.each(function () {
+                switchRowEditable(checkedOn, $(this))
+            })
         })
     }
 
