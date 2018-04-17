@@ -152,20 +152,22 @@
     }
 
     function compareCells(aRow, bRow, compareColumnIndex) {
-        var aVal = aRow.cells[compareColumnIndex].innerText;
-        var bVal = bRow.cells[compareColumnIndex].innerText;
+        var aCell = aRow.cells[compareColumnIndex]
+        var aVal = aCell ? aCell.innerText : ""
+        var bCell = bRow.cells[compareColumnIndex]
+        var bVal = bCell ? bCell.innerText : ""
 
-        aVal = aVal.replace(/\,/g, '');
-        bVal = bVal.replace(/\,/g, '');
+        aVal = aVal.replace(/\,/g, '')
+        bVal = bVal.replace(/\,/g, '')
 
         if (aVal.match(/^[0-9]+$/) && bVal.match(/^[0-9]+$/)) {
-            return parseFloat(aVal) - parseFloat(bVal);
+            return parseFloat(aVal) - parseFloat(bVal)
         } else if (aVal < bVal) {
-            return -1;
+            return -1
         } else if (aVal > bVal) {
-            return 1;
+            return 1
         } else {
-            return 0;
+            return 0
         }
     }
 })()
