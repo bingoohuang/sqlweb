@@ -22,11 +22,13 @@
     }
 
     var showHideColumns = function (resultId) {
-        var $resultTable = $('#queryResult' + resultId)
+        var queryResultId = '#queryResult' + resultId;
         $.contextMenu({
             selector: '#resultId' + resultId,
             trigger: 'left',
             callback: function (key, options) {
+                var $resultTable = $(queryResultId)
+                
                 if (key === 'HideHighlightedColumns') {
                     $resultTable.find('thead tr').each(function () {
                         $(this).find('td').each(function (index, td) {
