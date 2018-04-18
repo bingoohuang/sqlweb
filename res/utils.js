@@ -170,4 +170,11 @@
             return 0
         }
     }
+
+    $.csvString = function (value) {
+        if (!value || "(null)" === value) return '""'
+
+        var result = value.replace(/"/g, '""');
+        return result.search(/("|,|\n)/g) < 0 ? result : '"' + result + '"'
+    }
 })()

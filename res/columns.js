@@ -53,12 +53,29 @@
                     })
                 } else if (key === 'ShowAllColumns') {
                     $resultTable.find('td').removeClass('hide').removeClass('highlight')
+                } else if (key === 'ExportAsTsv') {
+                    var csv = []
+                    $resultTable.find('tr:visible').each(function (index, tr) {
+                        var csvLine = []
+                        $(tr).find('td').each(function (index, td) {
+                            if (index == 0) return
+
+                            var $td = $(td)
+                            if (!$td.hasClass('hide')) {
+                                csvLine.push($.csvString($td.text()))
+                            }
+                        })
+                        csv.push(csvLine.join('\t'))
+                    })
+                    $.copyTextToClipboard(csv.join('\n'))
+                    $.copiedTips('TSV copied.')
                 }
             },
             items: {
                 HideHighlightedColumns: {name: "Hide Highlighted Columns", icon: "columns"},
                 OnlyShowHighlightedColumns: {name: "Only Show Highlighted Columns", icon: "columns"},
-                ShowAllColumns: {name: "Show All Columns", icon: "columns"}
+                ShowAllColumns: {name: "Show All Columns", icon: "columns"},
+                ExportAsTsv: {name: "Export As TSV To Clipboard", icon: "columns"}
             }
         })
     }
