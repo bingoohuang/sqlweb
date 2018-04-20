@@ -12,6 +12,11 @@ type LoginResult struct {
 	RedirectUrl string
 }
 
+func serveLogut(w http.ResponseWriter, req *http.Request) {
+	loginCookie := &CookieValue{}
+	go_utils.WriteCookie(w, encryptKey, cookieName, loginCookie)
+}
+
 func serveLogin(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	csrfToken := go_utils.RandString(10)

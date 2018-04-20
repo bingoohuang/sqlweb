@@ -178,7 +178,7 @@
         // which is why you are seeing 5.03E+02 instead of 0503E000.
         // If you can convert or control the CSV format, you can force a column to parse as text in Excel
         // by wrapping it in double quotes and prepending an equals sign.
-        if (value.match(/^[0-9]+$/)) return '="' + value + '"'
+        // if (value.match(/^[0-9]+$/)) return '="' + value + '"'
 
         var result = value.replace(/"/g, '""');
         return result.search(/("|,|\n)/g) < 0 ? result : '"' + result + '"'

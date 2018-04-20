@@ -71,13 +71,16 @@
                     })
                     $.copyTextToClipboard(csv.join('\n'))
                     $.copiedTips('TSV copied.')
+                } else if (key === 'MakeDraggable') {
+                    dragtable.makeDraggable($resultTable[0])
                 }
             },
             items: {
                 HideHighlightedColumns: {name: "Hide Highlighted Columns", icon: "columns"},
                 OnlyShowHighlightedColumns: {name: "Only Show Highlighted Columns", icon: "columns"},
                 ShowAllColumns: {name: "Show All Columns", icon: "columns"},
-                ExportAsTsv: {name: "Export As TSV To Clipboard", icon: "columns"}
+                ExportAsTsv: {name: "Export As TSV To Clipboard", icon: "columns"},
+                MakeDraggable: {name: "Make Draggable", icon: "columns"}
             }
         })
     }

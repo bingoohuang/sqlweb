@@ -10,7 +10,6 @@
             $('#summaryCostTime' + resultId).text($.costTime(startTime))
             $.createOrderByContextMenu(resultId)
             $.attachHighlightColumnEvent(resultId)
-            dragtable.makeDraggable($('#queryResult' + resultId)[0])
             return
         }
 

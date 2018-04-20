@@ -89,6 +89,7 @@ func main() {
 	handleFunc(r, "/searchDb", serveSearchDb, false, true)
 	if writeAuthRequired {
 		handleFunc(r, "/login", serveLogin, false, true)
+		handleFunc(r, "/logout", serveLogut, false, false)
 	}
 	http.Handle("/", r)
 

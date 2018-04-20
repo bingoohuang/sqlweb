@@ -73,8 +73,8 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 		return `<button class="loginButton">Login</button>`
 	}
 
-	return exportDatabase + `<img class="loginAvatar" src="` + loginCookie.Avatar +
-		`"/><span class="loginName">` + loginCookie.Name + `</span>`
+	return exportDatabase + `<span id="loginSpan"><img class="loginAvatar" src="` + loginCookie.Avatar +
+		`"/><span class="loginName">` + loginCookie.Name + `<a title="Exit Login" href="javascript:void(0)">Exit<a/></span></span>`
 }
 
 type CookieValue struct {
