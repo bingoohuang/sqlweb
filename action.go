@@ -19,32 +19,21 @@ type SetCaptchaAction struct {
 
 func (t *SetCaptchaAction) Execute() ([]byte, error) {
 	proxy := findProxy(t.Tenant.HomeArea)
-	keyTemplate := findCaptchaKeyTemplate(t.Tenant.Classifier)
+	keyTemplate := ""
+	if strings.Contains(t.Tenant.Classifier, "yoga") {
+		keyTemplate = "captcha:{mobile}:/login"
+	} else if strings.Contains(t.Tenant.Classifier, "et") {
+		keyTemplate = "captcha:{mobile}:/login/sms"
+	}
 
 	key := strings.Replace(keyTemplate, "{mobile}", t.Mobile, -1)
-	httpResult, err := go_utils.HttpGet(proxy + "/setCache?key=" + url.QueryEscape(key) + "&value=1234&ttl=60s")
-	if err != nil {
-		return nil, err
-	}
-
-	return httpResult, nil
-}
-
-func findCaptchaKeyTemplate(classifier string) string {
-	if strings.Contains(classifier, "yoga") {
-		return "captcha:{mobile}:/login"
-	}
-	if strings.Contains(classifier, "et") {
-		return "captcha:{mobile}:/login/sms"
-	}
-	return ""
+	return go_utils.HttpGet(proxy + "/setCache?key=" + url.QueryEscape(key) + "&value=1234&ttl=60s")
 }
 
 func findProxy(homeArea string) string {
 	if strings.Contains(homeArea, "south") {
 		return southProxy
-	}
-	if strings.Contains(homeArea, "north") {
+	} else if strings.Contains(homeArea, "north") {
 		return northProxy
 	}
 	return ""
@@ -55,6 +44,23 @@ type UnknownAction struct {
 
 func (t *UnknownAction) Execute() ([]byte, error) {
 	return nil, errors.New("unknown action")
+}
+
+type ClearMerchantConfigCacheAction struct {
+	Tenant *Merchant
+}
+
+func (t *ClearMerchantConfigCacheAction) Execute() ([]byte, error) {
+	keys := ""
+	if strings.Contains(t.Tenant.Classifier, "yoga") {
+		keys = "westcache:yoga:" + t.Tenant.MerchantCode + ":MerchantConfigBoService.getMerchantConfig," +
+			"westcache:yoga:" + t.Tenant.MerchantCode + ":ConfigService.getAllConfigs"
+	} else if strings.Contains(t.Tenant.Classifier, "et") {
+		keys = "westcache:et:" + t.Tenant.MerchantCode + ":MerchantConfigDaoImpl.queryMerchantConfigItems"
+	}
+
+	proxy := findProxy(t.Tenant.HomeArea)
+	return go_utils.HttpGet(proxy + "/clearCache?keys=" + url.QueryEscape(keys))
 }
 
 func serveAction(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +86,6 @@ func serveAction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	act := findAction(action, merchant, value)
-
 	s, err := act.Execute()
 	if err != nil {
 		http.Error(w, err.Error(), 405)
@@ -93,6 +98,8 @@ func serveAction(w http.ResponseWriter, r *http.Request) {
 func findAction(action string, merchant *Merchant, value string) Action {
 	if action == "SetCaptcha" {
 		return &SetCaptchaAction{Tenant: merchant, Mobile: value}
+	} else if action == "ClearMerchantConfigCache" {
+		return &ClearMerchantConfigCacheAction{Tenant: merchant}
 	}
 
 	return &UnknownAction{}

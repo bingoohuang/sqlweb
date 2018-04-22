@@ -66,6 +66,11 @@
     label = "有卡会员"
     sql = "select * from tt_f_user where user_id in (select user_id from tt_f_member where member_id in (select member_id from tt_f_mbr_card where state != 0))"
 
+    [entries.clearMerchantConfigCache]
+    type = "link"
+    label = "清空商户配置缓存"
+    action = "action=ClearMerchantConfigCache,value=empty"
+    
     [entries.captcha]
     type = "input"
     placeholder = "输入手机号"

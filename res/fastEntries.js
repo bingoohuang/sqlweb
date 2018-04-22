@@ -45,6 +45,9 @@
             if (fastEntry.sql) {
                 $.executeMultiSqlsAjax(fastEntry.sql)
             }
+            if (fastEntry.action) {
+                executeFastAction(fastEntry.action)
+            }
         })
     }
 
