@@ -32,7 +32,7 @@ func (t *SetCaptchaAction) Execute() ([]byte, error) {
 
 func findCaptchaKeyTemplate(classifier string) string {
 	if strings.Contains(classifier, "yoga") {
-		return "yoga:captcha:{mobile}:/login"
+		return "captcha:{mobile}:/login"
 	}
 	if strings.Contains(classifier, "et") {
 		return "captcha:{mobile}:/login/sms"
