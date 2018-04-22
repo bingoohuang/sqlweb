@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 )
 
-type SearchResult struct {
+type Merchant struct {
 	MerchantName string
 	MerchantId   string
 	MerchantCode string
@@ -24,8 +25,8 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 
 	if searchKey == "trr" || !multiTenants {
 		if authOk(req) {
-			var searchResult [1]SearchResult
-			searchResult[0] = SearchResult{
+			var searchResult [1]Merchant
+			searchResult[0] = Merchant{
 				MerchantName: "trr",
 				MerchantId:   "trr",
 				MerchantCode: "trr",
@@ -45,11 +46,28 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	searchResult := make([]SearchResult, len(data))
+	searchResult := make([]Merchant, len(data))
 	for i, v := range data {
-		searchResult[i] = SearchResult{
+		searchResult[i] = Merchant{
 			MerchantName: v[1], MerchantId: v[2], MerchantCode: v[3], HomeArea: v[4], Classifier: v[5]}
 	}
 
 	json.NewEncoder(w).Encode(searchResult)
+}
+
+func searchMerchant(tid string) (*Merchant, error) {
+	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
+		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + tid + "'"
+	_, data, _, _, err, _ := executeQuery(searchSql, g_dataSource)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(data) != 1 {
+		return nil, errors.New("merchant query result 0 or more than 1")
+	}
+
+	v := data[0]
+
+	return &Merchant{MerchantName: v[1], MerchantId: v[2], MerchantCode: v[3], HomeArea: v[4], Classifier: v[5]}, nil
 }

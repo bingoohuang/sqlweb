@@ -65,3 +65,9 @@
     type = "link"
     label = "有卡会员"
     sql = "select * from tt_f_user where user_id in (select user_id from tt_f_member where member_id in (select member_id from tt_f_mbr_card where state != 0))"
+
+    [entries.captcha]
+    type = "input"
+    placeholder = "输入手机号"
+    label = "发60s验证码1234"
+    action = "action=SetCaptcha,value={input}"

@@ -30,6 +30,9 @@ var (
 	devMode      bool // to disable css/js minify
 	authBasic    bool
 	multiTenants bool
+
+	northProxy string
+	southProxy string
 )
 
 func init() {
@@ -47,6 +50,9 @@ func init() {
 	devModeArg := flag.Bool("devMode", false, "devMode(disable js/css minify)")
 	authBasicArg := flag.Bool("authBasic", false, "authBasic based on poems")
 	multiTenantsArg := flag.Bool("multiTenants", false, "support multiTenants")
+
+	northProxycArg := flag.String("northProxy", "http://127.0.0.1:8092", "northProxy")
+	southProxycArg := flag.String("southProxy", "http://127.0.0.1:8082", "southProxy")
 
 	flag.Parse()
 
@@ -68,6 +74,9 @@ func init() {
 	devMode = *devModeArg
 	authBasic = *authBasicArg
 	multiTenants = *multiTenantsArg
+
+	northProxy = *northProxycArg
+	southProxy = *southProxycArg
 }
 
 func main() {
@@ -91,6 +100,8 @@ func main() {
 		handleFunc(r, "/login", serveLogin, false, true)
 		handleFunc(r, "/logout", serveLogut, false, false)
 	}
+
+	handleFunc(r, "/action", serveAction, false, true)
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", port)
