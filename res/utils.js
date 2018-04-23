@@ -183,4 +183,13 @@
         var result = value.replace(/"/g, '""');
         return result.search(/("|,|\n)/g) < 0 ? result : '"' + result + '"'
     }
+
+
+    $.replaceOrPrependResult = function (resultId, oldResultId, html) {
+        if (resultId === oldResultId) {
+            $('#executionResultDiv' + oldResultId).replaceWith(html)
+        } else {
+            $(html).prependTo($('.result'))
+        }
+    }
 })()

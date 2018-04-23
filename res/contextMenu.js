@@ -264,8 +264,7 @@
                         + updateEqlTemplate + ';\n\n' + selectEqlTemplate, true)
                 } else if (key === 'CreateJavaBean') {
                     var javabean = $.createJavaBean(result)
-                    $.appendSqlToSqlEditor(javabean, true, true
-                    )
+                    $.appendSqlToSqlEditor(javabean, true, true)
                 }
             },
             items: {

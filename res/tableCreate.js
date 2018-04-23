@@ -127,11 +127,9 @@
         var resultId = oldResultId !== null && oldResultId >= 0 ? oldResultId : ++queryResultId
         var contextMenuHolder = {}
         var table = $.createResultTableHtml(result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tcode, tname)
-        if (resultId === oldResultId) {
-            $('#executionResultDiv' + oldResultId).replaceWith(table)
-        } else {
-            $(table).prependTo($('.result'))
-        }
+
+        $.replaceOrPrependResult(resultId, oldResultId, table)
+
         $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd').attr('rowOdd', 'true')
         $.attachSearchTableEvent(resultId)
         $.attachExpandRowsEvent(resultId)

@@ -49,6 +49,11 @@
                     tableName = codeMirror.getRange(word.anchor, word.head)
                 }
                 $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, 'show full columns from ' + tableName)
+            } else if (key === 'ParseTemplate') {
+                var selected = codeMirror.somethingSelected()
+                var sql = selected ? codeMirror.getSelection() : codeMirror.getValue()
+
+                $.templateSql(sql)
             }
         },
         items: {
@@ -56,6 +61,7 @@
             FormatSql: {name: 'Format SQL', icon: 'format'},
             ClearSql: {name: 'Clear SQL', icon: 'clear'},
             ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
+            ParseTemplate: {name: 'Parse Template', icon: 'columns'},
         }
     })
 

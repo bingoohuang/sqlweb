@@ -26,7 +26,6 @@
                 var searchResult = $('.searchResult')
                 var searchHtml = ''
                 var hasContent = content && content.length
-                $('#editorDiv').toggleClass('bottomMargin', !hasContent)
                 if (hasContent) {
                     for (var j = 0; j < content.length; j++) {
                         searchHtml += '<span tid="' + content[j].MerchantId
