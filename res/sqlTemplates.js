@@ -116,9 +116,43 @@
         html += createTable(resultId, templateVars) + '</div><br/>'
 
         $.replaceOrPrependResult(resultId, oldResultId, html)
+
+        showHideColumns(resultId)
         attachCloseEvent(resultId)
         attachEvalEvent(resultId)
         attachMoreRowsEvent(resultId)
         bindReExecuteSql('#reTemplateSql' + resultId, resultId)
+    }
+
+    var showHideColumns = function (resultId) {
+        var queryResultId = '#queryResult' + resultId;
+        $.contextMenu({
+            selector: '#resultId' + resultId,
+            trigger: 'left',
+            callback: function (key, options) {
+                var $resultTable = $(queryResultId)
+
+                if (key === 'ExportAsTsv') {
+                    var csv = []
+                    $resultTable.find('tr:visible').each(function (index, tr) {
+                        var csvLine = []
+                        var usable = false
+                        $(tr).find('td').each(function (index, td) {
+                            var text = $(td).text()
+                            if (index > 0 && text !== "") usable = true
+
+                            csvLine.push($.csvString(text))
+                        })
+
+                        if (usable) csv.push(csvLine.join('\t'))
+                    })
+                    $.copyTextToClipboard(csv.join('\n'))
+                    $.copiedTips('TSV copied.')
+                }
+            },
+            items: {
+                ExportAsTsv: {name: "Export As TSV To Clipboard", icon: "columns"},
+            }
+        })
     }
 })()
