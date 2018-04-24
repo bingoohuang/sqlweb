@@ -137,12 +137,13 @@
         $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tcode, tname)
         $.createTableToolsContextMenu(classifier, tid, tcode, tname, result, resultId)
         $.attachHighlightColumnEvent(resultId)
+        $.attachRowTransposesEvent(resultId)
+        $.attachMarkRowsOrCellsEvent(resultId)
 
         if (rowUpdateReady) {
             $.attachEditableEvent(resultId)
             attachCopyRowsEvent(resultId)
             attachDeleteRowsEvent(resultId)
-            $.attachRowTransposesEvent(resultId)
             if (showFullColumns) {
                 $.attachDdlEvent(tid, result, resultId)
             } else {

@@ -111,6 +111,7 @@
             table += '<input id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
         }
         table += '<button title="Transpose Rows" id="rowTranspose' + resultId + '"><span class="context-menu-icons context-menu-icon-transpose"></span></button>'
+        table += '<button title="Mark Rows or Cells" id="markRowsOrCells' + resultId + '"><span class="context-menu-icons context-menu-icon-mark"></span></button>'
         table += '<button id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
         if (rowUpdateReady) {
             table += '<input type="checkbox" id="checkboxEditable' + resultId + '" class="checkboxEditable">'

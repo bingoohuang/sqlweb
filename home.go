@@ -39,7 +39,7 @@ func mergeScripts() string {
 		"jquery-3.2.1.min.js", "common.js",
 		"codemirror-5.33.0.min.js", "sql-5.33.0.min.js", "toml-5.33.0.min.js", "placeholder-5.33.0.js",
 		"linksConfig.js", "columns.js", "dragtable.js",
-		"sql-formatter-2.0.0.min.js",
+		"sql-formatter-2.0.0.min.js", "markRowsOrCells.js",
 		"searchTenants.js", "tables.js", "rowFilter.js", "createSql.js", "showCreateTable.js",
 		"transposeRows.js", "login.js", "sqlAjax.js", "checkboxEditable.js", "saveUpdates.js",
 		"resultTable.js", "tableCreate.js", "showColumn.js", "multipleTenantsQueryAjax.js",
@@ -58,9 +58,8 @@ func mergeStatic(seperate string, statics ...string) string {
 }
 
 func loginHtml(w http.ResponseWriter, r *http.Request) string {
-	exportDatabase := `<a class="exportDatabase hide" target="_blank">Export Database</a>`
 	if !writeAuthRequired {
-		return exportDatabase
+		return ""
 	}
 
 	loginCookie := &CookieValue{}
@@ -73,7 +72,7 @@ func loginHtml(w http.ResponseWriter, r *http.Request) string {
 		return `<button class="loginButton">Login</button>`
 	}
 
-	return exportDatabase + `<span id="loginSpan"><img class="loginAvatar" src="` + loginCookie.Avatar +
+	return `<span id="loginSpan"><img class="loginAvatar" src="` + loginCookie.Avatar +
 		`"/><span class="loginName">` + loginCookie.Name + `<a title="Exit Login" href="javascript:void(0)">Exit<a/></span></span>`
 }
 
