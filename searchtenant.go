@@ -55,6 +55,32 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(searchResult)
 }
 
+type MerchantDb struct {
+	MerchantId string
+	Username   string
+	Password   string
+	Host       string
+	Port       string
+	Database   string
+}
+
+func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
+	queryDbSql := "SELECT MERCHANT_ID, DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
+		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "' AND STATE = '2'"
+
+	_, data, _, _, err, _ := executeQuery(queryDbSql, ds)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(data) != 1 {
+		return nil, errors.New("none or more than one found for tid:" + tid)
+	}
+	v := data[0]
+
+	return &MerchantDb{MerchantId: v[1], Username: v[2], Password: v[3], Host: v[4], Port: v[5], Database: v[6]}, nil
+}
+
 func searchMerchant(tid string) (*Merchant, error) {
 	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + tid + "'"

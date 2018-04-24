@@ -34,10 +34,11 @@
                             + '" classifier="' + content[j].Classifier
                             + '" class="context-menu-icons context-menu-icon-tenant">' + content[j].MerchantName + '</span>'
                     }
+
+                    $.exportDb()
                 } else {
                     $('.executeQuery').prop("disabled", true)
                     $('.tables').html('')
-                    $('.exportDatabase').hide()
                 }
                 searchResult.html(searchHtml)
                 $('.searchResult span:first-child').click()
@@ -89,7 +90,6 @@
         $.showTablesAjax(activeMerchantId)
 
         $('#fastEntriesDiv').show()
-        $('.exportDatabase').show().attr('href', contextPath + '/exportDatabase?tid=' + activeMerchantId)
     })
 
 })()
