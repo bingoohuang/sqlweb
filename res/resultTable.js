@@ -87,7 +87,7 @@
         var seqNum = $.convertSeqNum(resultId)
         return '<div class="executionResult" id="executionResultDiv' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" classifier="' + classifier + '">' +
             '<table class="executionSummary"><tr>' +
-            '<td class="resultId" id="resultId' + seqNum + '">#' + seqNum + '</td>' +
+            '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '</td>' +
             (multiTenants === 'true' ? '<td>Tenant:&nbsp;' + tname + '&nbsp;' + tcode + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' : '') +
             (result.TableName !== '' ? '<td>Table:&nbsp;<span>' + result.TableName + '</span><span class="tableTools" id="tableTools' + resultId + '">...</span></td>' : '') +
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
