@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -15,7 +16,18 @@ type SqlHistory struct {
 	Tids    string
 }
 
+func isByPassedSql(sql string) bool {
+	return sql == "show tables" ||
+		strings.Index(sql, "show create table") == 0 ||
+		strings.Index(sql, "show full columns from") == 0 ||
+		strings.Index(sql, "select * from") == 0
+}
+
 func saveHistory(tids, sql string) {
+	if isByPassedSql(sql) {
+		return
+	}
+
 	sqlHistory := SqlHistory{
 		SqlTime: time.Now().Format("2006-01-02 15:04:05.000"),
 		Sql:     sql,
@@ -42,7 +54,7 @@ func showHistory() (header []string, data [][]string, executionTime, costTime st
 	}
 	defer file.Close()
 
-	header = []string{"ExecutionTime", "Tenant IDs", "Sql"}
+	header = []string{"ExecutionTime", "Sql", "Tenant IDs"}
 	data = make([][]string, 0)
 
 	reader := bufio.NewReader(file)
@@ -58,11 +70,15 @@ func showHistory() (header []string, data [][]string, executionTime, costTime st
 			break
 		}
 
-		rowIndex++
 		var history SqlHistory
 		json.Unmarshal(rowData, &history)
-		row := []string{strconv.Itoa(rowIndex), history.SqlTime, history.Tids, history.Sql}
 
+		if isByPassedSql(history.Sql) {
+			continue
+		}
+
+		rowIndex++
+		row := []string{strconv.Itoa(rowIndex), history.SqlTime, history.Sql, history.Tids}
 		data = append([][]string{row}, data...)
 	}
 

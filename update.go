@@ -48,6 +48,7 @@ func serveUpdate(w http.ResponseWriter, req *http.Request) {
 
 	resultRows := make([]UpdateResultRow, 0)
 	for _, s := range strings.Split(sqls, ";\n") {
+		saveHistory(tid, s)
 		sqlResult := go_utils.ExecuteSql(db, s, 0)
 		if sqlResult.Error != nil {
 			resultRows = append(resultRows, UpdateResultRow{Ok: false, Message: sqlResult.Error.Error()})
