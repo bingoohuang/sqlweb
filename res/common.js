@@ -24,7 +24,6 @@ var activeClassifier = null
 
     $('.clearResult').click(function () {
         $('.result').html('')
-        queryResultId = -1
     })
 
     // refer
