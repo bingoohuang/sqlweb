@@ -9,7 +9,7 @@
         $('#tipsDiv').html(tipsContent).show()
         setTimeout(function () {
             $('#tipsDiv').hide()
-        }, 3000)
+        }, 60000)
     }
 
     $.chosenRows = function (resultId) {

@@ -132,6 +132,7 @@
                     if (rowResult.Message.indexOf("Error") >= 0 || !isDDl && !rowResult.Ok) {
                         $.copiedTips(rowResult.Message)
                     } else {
+                        $.copiedTips(sqls)
                         var rowIndex = sqlRowIndices[i]
                         var $row = $($rows[rowIndex])
 
