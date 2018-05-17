@@ -254,7 +254,8 @@
                 var fieldName = $(headRow.get(jndex + 1)).text()
                 updateSql += wrapFieldName(fieldName)
 
-                var newValue = $(cell).text()
+                var $cell = $(cell)
+                var newValue = $cell.hasClass('textAreaTd') ? $cell.find('textarea').val() : $cell.text()
                 updateSql += "(null)" == newValue ? ' = null' : ' = \'' + $.escapeSqlValue(newValue) + '\''
             }
         })

@@ -6,7 +6,12 @@
     }
 
     $.copiedTips = function (tipsContent) {
-        $('#tipsDiv').html(tipsContent).show()
+        if (tipsContent.length >= 300) {
+            $('#tipsDiv').html('<textarea readonly>' + tipsContent + '</textarea>').show()
+        } else {
+            $('#tipsDiv').html(tipsContent).show()
+        }
+
         setTimeout(function () {
             $('#tipsDiv').hide()
         }, 60000)

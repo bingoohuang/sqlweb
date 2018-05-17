@@ -26,13 +26,22 @@
 
             for (var j = 0; j < result.Rows[i].length; ++j) {
                 var cellValue = result.Rows[i][j]
+                var tooLarge = cellValue.length >= 300
 
-                rowHtml += '<td class="dataCell '
-                if (result.Headers) {
+                if (tooLarge) {
+                    rowHtml += '<td class="dataCell textAreaTd '
+                } else {
+                    rowHtml += '<td class="dataCell '
+                }
+                if (result.Headers && !tooLarge) {
                     rowHtml += $.escapeContextMenuCssName(result.Headers[j - 1])
                 }
 
-                rowHtml += '">' + cellValue + '</td>'
+                if (tooLarge) {
+                    rowHtml += '"><textarea readonly>' + cellValue + '</textarea></td>'
+                } else {
+                    rowHtml += '">' + cellValue + '</td>'
+                }
             }
 
             rowHtml += '</tr>'

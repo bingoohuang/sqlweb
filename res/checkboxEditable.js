@@ -6,24 +6,47 @@
     }
 
     function switchRowEditable(rowChecked, $tr) {
-        var dataCells = $tr.find('td.dataCell')
+        var dataCells = $tr.find('td.dataCell:not(.textAreaTd)')
+        var textareas = $tr.find('textarea')
         if (!rowChecked) {
             dataCells.attr('contenteditable', false).unbind('blur')
+            textareas.prop("readonly", true).unbind('blur')
             return
         }
+
+        textareas.prop("readonly", false).click(function () {
+            var $this = $(this)
+            var $td = $this.parent()
+            if (!$td.attr('old')) {
+                $td.attr('old', $this.val())
+            }
+            $td.focus().keydown(function (event) {
+                var keyCode = event.keyCode || event.which
+                if (keyCode == 13 && event.ctrlKey) {
+                    $this.blur()
+                }
+            })
+        }).blur(function () {
+            var $this = $(this)
+            var $td = $this.parent()
+            if ($td.attr('old') == $this.val()) {
+                $td.removeAttr('old').removeClass('changedCell')
+            } else {
+                $td.addClass('changedCell')
+            }
+        })
 
         dataCells.attr('contenteditable', true).click(function () {
             var $this = $(this)
             if (!$this.attr('old')) {
                 $this.attr('old', $this.text())
             }
-            $this.focus()
-                .keydown(function (event) {
-                    var keyCode = event.keyCode || event.which
-                    if (keyCode == 13 && event.ctrlKey) {
-                        $this.blur()
-                    }
-                })
+            $this.focus().keydown(function (event) {
+                var keyCode = event.keyCode || event.which
+                if (keyCode == 13 && event.ctrlKey) {
+                    $this.blur()
+                }
+            })
         }).blur(function () {
             var $this = $(this)
             if ($this.attr('old') == $this.text()) {
