@@ -1,5 +1,11 @@
 (function () {
-    $.executeMultiSqlsAjax = function (sql, resultId) {
+    $.executeMultiSqlsAjax = function (sql, confirmUpdate) {
+        if (confirmUpdate && $.firstUpperWord(sql) != 'SELECT') {
+            if (!confirm(sql + '\n\nAre you sure to execute ?')) {
+                return
+            }
+        }
+
         var sqls = $.splitSqls(sql, ';')
         var executeResultContext = []
         $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, sqls[0], null, sqls, 0, executeResultContext)
@@ -97,6 +103,8 @@
                 if (content && content.Error) {
                     return alert(content.Error)
                 }
+
+                $.copiedTips(sql)
 
                 $.tableCreate(content, sql, resultId, classifier, tid, tcode, tname)
 

@@ -192,4 +192,10 @@
             $(html).prependTo($('.result'))
         }
     }
+
+    $.firstUpperWord = function (sql) {
+        var s = $.trim(sql)
+        var firstWord = s.replace(/\s.*/,'')
+        return firstWord.toUpperCase()
+    }
 })()

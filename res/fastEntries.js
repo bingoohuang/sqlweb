@@ -49,7 +49,7 @@
 
                     if (fastEntry.sql) {
                         var sql = fastEntry.sql.replace(/\{input\}/g, input)
-                        $.executeMultiSqlsAjax(sql)
+                        $.executeMultiSqlsAjax(sql, true)
                     } else if (fastEntry.action) {
                         var action = fastEntry.action.replace(/\{input\}/g, input)
                         executeFastAction(action)
@@ -72,7 +72,7 @@
                     }
 
                     if (sql) {
-                        $.executeMultiSqlsAjax(sql)
+                        $.executeMultiSqlsAjax(sql, true)
                     } else if (action) {
                         executeFastAction(action)
                     }
