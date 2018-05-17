@@ -48,7 +48,13 @@
     type = "input"
     placeholder = "会员卡号"
     label = "查找会员卡"
-    sql = "select * from tt_f_mbr_card where mbr_card_id = '{input}' or card_no = {input}"
+    sql = "select * from tt_f_mbr_card where mbr_card_id = '{input}' or card_no = '{input}'"
+    
+    [entries.findMemberCard2]
+    type = "input,input"
+    placeholder = "会员卡号,会员卡ID"
+    label = "查找会员卡"
+    sql = "select * from tt_f_mbr_card where mbr_card_id = '{input2}' or card_no = '{input1}'"
 
     [entries.findMerchant]
     type = "link"

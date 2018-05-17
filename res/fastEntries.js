@@ -1,38 +1,81 @@
 (function () {
     $.createFastEntries = function (fastEntriesConfig) {
-        var fastEnriesHtml = ''
+        var fastEntriesHtml = ''
 
         $.each(fastEntriesConfig, function (key, entry) {
-            if (fastEnriesHtml !== '') {
-                fastEnriesHtml += '<span class="separator">|</span>'
+            if (fastEntriesHtml !== '') {
+                fastEntriesHtml += '<span class="separator">|</span>'
             }
 
-            if (entry.type === 'input') {
-                fastEnriesHtml += '<span>' + entry.label + ': <input placeholder="' + (entry.placeholder || '') + '" entryKey="' + key + '"></span>'
-            } else if (entry.type = 'link') {
-                fastEnriesHtml += '<span class="clickable" entryKey="' + key + '">' + entry.label + '</span>'
+            var entryTypes = entry.type.split(',')
+            var size = entryTypes.length
+            var placeholders = (entry.placeholder || '').split(',')
+
+            for (var i = 0; i < size; ++i) {
+                var entryType = entryTypes[i]
+                if (entryType === 'input') {
+                    if (i === 0) {
+                        fastEntriesHtml += '<span>' + entry.label + ': '
+                    }
+
+                    if (i === size - 1) {
+                        fastEntriesHtml += '<input inputsize="' + size + '" placeholder="'
+                            + (placeholders[i] || placeholders[0] || '') + '" entryKey="' + key + '"></span>'
+                    } else {
+                        fastEntriesHtml += '<input placeholder="'
+                            + (placeholders[i] || placeholders[0] || '') + '">'
+                    }
+                } else if (entryType = 'link') {
+                    fastEntriesHtml += '<span class="clickable" entryKey="'
+                        + key + '">' + entry.label + '</span>'
+                }
             }
 
 
         })
 
-        $('#fastEntriesDiv').html(fastEnriesHtml)
+        $('#fastEntriesDiv').html(fastEntriesHtml)
 
         $('#fastEntriesDiv input').keydown(function (event) {
             var keyCode = event.keyCode || event.which
             if (keyCode == 13) {
-                var input = $(this).val()
                 var entryKey = $(this).attr('entryKey')
+                if (!entryKey) return
+
                 var fastEntry = fastEntriesConfig[entryKey]
+                var inputsize = $(this).attr('inputsize')
+                if (inputsize === "1") {
+                    var input = $(this).val()
 
-                if (fastEntry.sql) {
-                    var sql = fastEntry.sql.replace(/\{input\}/g, input)
-                    $.executeMultiSqlsAjax(sql)
-                }
+                    if (fastEntry.sql) {
+                        var sql = fastEntry.sql.replace(/\{input\}/g, input)
+                        $.executeMultiSqlsAjax(sql)
+                    } else if (fastEntry.action) {
+                        var action = fastEntry.action.replace(/\{input\}/g, input)
+                        executeFastAction(action)
+                    }
+                } else {
+                    var $input = $(this)
+                    var sql = fastEntry.sql
+                    var action = fastEntry.action
 
-                if (fastEntry.action) {
-                    var action = fastEntry.action.replace(/\{input\}/g, input)
-                    executeFastAction(action)
+                    for (var i = +inputsize; i >= 0; --i) {
+                        var input = $input.val()
+
+                        var p = new RegExp("\\{input" + i + "\\}", "g")
+                        if (sql) {
+                            sql = sql.replace(p, input)
+                        } else if (action) {
+                            action = action.replace(p, input)
+                        }
+                        $input = $input.prev('input')
+                    }
+
+                    if (sql) {
+                        $.executeMultiSqlsAjax(sql)
+                    } else if (action) {
+                        executeFastAction(action)
+                    }
                 }
             }
         }).focus(function () {
