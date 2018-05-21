@@ -1,31 +1,36 @@
 (function () {
 
-    function matchCellValue(cellValue, operator, operatorValue) {
+    function matchCellValue(cellValue, operator, operatorValue, orOperatorValues) {
         if (operator == '>=') {
             return +cellValue >= +operatorValue
         } else if (operator == '<=') {
             return +cellValue <= +operatorValue
         } else if (operator == '<>' || operator == '!=') {
-            return cellValue != operatorValue
+            return !equalsAnyOf(cellValue, orOperatorValues)
         } else if (operator == '>') {
             return +cellValue > +operatorValue
         } else if (operator == '<') {
             return +cellValue < +operatorValue
         } else if (operator == '=') {
-            return cellValue == operatorValue
+            return equalsAnyOf(cellValue, orOperatorValues)
         } else if (operator == 'contains') {
-            return cellValue.indexOf(operatorValue) > -1
+            return containsAnyOf(cellValue, orOperatorValues)
         }
 
         return false
     }
 
     function rowFilter(dataTable, filter) {
+        var orFilters = filter.split(/\|/)
+        for (var i = 0; i < orFilters.length; ++i) {
+            orFilters[i] = $.trim(orFilters[i])
+        }
+
         $('tr:gt(0)', dataTable).filter(function () {
             var found = false
             $('td.dataCell', $(this)).each(function (index, cell) {
                 var text = $.trim($(cell).text()).toUpperCase()
-                if (text.indexOf(filter) > -1) {
+                if (containsAnyOf(text, orFilters)) {
                     found = true
                     return false
                 }
@@ -34,12 +39,32 @@
         })
     }
 
+    function equalsAnyOf(text, filters) {
+        for (var i = 0; i < filters.length; ++i) {
+            if (text == filters[i]) return true;
+        }
+
+        return false;
+    }
+
+    function containsAnyOf(text, filters) {
+        for (var i = 0; i < filters.length; ++i) {
+            if (text.indexOf(filters[i]) > -1) return true;
+        }
+
+        return false;
+    }
+
     function fieldRowFilter(dataTable, foundColumnIndex, operator, operatorValue) {
-        var headRow = dataTable.find('tr.headRow').first().find('td')
+        var orOperatorValues = operatorValue.split(/\|/)
+        for (var i = 0; i < orOperatorValues.length; ++i) {
+            orOperatorValues[i] = $.trim(orOperatorValues[i])
+        }
+
         $('tr:gt(0)', dataTable).filter(function () {
             var td = $('td', $(this)).eq(foundColumnIndex)
             var text = $.trim(td.text()).toUpperCase()
-            var found = matchCellValue(text, operator, operatorValue)
+            var found = matchCellValue(text, operator, operatorValue, orOperatorValues)
             $(this).toggle(found)
         })
     }
