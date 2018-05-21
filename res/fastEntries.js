@@ -10,20 +10,28 @@
             var entryTypes = entry.type.split(',')
             var size = entryTypes.length
             var placeholders = (entry.placeholder || '').split(',')
+            var inputWidth = (entry.width || '').split(',')
 
             for (var i = 0; i < size; ++i) {
                 var entryType = entryTypes[i]
                 if (entryType === 'input') {
                     if (i === 0) {
-                        fastEntriesHtml += '<span>' + entry.label + ': '
+                        fastEntriesHtml += '<span><span class="' +
+                            (entry.autoHide ? "authHidable underline" : "") + '" >' + entry.label + '</span>' +
+                            '<span class="' + (entry.autoHide ? "hide" : "") + '">: '
                     }
 
+                    var width = inputWidth && (inputWidth[i] || inputWidth[0])
+
                     if (i === size - 1) {
-                        fastEntriesHtml += '<input inputsize="' + size + '" placeholder="'
-                            + (placeholders[i] || placeholders[0] || '') + '" entryKey="' + key + '"></span>'
+                        fastEntriesHtml += '<input inputsize="' + size + '" ' +
+                            (width ? 'style="width:' + width + '" ' : '') +
+                            'placeholder="' + (placeholders[i] || placeholders[0] || '') + '" ' +
+                            'entryKey="' + key + '"></span></span>'
                     } else {
-                        fastEntriesHtml += '<input placeholder="'
-                            + (placeholders[i] || placeholders[0] || '') + '">'
+                        fastEntriesHtml += '<input ' +
+                            (width ? 'style="width:' + width + '" ' : '') +
+                            'placeholder="' + (placeholders[i] || placeholders[0] || '') + '">'
                     }
                 } else if (entryType = 'link') {
                     fastEntriesHtml += '<span class="clickable" entryKey="'
@@ -35,6 +43,12 @@
         })
 
         $('#fastEntriesDiv').html(fastEntriesHtml)
+
+        $('#fastEntriesDiv span.authHidable').click(function () {
+            var $span = $(this)
+            $span.next().toggle()
+            $span.toggleClass('underline')
+        })
 
         $('#fastEntriesDiv input').keydown(function (event) {
             var keyCode = event.keyCode || event.which

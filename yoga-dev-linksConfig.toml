@@ -45,14 +45,10 @@
         """
     
     [entries.findMemberCard]
-    type = "input"
-    placeholder = "会员卡号"
-    label = "查找会员卡"
-    sql = "select * from tt_f_mbr_card where mbr_card_id = '{input}' or card_no = '{input}'"
-    
-    [entries.findMemberCard2]
     type = "input,input"
     placeholder = "会员卡号,会员卡ID"
+    autoHide = true
+    width="45px,120px"
     label = "查找会员卡"
     sql = "select * from tt_f_mbr_card where mbr_card_id = '{input2}' or card_no = '{input1}'"
 
@@ -64,6 +60,7 @@
     [entries.findUserByCard]
     type = "input"
     placeholder = "会员卡号"
+    width="45px"
     label = "卡找会员"
     sql = "select * from tt_f_user where user_id in (select user_id from tt_f_member where member_id in (select member_id from tt_f_mbr_card where mbr_card_id = '{input}'))"
     
@@ -82,3 +79,4 @@
     placeholder = "输入手机号"
     label = "发60s验证码1234"
     action = "action=SetCaptcha,value={input}"
+    width="80px"

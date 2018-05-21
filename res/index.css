@@ -155,6 +155,10 @@ table.executionSummary tr:first-child {
     display: none;
 }
 
+.underline {
+    text-decoration: underline;
+}
+
 .loginAvatar {
     width: 16px;
     height: 16px;
