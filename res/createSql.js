@@ -41,7 +41,14 @@
         var headers = result.Headers
         var fieldNames = ''
         for (var i = 0; i < headers.length; ++i) {
-            fieldNames += '    private String ' + camelCased(headers[i]) + ';\n'
+            var header = headers[i]
+            if (header.toLowerCase().indexOf("time") >= 0) {
+                fieldNames += '    private DateTime '
+            } else {
+                fieldNames += '    private String '
+            }
+
+            fieldNames += camelCased(header) + ';\n'
         }
 
         return fieldNames
