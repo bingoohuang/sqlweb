@@ -30,20 +30,16 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func mergeCss() string {
-	return mergeStatic("\n",
-		"codemirror-5.33.0.min.css", "index.css", "jquery.contextMenu.css")
+	return mergeStatic("\n", "index.css", "jquery.contextMenu.css")
 }
 
 func mergeScripts() string {
 	return mergeStatic(";",
-		"jquery-3.2.1.min.js", "common.js",
-		"codemirror-5.33.0.min.js", "sql-5.33.0.min.js", "toml-5.33.0.min.js", "placeholder-5.33.0.js",
-		"linksConfig.js", "columns.js", "dragtable.js",
-		"sql-formatter-2.0.0.min.js", "markRowsOrCells.js", "exportdb.js",
+		"common.js", "linksConfig.js", "columns.js", "dragtable.js", "markRowsOrCells.js", "exportdb.js",
 		"searchTenants.js", "tables.js", "rowFilter.js", "createSql.js", "showCreateTable.js",
 		"transposeRows.js", "login.js", "sqlAjax.js", "checkboxEditable.js", "saveUpdates.js",
 		"resultTable.js", "tableCreate.js", "showColumn.js", "multipleTenantsQueryAjax.js",
-		"contextMenu.js", "jquery.contextMenu.js", "jquery.ui.position.js", "fastEntries.js",
+		"contextMenu.js", "fastEntries.js",
 		"index.js", "sqlEditor.js", "utils.js", "jquery.loading.js", "template.js", "sqlTemplates.js")
 }
 
