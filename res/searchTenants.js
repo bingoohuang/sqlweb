@@ -106,7 +106,7 @@
         activeClassifier = $this.attr('classifier')
         activeMerchantName = $this.text()
 
-        $('#tidtcodeSpan').html('　<span title="tid" class="context-menu-icons context-menu-icon-id">' + activeMerchantId + ' </span>' +
+        $('#tidtcodeSpan').html('　<span title="tid" class="context-menu-icons context-menu-icon-id" onclick="prompt(\'tid:\', \'' + activeMerchantId + '\')"></span>' +
             '　<span title="tcode" class="context-menu-icons context-menu-icon-code">' + activeMerchantCode + '</span>' +
             '　<span title="home area" class="context-menu-icons context-menu-icon-earth">' + activeHomeArea + '</span>' +
             '　<span><a href="' + createHomeUrl() + '" target="_blank">Home</a></span>' +

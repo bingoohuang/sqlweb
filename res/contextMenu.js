@@ -14,7 +14,7 @@
 
         setTimeout(function () {
             $('#tipsDiv').hide()
-        }, 60000)
+        }, 60000 * 5)
     }
 
     $.chosenRows = function (resultId) {

@@ -28,6 +28,8 @@ table td {
 .searchResult {
     max-width: 500px;
     display: inline-block;
+    white-space: nowrap;
+    overflow: auto;
 }
 
 .searchResult span {
@@ -306,6 +308,6 @@ table.executionSummary tr:first-child {
     background: yellow;
     display: none;
     right: 10px;
-    bottom: 10px;
+    bottom: 30px;
     text-align: center;
 }
