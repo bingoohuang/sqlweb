@@ -14,8 +14,14 @@ import (
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
+	loginedHtml, isLogined := loginHtml(w, r)
+	if isLogined {
+		w.Write([]byte("<script>window.opener.logined('" + loginedHtml + "');window.close()</script>"))
+		return
+	}
+
 	indexHtml := string(MustAsset("res/index.html"))
-	indexHtml = strings.Replace(indexHtml, "<LOGIN/>", loginHtml(w, r), 1)
+	indexHtml = strings.Replace(indexHtml, "<LOGIN/>", loginedHtml, 1)
 
 	html := go_utils.MinifyHtml(indexHtml, devMode)
 
@@ -53,23 +59,25 @@ func mergeStatic(seperate string, statics ...string) string {
 	return scripts.String()
 }
 
-func loginHtml(w http.ResponseWriter, r *http.Request) string {
+func loginHtml(w http.ResponseWriter, r *http.Request) (string, bool) {
 	if !writeAuthRequired {
-		return ""
+		return "", false
 	}
 
 	loginCookie := &CookieValue{}
 	err := go_utils.ReadCookie(r, encryptKey, cookieName, loginCookie)
-	if err != nil || loginCookie.Name == "" {
-		err = tryLogin(loginCookie, w, r)
+	if loginCookie.Name != "" {
+		return `<span id="loginSpan"><img class="loginAvatar" src="` + loginCookie.Avatar +
+			`"/><span class="loginName">` + loginCookie.Name + `<a title="Exit Login" href="javascript:void(0)">Exit<a/></span></span>`, false
 	}
 
+	err = tryLogin(loginCookie, w, r)
 	if err != nil {
-		return `<button class="loginButton">Login</button>`
+		return `<button class="loginButton">Login</button>`, false
 	}
 
 	return `<span id="loginSpan"><img class="loginAvatar" src="` + loginCookie.Avatar +
-		`"/><span class="loginName">` + loginCookie.Name + `<a title="Exit Login" href="javascript:void(0)">Exit<a/></span></span>`
+		`"/><span class="loginName">` + loginCookie.Name + `<a title="Exit Login" href="javascript:void(0)">Exit<a/></span></span>`, true
 }
 
 type CookieValue struct {

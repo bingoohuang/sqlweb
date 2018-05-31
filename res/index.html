@@ -72,6 +72,10 @@
 <script>
     var contextPath = '${contextPath}'
     var multiTenants = '${multiTenants}'
+    var logined = function(avatarHtml) {
+        $('.loginButton').replaceWith(avatarHtml)
+        $.bindLogoutButon()
+    }
 
     /*.SCRIPT*/
 </script>
