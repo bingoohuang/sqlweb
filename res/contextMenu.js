@@ -146,6 +146,7 @@
 
         if (linkColumnNames[columnName]) {
             $.contextMenu({
+                zIndex: 10,
                 selector: selector + '.dataCell',
                 callback: function (key, options) {
                     if (key.indexOf('link') == 0) {
@@ -161,6 +162,7 @@
             })
         } else {
             $.contextMenu({
+                zIndex: 10,
                 selector: selector + '.dataCell',
                 callback: function (key, options) {
                     if (key === 'Copy Where') {
@@ -176,6 +178,7 @@
         var columnIndex = $.findColumnIndex($('#queryResult' + queryResultId), columnName)
 
         $.contextMenu({
+            zIndex: 10,
             selector: selector + '.headCell',
             callback: function (key, options) {
                 if (key.indexOf('link') == 0) {
@@ -212,6 +215,7 @@
         }
 
         $.contextMenu({
+            zIndex: 10,
             selector: '#queryResult' + queryResultId + ' td.headCell.contextMenu',
             callback: function (key, options) {
                 if (key === 'orderByAsc') {
@@ -232,6 +236,7 @@
         var selectSql = $.createSelectSql(result)
         var insertSqlPrefix = $.createInsertSqlPrefix(result)
         $.contextMenu({
+            zIndex: 10,
             selector: '#tableTools' + resultId,
             trigger: 'left',
             callback: function (key, options) {

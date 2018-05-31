@@ -127,6 +127,7 @@
     var showHideColumns = function (resultId) {
         var queryResultId = '#queryResult' + resultId;
         $.contextMenu({
+            zIndex: 10,
             selector: '#resultId' + resultId,
             trigger: 'left',
             callback: function (key, options) {

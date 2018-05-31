@@ -11,6 +11,7 @@
         $.ReloadConfig()
 
         $.contextMenu({
+            zIndex: 10,
             selector: '.tables span',
             callback: function (key, options) {
                 var tableName = $(this).text()
