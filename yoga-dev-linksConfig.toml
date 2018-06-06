@@ -75,8 +75,9 @@
     action = "action=ClearMerchantConfigCache,value=empty"
     
     [entries.captcha]
-    type = "input"
-    placeholder = "输入手机号"
-    label = "发60s验证码1234"
-    action = "action=SetCaptcha,value={input}"
-    width="80px"
+    type = "input,input,input"
+    placeholder = "验证码,有效期,手机号"
+    defaultValue = "1234,60s,"
+    label = "发验证码"
+    action = "action=CacheAction,op=SetCaptcha,value={input1},ttl={input2},key=captcha:{input3}:/login"
+    width="35px,35px,75px"

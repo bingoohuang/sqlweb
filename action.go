@@ -8,61 +8,6 @@ import (
 	"strings"
 )
 
-type Action interface {
-	Execute() ([]byte, error)
-}
-
-type SetCaptchaAction struct {
-	Tenant *Merchant
-	Mobile string
-}
-
-func (t *SetCaptchaAction) Execute() ([]byte, error) {
-	proxy := findProxy(t.Tenant.HomeArea)
-	keyTemplate := ""
-	if strings.Contains(t.Tenant.Classifier, "yoga") {
-		keyTemplate = "captcha:{mobile}:/login"
-	} else if strings.Contains(t.Tenant.Classifier, "et") {
-		keyTemplate = "captcha:{mobile}:/login/sms"
-	}
-
-	key := strings.Replace(keyTemplate, "{mobile}", t.Mobile, -1)
-	return go_utils.HttpGet(proxy + "/setCache?key=" + url.QueryEscape(key) + "&value=1234&ttl=60s")
-}
-
-func findProxy(homeArea string) string {
-	if strings.Contains(homeArea, "south") {
-		return southProxy
-	} else if strings.Contains(homeArea, "north") {
-		return northProxy
-	}
-	return ""
-}
-
-type UnknownAction struct {
-}
-
-func (t *UnknownAction) Execute() ([]byte, error) {
-	return nil, errors.New("unknown action")
-}
-
-type ClearMerchantConfigCacheAction struct {
-	Tenant *Merchant
-}
-
-func (t *ClearMerchantConfigCacheAction) Execute() ([]byte, error) {
-	keys := ""
-	if strings.Contains(t.Tenant.Classifier, "yoga") {
-		keys = "westcache:yoga:" + t.Tenant.MerchantCode + ":MerchantConfigBoService.getMerchantConfig," +
-			"westcache:yoga:" + t.Tenant.MerchantCode + ":ConfigService.getAllConfigs"
-	} else if strings.Contains(t.Tenant.Classifier, "et") {
-		keys = "westcache:et:" + t.Tenant.MerchantCode + ":MerchantConfigDaoImpl.queryMerchantConfigItems"
-	}
-
-	proxy := findProxy(t.Tenant.HomeArea)
-	return go_utils.HttpGet(proxy + "/clearCache?keys=" + url.QueryEscape(keys))
-}
-
 func serveAction(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	if !authOk(r) {
@@ -85,7 +30,7 @@ func serveAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	act := findAction(action, merchant, value)
+	act := findAction(action, merchant, value, r)
 	s, err := act.Execute()
 	if err != nil {
 		http.Error(w, err.Error(), 405)
@@ -95,11 +40,60 @@ func serveAction(w http.ResponseWriter, r *http.Request) {
 	w.Write(s)
 }
 
-func findAction(action string, merchant *Merchant, value string) Action {
-	if action == "SetCaptcha" {
-		return &SetCaptchaAction{Tenant: merchant, Mobile: value}
-	} else if action == "ClearMerchantConfigCache" {
-		return &ClearMerchantConfigCacheAction{Tenant: merchant}
+type Action interface {
+	Execute() ([]byte, error)
+}
+
+func findProxy(homeArea string) (string, error) {
+	if strings.Contains(homeArea, "south") {
+		return southProxy, nil
+	} else if strings.Contains(homeArea, "north") {
+		return northProxy, nil
+	}
+	return "", errors.New("unknown homeArea " + homeArea)
+}
+
+type UnknownAction struct {
+}
+
+func (t *UnknownAction) Execute() ([]byte, error) {
+	return nil, errors.New("unknown action")
+}
+
+type CacheAction struct {
+	Tenant *Merchant
+	Key    string
+	Value  string
+	Ttl    string
+	Op     string // Set/Get/Clear
+}
+
+func (t *CacheAction) Execute() ([]byte, error) {
+	proxy, err := findProxy(t.Tenant.HomeArea)
+	if err != nil {
+		return nil, err
+	}
+
+	if t.Op == "Get" {
+		return go_utils.HttpGet(proxy + "/getCache?key=" + url.QueryEscape(t.Key))
+	} else if t.Op == "Set" {
+		return go_utils.HttpGet(proxy + "/setCache?key=" + url.QueryEscape(t.Key) + "&value=" + t.Value + "&ttl=" + t.Ttl)
+	} else if t.Op == "Clear" {
+		return go_utils.HttpGet(proxy + "/clearCache?keys=" + url.QueryEscape(t.Key))
+	} else {
+		return nil, errors.New("unknown Operation " + t.Op)
+	}
+}
+
+func findAction(action string, merchant *Merchant, value string, r *http.Request) Action {
+	if action == "CacheAction" {
+		return &CacheAction{
+			Tenant: merchant,
+			Key:    strings.TrimSpace(r.FormValue("key")),
+			Value:  value,
+			Ttl:    strings.TrimSpace(r.FormValue("ttl")),
+			Op:     strings.TrimSpace(r.FormValue("op")),
+		}
 	}
 
 	return &UnknownAction{}

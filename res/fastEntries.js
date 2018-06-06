@@ -10,6 +10,7 @@
             var entryTypes = entry.type.split(',')
             var size = entryTypes.length
             var placeholders = (entry.placeholder || '').split(',')
+            var defaultValues = (entry.defaultValue || '').split(',')
             var inputWidth = (entry.width || '').split(',')
 
             for (var i = 0; i < size; ++i) {
@@ -26,12 +27,13 @@
                     if (i === size - 1) {
                         fastEntriesHtml += '<input inputsize="' + size + '" ' +
                             (width ? 'style="width:' + width + '" ' : '') +
-                            'placeholder="' + (placeholders[i] || placeholders[0] || '') + '" ' +
+                            'placeholder="' + (placeholders[i] || '') + '" value="' + (defaultValues[i] || '') + '" ' +
                             'entryKey="' + key + '"></span></span>'
                     } else {
                         fastEntriesHtml += '<input ' +
                             (width ? 'style="width:' + width + '" ' : '') +
-                            'placeholder="' + (placeholders[i] || placeholders[0] || '') + '">'
+                            'placeholder="' + (placeholders[i] || '') + '" value="' + (defaultValues[i] || '') + '" ' +
+                            '>'
                     }
                 } else if (entryType = 'link') {
                     fastEntriesHtml += '<span class="clickable" entryKey="'
