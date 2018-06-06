@@ -17,10 +17,10 @@ func serveAction(w http.ResponseWriter, r *http.Request) {
 
 	tid := strings.TrimSpace(r.FormValue("tid"))
 	action := strings.TrimSpace(r.FormValue("action"))
-	value := strings.TrimSpace(r.FormValue("value"))
+	key := strings.TrimSpace(r.FormValue("key"))
 
-	if tid == "" || action == "" || value == "" {
-		http.Error(w, "tid/action/value required", 405)
+	if tid == "" || action == "" || key == "" {
+		http.Error(w, "tid/action/key required", 405)
 		return
 	}
 
@@ -30,7 +30,7 @@ func serveAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	act := findAction(action, merchant, value, r)
+	act := findAction(action, merchant, key, r)
 	s, err := act.Execute()
 	if err != nil {
 		http.Error(w, err.Error(), 405)
@@ -85,12 +85,12 @@ func (t *CacheAction) Execute() ([]byte, error) {
 	}
 }
 
-func findAction(action string, merchant *Merchant, value string, r *http.Request) Action {
+func findAction(action string, merchant *Merchant, key string, r *http.Request) Action {
 	if action == "CacheAction" {
 		return &CacheAction{
 			Tenant: merchant,
-			Key:    strings.TrimSpace(r.FormValue("key")),
-			Value:  value,
+			Key:    key,
+			Value:  strings.TrimSpace(r.FormValue("value")),
 			Ttl:    strings.TrimSpace(r.FormValue("ttl")),
 			Op:     strings.TrimSpace(r.FormValue("op")),
 		}

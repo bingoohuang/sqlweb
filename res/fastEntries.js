@@ -1,4 +1,10 @@
 (function () {
+    function replaceTcodeTid(val) {
+        val = val.replace(/\{tcode\}/g, activeMerchantCode)
+        val = val.replace(/\{tid\}/g, activeMerchantId)
+        return val
+    }
+
     $.createFastEntries = function (fastEntriesConfig) {
         var fastEntriesHtml = ''
 
@@ -7,11 +13,12 @@
                 fastEntriesHtml += '<span class="separator">|</span>'
             }
 
-            var entryTypes = entry.type.split(',')
+            var separator = entry.separator || ','
+            var entryTypes = entry.type.split(separator)
             var size = entryTypes.length
-            var placeholders = (entry.placeholder || '').split(',')
-            var defaultValues = (entry.defaultValue || '').split(',')
-            var inputWidth = (entry.width || '').split(',')
+            var placeholders = (entry.placeholder || '').split(separator)
+            var defaultValues = (entry.defaultValue || '').split(separator)
+            var inputWidth = (entry.width || '').split(separator)
 
             for (var i = 0; i < size; ++i) {
                 var entryType = entryTypes[i]
@@ -59,16 +66,18 @@
                 if (!entryKey) return
 
                 var fastEntry = fastEntriesConfig[entryKey]
+                var separator = fastEntry.separator || ','
                 var inputsize = $(this).attr('inputsize')
                 if (inputsize === "1") {
                     var input = $(this).val()
 
                     if (fastEntry.sql) {
                         var sql = fastEntry.sql.replace(/\{input\}/g, input)
-                        $.executeMultiSqlsAjax(sql, true)
+
+                        $.executeMultiSqlsAjax(replaceTcodeTid(sql), true)
                     } else if (fastEntry.action) {
                         var action = fastEntry.action.replace(/\{input\}/g, input)
-                        executeFastAction(action)
+                        executeFastAction(replaceTcodeTid(action), separator)
                     }
                 } else {
                     var $input = $(this)
@@ -88,9 +97,9 @@
                     }
 
                     if (sql) {
-                        $.executeMultiSqlsAjax(sql, true)
+                        $.executeMultiSqlsAjax(replaceTcodeTid(sql), true)
                     } else if (action) {
-                        executeFastAction(action)
+                        executeFastAction(replaceTcodeTid(action), separator)
                     }
                 }
             }
@@ -100,18 +109,19 @@
 
         $('#fastEntriesDiv span.clickable').click(function () {
             var entryKey = $(this).attr('entryKey')
-            var fastEntry = fastEntriesConfig[entryKey];
+            var fastEntry = fastEntriesConfig[entryKey]
+            var separator = fastEntry.separator || ','
             if (fastEntry.sql) {
-                $.executeMultiSqlsAjax(fastEntry.sql)
+                $.executeMultiSqlsAjax(replaceTcodeTid(fastEntry.sql))
             }
             if (fastEntry.action) {
-                executeFastAction(fastEntry.action)
+                executeFastAction(replaceTcodeTid(fastEntry.action), separator)
             }
         })
     }
 
-    function executeFastAction(action) {
-        var params = action.split(',')
+    function executeFastAction(action, separator) {
+        var params = action.split(separator || ',')
         var paramObject = {tid: activeMerchantId}
         for (var i = 0; i < params.length; ++i) {
             var kv = params[i].split('=', 2)
