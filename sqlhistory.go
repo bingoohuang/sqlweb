@@ -41,8 +41,6 @@ func saveHistory(tids, sql string) {
 }
 
 func showHistory() (header []string, data [][]string, executionTime, costTime string, err error, msg string) {
-	header = nil
-	data = nil
 	start := time.Now()
 	executionTime = start.Format("2006-01-02 15:04:05.000")
 
@@ -54,11 +52,9 @@ func showHistory() (header []string, data [][]string, executionTime, costTime st
 	}
 	defer file.Close()
 
-	header = []string{"ExecutionTime", "Sql", "Tenant IDs"}
-	data = make([][]string, 0)
-
 	reader := bufio.NewReader(file)
-	rowIndex := 0
+
+	deque := NewCappedDeque(30)
 	for {
 		rowData, err := reader.ReadBytes('\n')
 		if err != nil {
@@ -77,9 +73,23 @@ func showHistory() (header []string, data [][]string, executionTime, costTime st
 			continue
 		}
 
+		deque.Append(history)
+	}
+
+	header = []string{"ExecutionTime", "Sql", "Tenant IDs"}
+	data = make([][]string, 0)
+	rowIndex := 0
+	for {
+		item := deque.Pop()
+		if item == nil {
+			break
+		}
+
+		his := item.(SqlHistory)
+
 		rowIndex++
-		row := []string{strconv.Itoa(rowIndex), history.SqlTime, history.Sql, history.Tids}
-		data = append([][]string{row}, data...)
+		row := []string{strconv.Itoa(rowIndex), his.SqlTime, his.Sql, his.Tids}
+		data = append(data, row)
 	}
 
 	costTime = time.Since(start).String()
