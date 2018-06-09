@@ -24,17 +24,15 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if searchKey == "trr" || !multiTenants {
-		if authOk(req) {
-			var searchResult [1]Merchant
-			searchResult[0] = Merchant{
-				MerchantName: "trr",
-				MerchantId:   "trr",
-				MerchantCode: "trr",
-				HomeArea:     "south-center",
-				Classifier:   "trr"}
-			json.NewEncoder(w).Encode(searchResult)
-			return
-		}
+		var searchResult [1]Merchant
+		searchResult[0] = Merchant{
+			MerchantName: "trr",
+			MerchantId:   "trr",
+			MerchantCode: "trr",
+			HomeArea:     "south-center",
+			Classifier:   "trr"}
+		json.NewEncoder(w).Encode(searchResult)
+		return
 	}
 
 	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +

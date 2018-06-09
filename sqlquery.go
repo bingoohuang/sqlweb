@@ -10,14 +10,11 @@ import (
 	"fmt"
 	"github.com/bingoohuang/go-utils"
 	_ "github.com/go-sql-driver/mysql"
-	"net/http"
 )
 
-func selectDb(tid string, req *http.Request) (string, string, error) {
+func selectDb(tid string) (string, string, error) {
 	if tid == "trr" {
-		if authOk(req) {
-			return g_dataSource, "", nil
-		}
+		return g_dataSource, "", nil
 	}
 
 	return selectDbByTid(tid, g_dataSource)

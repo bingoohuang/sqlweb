@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"errors"
 	"github.com/bingoohuang/go-utils"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,11 +11,9 @@ import (
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	loginedHtml, isLogined := loginHtml(w, r)
-	if isLogined {
-		w.Write([]byte("<script>window.opener.logined('" + loginedHtml + "');window.close()</script>"))
-		return
-	}
+	cookie := r.Context().Value("CookieValue").(*CookieValue)
+	loginedHtml := `<span id="loginSpan"><img class="loginAvatar" src="` + cookie.Avatar +
+		`"/><span class="loginName">` + cookie.Name + `</span></span>`
 
 	indexHtml := string(MustAsset("res/index.html"))
 	indexHtml = strings.Replace(indexHtml, "<LOGIN/>", loginedHtml, 1)
@@ -36,48 +31,17 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func mergeCss() string {
-	return mergeStatic("\n", "index.css", "jquery.contextMenu.css")
+	return go_utils.MergeCss(MustAsset, "index.css", "jquery.contextMenu.css")
 }
 
 func mergeScripts() string {
-	return mergeStatic(";",
+	return go_utils.MergeJs(MustAsset,
 		"common.js", "linksConfig.js", "columns.js", "dragtable.js", "markRowsOrCells.js", "exportdb.js",
 		"searchTenants.js", "tables.js", "rowFilter.js", "createSql.js", "showCreateTable.js",
 		"transposeRows.js", "login.js", "sqlAjax.js", "checkboxEditable.js", "saveUpdates.js",
 		"resultTable.js", "tableCreate.js", "showColumn.js", "multipleTenantsQueryAjax.js",
 		"contextMenu.js", "fastEntries.js",
 		"index.js", "sqlEditor.js", "utils.js", "jquery.loading.js", "template.js", "sqlTemplates.js")
-}
-
-func mergeStatic(seperate string, statics ...string) string {
-	var scripts bytes.Buffer
-	for _, static := range statics {
-		scripts.Write(MustAsset("res/" + static))
-		scripts.Write([]byte(seperate))
-	}
-
-	return scripts.String()
-}
-
-func loginHtml(w http.ResponseWriter, r *http.Request) (string, bool) {
-	if !writeAuthRequired {
-		return "", false
-	}
-
-	loginCookie := &CookieValue{}
-	err := go_utils.ReadCookie(r, encryptKey, cookieName, loginCookie)
-	if loginCookie.Name != "" {
-		return `<span id="loginSpan"><img class="loginAvatar" src="` + loginCookie.Avatar +
-			`"/><span class="loginName">` + loginCookie.Name + `<a title="Exit Login" href="javascript:void(0)">Exit<a/></span></span>`, false
-	}
-
-	err = tryLogin(loginCookie, w, r)
-	if err != nil {
-		return `<button class="loginButton">Login</button>`, false
-	}
-
-	return `<span id="loginSpan"><img class="loginAvatar" src="` + loginCookie.Avatar +
-		`"/><span class="loginName">` + loginCookie.Name + `<a title="Exit Login" href="javascript:void(0)">Exit<a/></span></span>`, true
 }
 
 type CookieValue struct {
@@ -90,35 +54,4 @@ type CookieValue struct {
 
 func (t *CookieValue) ExpiredTime() time.Time {
 	return t.Expired
-}
-
-func tryLogin(loginCookie *CookieValue, w http.ResponseWriter, r *http.Request) error {
-	code := r.FormValue("code")
-	state := r.FormValue("state")
-	log.Println("code:", code, ",state:", state)
-	if loginCookie != nil && code != "" && state == loginCookie.CsrfToken {
-		accessToken, err := go_utils.GetAccessToken(corpId, corpSecret)
-		if err != nil {
-			return err
-		}
-		userId, err := go_utils.GetLoginUserId(accessToken, code)
-		if err != nil {
-			return err
-		}
-		userInfo, err := go_utils.GetUserInfo(accessToken, userId)
-		if err != nil {
-			return err
-		}
-
-		loginCookie.UserId = userInfo.UserId
-		loginCookie.Name = userInfo.Name
-		loginCookie.Avatar = userInfo.Avatar
-		loginCookie.CsrfToken = ""
-		loginCookie.Expired = time.Now().Add(time.Duration(24) * time.Hour)
-
-		go_utils.WriteCookie(w, encryptKey, cookieName, loginCookie)
-		return nil
-	}
-
-	return errors.New("no login")
 }

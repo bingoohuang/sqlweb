@@ -29,7 +29,7 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 	tid := strings.TrimSpace(req.FormValue("tid"))
 	columnName := strings.TrimSpace(req.FormValue("columnName"))
 
-	dbDataSource, databaseName, err := selectDb(tid, req)
+	dbDataSource, databaseName, err := selectDb(tid)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -61,20 +61,20 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 }
 
 func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
-	start := time.Now()
+	//start := time.Now()
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	if !authOk(req) {
-		results := make([]*QueryResult, 1)
-		results[0] = &QueryResult{Headers: nil, Rows: nil,
-			Error:         "dangerous sql, please get authorized first!",
-			ExecutionTime: start.Format("2006-01-02 15:04:05.000"),
-			CostTime:      time.Since(start).String(),
-		}
-
-		json.NewEncoder(w).Encode(results)
-		return
-	}
+	//if !authOk(req) {
+	//	results := make([]*QueryResult, 1)
+	//	results[0] = &QueryResult{Headers: nil, Rows: nil,
+	//		Error:         "dangerous sql, please get authorized first!",
+	//		ExecutionTime: start.Format("2006-01-02 15:04:05.000"),
+	//		CostTime:      time.Since(start).String(),
+	//	}
+	//
+	//	json.NewEncoder(w).Encode(results)
+	//	return
+	//}
 
 	sqlString := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
@@ -196,13 +196,13 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 	})
 	tid := strings.TrimSpace(req.FormValue("tid"))
 
-	dbDataSource, databaseName, err := selectDb(tid, req)
+	dbDataSource, databaseName, err := selectDb(tid)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
 	}
 
-	_, tableName, primaryKeys, sqlAllowed := parseSql(w, req, querySql, dbDataSource)
+	_, tableName, primaryKeys, sqlAllowed := parseSql(w, querySql, dbDataSource)
 	if !sqlAllowed {
 		return
 	}

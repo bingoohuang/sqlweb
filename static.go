@@ -15,10 +15,6 @@ func serveFont(w http.ResponseWriter, r *http.Request) {
 	HandleStaticResource("res/iconfont."+extension, w)
 }
 
-func serveFavicon(w http.ResponseWriter, r *http.Request) {
-	HandleStaticResource("res/favicon.ico", w)
-}
-
 func HandleStaticResource(path string, w http.ResponseWriter) {
 	data := MustAsset(path)
 	fi, _ := AssetInfo(path)

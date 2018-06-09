@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"flag"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"strconv"
@@ -17,21 +19,19 @@ import (
 )
 
 var (
-	contextPath       string
-	port              string
-	maxRows           int
-	g_dataSource      string
-	writeAuthRequired bool
-	encryptKey        string
+	contextPath  string
+	port         string
+	maxRows      int
+	g_dataSource string
+	encryptKey   string
 
-	corpId      string
-	corpSecret  string
-	agentId     string
 	redirectUri string
+	localUrl    string
 
 	cookieName   string
 	devMode      bool // to disable css/js minify
 	authBasic    bool
+	forceLogin   bool
 	multiTenants bool
 
 	northProxy string
@@ -43,15 +43,13 @@ func init() {
 	portArg := flag.Int("port", 8381, "Port to serve.")
 	maxRowsArg := flag.Int("maxRows", 1000, "Max number of rows to return.")
 	dataSourceArg := flag.String("dataSource", "user:pass@tcp(127.0.0.1:3306)/?charset=utf8", "dataSource string.")
-	writeAuthRequiredArg := flag.Bool("writeAuthRequired", false, "write auth required")
 	keyArg := flag.String("key", "", "key to encryption or decryption")
-	corpIdArg := flag.String("corpId", "", "corpId")
-	corpSecretArg := flag.String("corpSecret", "", "cropId")
-	agentIdArg := flag.String("agentId", "", "agentId")
 	redirectUriArg := flag.String("redirectUri", "", "redirectUri")
-	cookieNameArg := flag.String("cookieName", "easyhi_qyapi", "cookieName")
+	localUrlArg := flag.String("localUrl", "", "localUrl")
+	cookieNameArg := flag.String("cookieName", "i-raiyee-cn-auth", "cookieName")
 	devModeArg := flag.Bool("devMode", false, "devMode(disable js/css minify)")
 	authBasicArg := flag.Bool("authBasic", false, "authBasic based on poems")
+	forceLoginArg := flag.Bool("forceLogin", false, "forceLogin required")
 	multiTenantsArg := flag.Bool("multiTenants", false, "support multiTenants")
 
 	northProxycArg := flag.String("northProxy", "http://127.0.0.1:8092", "northProxy")
@@ -67,15 +65,13 @@ func init() {
 	port = strconv.Itoa(*portArg)
 	maxRows = *maxRowsArg
 	g_dataSource = *dataSourceArg
-	writeAuthRequired = *writeAuthRequiredArg
 	encryptKey = *keyArg
-	corpId = *corpIdArg
-	corpSecret = *corpSecretArg
-	agentId = *agentIdArg
 	redirectUri = *redirectUriArg
+	localUrl = *localUrlArg
 	cookieName = *cookieNameArg
 	devMode = *devModeArg
 	authBasic = *authBasicArg
+	forceLogin = *forceLoginArg
 	multiTenants = *multiTenantsArg
 
 	northProxy = *northProxycArg
@@ -85,14 +81,14 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 
-	handleFunc(r, "/", serveWelcome, false, false)
+	handleFunc(r, "/", serveWelcome, false, true)
 	handleFunc(r, "/home", serveHome, true, true)
 	handleFunc(r, "/query", serveQuery, true, true)
 	handleFunc(r, "/tablesByColumn", serveTablesByColumn, false, true)
 	handleFunc(r, "/loadLinksConfig", serveLoadLinksConfig, false, true)
 	handleFunc(r, "/saveLinksConfig", serveSaveLinksConfig, false, true)
 	handleFunc(r, "/iconfont.{extension}", serveFont, true, false)
-	handleFunc(r, "/favicon.ico", serveFavicon, true, false)
+	handleFunc(r, "/favicon.ico", go_utils.ServeFavicon("res/favicon.ico", MustAsset, AssetInfo), true, false)
 	handleFunc(r, "/update", serveUpdate, false, true)
 	handleFunc(r, "/exportDatabase", exportDatabase, true, true)
 	handleFunc(r, "/importDatabase", importDatabase, false, true)
@@ -100,11 +96,6 @@ func main() {
 		handleFunc(r, "/multipleTenantsQuery", multipleTenantsQuery, true, true)
 	}
 	handleFunc(r, "/searchDb", serveSearchDb, false, true)
-	if writeAuthRequired {
-		handleFunc(r, "/login", serveLogin, false, true)
-		handleFunc(r, "/logout", serveLogut, false, false)
-	}
-
 	handleFunc(r, "/action", serveAction, false, true)
 	http.Handle("/", r)
 
@@ -122,11 +113,32 @@ func handleFunc(r *mux.Router, path string, f func(http.ResponseWriter, *http.Re
 		wrap = go_utils.RandomPoemBasicAuth(wrap)
 	}
 
+	if requiredBasicAuth && forceLogin {
+		wrap = MustAuth(wrap)
+	}
+
 	if requiredGzip {
 		wrap = go_utils.GzipHandlerFunc(wrap)
 	}
 
 	r.HandleFunc(contextPath+path, wrap)
+}
+
+func MustAuth(fn http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cookie := CookieValue{}
+		go_utils.ReadCookie(r, encryptKey, cookieName, &cookie)
+		fmt.Print("cookie:", cookie)
+		if cookie.Name != "" {
+			ctx := context.WithValue(r.Context(), "CookieValue", &cookie)
+			fn.ServeHTTP(w, r.WithContext(ctx))
+
+			return
+		}
+
+		urlx := redirectUri + "?redirect=" + url.QueryEscape(localUrl)
+		http.Redirect(w, r, urlx, 302)
+	}
 }
 
 func importDatabase(w http.ResponseWriter, r *http.Request) {
@@ -149,11 +161,6 @@ func importDatabase(w http.ResponseWriter, r *http.Request) {
 }
 
 func exportDatabase(w http.ResponseWriter, r *http.Request) {
-	if !authOk(r) {
-		http.Error(w, "auth required!", http.StatusForbidden)
-		return
-	}
-
 	tid := strings.TrimSpace(r.FormValue("tid"))
 
 	tdb, err := searchMerchantDb(tid, g_dataSource)
@@ -191,7 +198,7 @@ func exportDatabase(w http.ResponseWriter, r *http.Request) {
 		fileName := tn.MerchantCode + "." + time.Now().Format("20060102150405") + ".sql"
 		w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
 		log.Println("user custome mysqldump to export database")
-		tenantDataSource, _, err := selectDb(tid, r)
+		tenantDataSource, _, err := selectDb(tid)
 		if err != nil {
 			http.Error(w, err.Error(), 405)
 			return
@@ -218,7 +225,7 @@ func CommandExist(command string) bool {
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	if !authBasic {
+	if !authBasic || forceLogin {
 		// fmt.Println("Redirect to", contextPath+"/home")
 		// http.Redirect(w, r, contextPath+"/home", 301)
 		serveHome(w, r)
