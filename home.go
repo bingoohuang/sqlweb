@@ -5,27 +5,26 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	cookie := r.Context().Value("CookieValue").(*CookieValue)
+	cookie := r.Context().Value("CookieValue").(*go_utils.CookieValueImpl)
 	loginedHtml := `<span id="loginSpan"><img class="loginAvatar" src="` + cookie.Avatar +
 		`"/><span class="loginName">` + cookie.Name + `</span></span>`
 
 	indexHtml := string(MustAsset("res/index.html"))
 	indexHtml = strings.Replace(indexHtml, "<LOGIN/>", loginedHtml, 1)
 
-	html := go_utils.MinifyHtml(indexHtml, devMode)
+	html := go_utils.MinifyHtml(indexHtml, *devMode)
 
-	css := go_utils.MinifyCss(mergeCss(), devMode)
-	js := go_utils.MinifyJs(mergeScripts(), devMode)
+	css := go_utils.MinifyCss(mergeCss(), *devMode)
+	js := go_utils.MinifyJs(mergeScripts(), *devMode)
 	html = strings.Replace(html, "/*.CSS*/", css, 1)
 	html = strings.Replace(html, "/*.SCRIPT*/", js, 1)
 	html = strings.Replace(html, "${contextPath}", contextPath, -1)
-	html = strings.Replace(html, "${multiTenants}", strconv.FormatBool(multiTenants), -1)
+	html = strings.Replace(html, "${multiTenants}", strconv.FormatBool(*multiTenants), -1)
 
 	w.Write([]byte(html))
 }
@@ -42,16 +41,4 @@ func mergeScripts() string {
 		"resultTable.js", "tableCreate.js", "showColumn.js", "multipleTenantsQueryAjax.js",
 		"contextMenu.js", "fastEntries.js",
 		"index.js", "sqlEditor.js", "utils.js", "jquery.loading.js", "template.js", "sqlTemplates.js")
-}
-
-type CookieValue struct {
-	UserId    string
-	Name      string
-	Avatar    string
-	CsrfToken string
-	Expired   time.Time
-}
-
-func (t *CookieValue) ExpiredTime() time.Time {
-	return t.Expired
 }

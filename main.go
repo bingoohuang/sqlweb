@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"flag"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"os/exec"
 	"strconv"
@@ -21,39 +19,33 @@ import (
 var (
 	contextPath  string
 	port         string
-	maxRows      int
-	g_dataSource string
-	encryptKey   string
+	maxRows      *int
+	g_dataSource *string
 
-	redirectUri string
-	localUrl    string
+	devMode      *bool // to disable css/js minify
+	authBasic    *bool
+	multiTenants *bool
 
-	cookieName   string
-	devMode      bool // to disable css/js minify
-	authBasic    bool
-	forceLogin   bool
-	multiTenants bool
-
-	northProxy string
-	southProxy string
+	northProxy *string
+	southProxy *string
 )
+
+var authParam go_utils.MustAuthParam
 
 func init() {
 	contextPathArg := flag.String("contextPath", "", "context path")
 	portArg := flag.Int("port", 8381, "Port to serve.")
-	maxRowsArg := flag.Int("maxRows", 1000, "Max number of rows to return.")
-	dataSourceArg := flag.String("dataSource", "user:pass@tcp(127.0.0.1:3306)/?charset=utf8", "dataSource string.")
-	keyArg := flag.String("key", "", "key to encryption or decryption")
-	redirectUriArg := flag.String("redirectUri", "", "redirectUri")
-	localUrlArg := flag.String("localUrl", "", "localUrl")
-	cookieNameArg := flag.String("cookieName", "i-raiyee-cn-auth", "cookieName")
-	devModeArg := flag.Bool("devMode", false, "devMode(disable js/css minify)")
-	authBasicArg := flag.Bool("authBasic", false, "authBasic based on poems")
-	forceLoginArg := flag.Bool("forceLogin", false, "forceLogin required")
-	multiTenantsArg := flag.Bool("multiTenants", false, "support multiTenants")
+	maxRows = flag.Int("maxRows", 1000, "Max number of rows to return.")
+	g_dataSource = flag.String("dataSource", "user:pass@tcp(127.0.0.1:3306)/?charset=utf8", "dataSource string.")
 
-	northProxycArg := flag.String("northProxy", "http://127.0.0.1:8092", "northProxy")
-	southProxycArg := flag.String("southProxy", "http://127.0.0.1:8082", "southProxy")
+	go_utils.PrepareMustAuthFlag(&authParam)
+
+	devMode = flag.Bool("devMode", false, "devMode(disable js/css minify)")
+	authBasic = flag.Bool("authBasic", false, "authBasic based on poems")
+	multiTenants = flag.Bool("multiTenants", false, "support multiTenants")
+
+	northProxy = flag.String("northProxy", "http://127.0.0.1:8092", "northProxy")
+	southProxy = flag.String("southProxy", "http://127.0.0.1:8082", "southProxy")
 
 	flag.Parse()
 
@@ -63,19 +55,6 @@ func init() {
 	}
 
 	port = strconv.Itoa(*portArg)
-	maxRows = *maxRowsArg
-	g_dataSource = *dataSourceArg
-	encryptKey = *keyArg
-	redirectUri = *redirectUriArg
-	localUrl = *localUrlArg
-	cookieName = *cookieNameArg
-	devMode = *devModeArg
-	authBasic = *authBasicArg
-	forceLogin = *forceLoginArg
-	multiTenants = *multiTenantsArg
-
-	northProxy = *northProxycArg
-	southProxy = *southProxycArg
 }
 
 func main() {
@@ -92,7 +71,7 @@ func main() {
 	handleFunc(r, "/update", serveUpdate, false, true)
 	handleFunc(r, "/exportDatabase", exportDatabase, true, true)
 	handleFunc(r, "/importDatabase", importDatabase, false, true)
-	if multiTenants {
+	if *multiTenants {
 		handleFunc(r, "/multipleTenantsQuery", multipleTenantsQuery, true, true)
 	}
 	handleFunc(r, "/searchDb", serveSearchDb, false, true)
@@ -109,12 +88,12 @@ func main() {
 
 func handleFunc(r *mux.Router, path string, f func(http.ResponseWriter, *http.Request), requiredGzip, requiredBasicAuth bool) {
 	wrap := go_utils.DumpRequest(f)
-	if requiredBasicAuth && authBasic {
+	if requiredBasicAuth && *authBasic {
 		wrap = go_utils.RandomPoemBasicAuth(wrap)
 	}
 
-	if requiredBasicAuth && forceLogin {
-		wrap = MustAuth(wrap)
+	if requiredBasicAuth {
+		wrap = go_utils.MustAuth(wrap, authParam)
 	}
 
 	if requiredGzip {
@@ -122,23 +101,6 @@ func handleFunc(r *mux.Router, path string, f func(http.ResponseWriter, *http.Re
 	}
 
 	r.HandleFunc(contextPath+path, wrap)
-}
-
-func MustAuth(fn http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		cookie := CookieValue{}
-		go_utils.ReadCookie(r, encryptKey, cookieName, &cookie)
-		fmt.Print("cookie:", cookie)
-		if cookie.Name != "" {
-			ctx := context.WithValue(r.Context(), "CookieValue", &cookie)
-			fn.ServeHTTP(w, r.WithContext(ctx))
-
-			return
-		}
-
-		urlx := redirectUri + "?redirect=" + url.QueryEscape(localUrl)
-		http.Redirect(w, r, urlx, 302)
-	}
 }
 
 func importDatabase(w http.ResponseWriter, r *http.Request) {
@@ -157,13 +119,12 @@ func importDatabase(w http.ResponseWriter, r *http.Request) {
 	}
 	defer f.Close()
 	io.Copy(f, file)
-
 }
 
 func exportDatabase(w http.ResponseWriter, r *http.Request) {
 	tid := strings.TrimSpace(r.FormValue("tid"))
 
-	tdb, err := searchMerchantDb(tid, g_dataSource)
+	tdb, err := searchMerchantDb(tid, *g_dataSource)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -225,12 +186,11 @@ func CommandExist(command string) bool {
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	if !authBasic || forceLogin {
+	if !*authBasic || *authParam.ForceLogin {
 		// fmt.Println("Redirect to", contextPath+"/home")
 		// http.Redirect(w, r, contextPath+"/home", 301)
 		serveHome(w, r)
 	} else {
-		welcome := MustAsset("res/welcome.html")
-		go_utils.ServeWelcome(w, welcome, contextPath)
+		go_utils.ServeWelcome(w, MustAsset("res/welcome.html"), contextPath)
 	}
 }
