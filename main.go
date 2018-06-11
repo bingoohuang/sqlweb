@@ -1,19 +1,14 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
 	"fmt"
 	"github.com/bingoohuang/go-utils"
 	"github.com/gorilla/mux"
-	"io"
 	"log"
 	"net/http"
-	"os"
-	"os/exec"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var (
@@ -66,7 +61,7 @@ func main() {
 	handleFunc(r, "/tablesByColumn", serveTablesByColumn, false, true)
 	handleFunc(r, "/loadLinksConfig", serveLoadLinksConfig, false, true)
 	handleFunc(r, "/saveLinksConfig", serveSaveLinksConfig, false, true)
-	handleFunc(r, "/iconfont.{extension}", serveFont, true, false)
+	handleFunc(r, "/iconfont.{extension}", serveFont("res/iconfont."), true, false)
 	handleFunc(r, "/favicon.ico", go_utils.ServeFavicon("res/favicon.ico", MustAsset, AssetInfo), true, false)
 	handleFunc(r, "/update", serveUpdate, false, true)
 	handleFunc(r, "/exportDatabase", exportDatabase, true, true)
@@ -86,7 +81,7 @@ func main() {
 	}
 }
 
-func handleFunc(r *mux.Router, path string, f func(http.ResponseWriter, *http.Request), requiredGzip, requiredBasicAuth bool) {
+func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := go_utils.DumpRequest(f)
 	if requiredBasicAuth && *authBasic {
 		wrap = go_utils.RandomPoemBasicAuth(wrap)
@@ -101,88 +96,6 @@ func handleFunc(r *mux.Router, path string, f func(http.ResponseWriter, *http.Re
 	}
 
 	r.HandleFunc(contextPath+path, wrap)
-}
-
-func importDatabase(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(32 << 20)
-	file, handler, err := r.FormFile("uploadfile")
-	if err != nil {
-		http.Error(w, err.Error(), 405)
-		return
-	}
-	defer file.Close()
-	fmt.Fprintf(w, "%v", handler.Header)
-	f, err := os.OpenFile("./"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		http.Error(w, err.Error(), 405)
-		return
-	}
-	defer f.Close()
-	io.Copy(f, file)
-}
-
-func exportDatabase(w http.ResponseWriter, r *http.Request) {
-	tid := strings.TrimSpace(r.FormValue("tid"))
-
-	tdb, err := searchMerchantDb(tid, *g_dataSource)
-	if err != nil {
-		http.Error(w, err.Error(), 405)
-		return
-	}
-
-	tn, err := searchMerchant(tid)
-	if err != nil {
-		http.Error(w, err.Error(), 405)
-		return
-	}
-
-	w.Header().Set("Content-Transfer-Encoding", "binary")
-	w.Header().Set("Content-Type", "text/plain")
-
-	if CommandExist("mysqldump") {
-		fileName := tn.MerchantCode + "." + time.Now().Format("20060102150405") + ".sql.gz"
-		w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
-
-		log.Println("user system mysqldump to export database")
-		mysqldump := "mysqldump -h  " + tdb.Host + " -P" + tdb.Port + " -u" + tdb.Username + " -p" + tdb.Password + "  " + tdb.Database + " | gzip"
-		cmd := exec.Command("/bin/sh", "-c", mysqldump)
-		stdout, err := cmd.StdoutPipe()
-		if err != nil {
-			http.Error(w, err.Error(), 405)
-			return
-		}
-		cmd.Start()
-
-		io.Copy(w, stdout)
-		stdout.Close()
-	} else {
-		fileName := tn.MerchantCode + "." + time.Now().Format("20060102150405") + ".sql"
-		w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
-		log.Println("user custome mysqldump to export database")
-		tenantDataSource, _, err := selectDb(tid)
-		if err != nil {
-			http.Error(w, err.Error(), 405)
-			return
-		}
-		db, err := sql.Open("mysql", tenantDataSource)
-		if err != nil {
-			http.Error(w, err.Error(), 405)
-			return
-		}
-		defer db.Close()
-
-		err = go_utils.MySqlDump(db, w)
-		if err != nil {
-			http.Error(w, err.Error(), 405)
-			return
-		}
-	}
-}
-
-func CommandExist(command string) bool {
-	out, _ := exec.Command("which", command).Output()
-	log.Println(command, string(out))
-	return len(out) != 0
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {

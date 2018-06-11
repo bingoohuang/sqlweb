@@ -34,9 +34,11 @@
     
     [links.SUBSCRIBE_ID]
     linksTo = ["tt_f_subscribe", "tt_f_subscribe_pay"]
+
 [entries]
     [entries.member]
     type = "input"
+    autoHide  = true
     placeholder = "手机号码/姓名/userId"
     label = "查找用户"
     sql = """\
@@ -59,6 +61,7 @@
     
     [entries.findUserByCard]
     type = "input"
+    autoHide  = true
     placeholder = "会员卡号"
     width="45px"
     label = "卡找会员"
@@ -68,14 +71,10 @@
     type = "link"
     label = "有卡会员"
     sql = "select * from tt_f_user where user_id in (select user_id from tt_f_member where member_id in (select member_id from tt_f_mbr_card where state != 0))"
-
-    [entries.clearMerchantConfigCache]
-    type = "link"
-    label = "清空商户配置缓存"
-    action = "action=ClearMerchantConfigCache,value=empty"
     
     [entries.captcha]
     type = "input,input,input"
+    autoHide  = true
     placeholder = "验证码,有效期,手机号"
     defaultValue = "1234,60s,"
     label = "发验证码"
@@ -100,4 +99,5 @@
         update tt_f_staff set mobile = '{input2}' where USER_ID IN _result_0.USER_ID;\
         update tt_f_login set mobile = '{input2}' where USER_ID IN _result_0.USER_ID;\
     """
-    
+
+

@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/bingoohuang/go-utils"
   packages = ["."]
-  revision = "15425dc6841e38935affdb9aac996fd13f4462d6"
+  revision = "f3b63d8bc5d4a082c0958002eedbd5609d3f664c"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -44,7 +44,6 @@
   revision = "75fb7ed4208cf72d323d7d02fd1a5964a7a9073c"
 
 [[projects]]
-  branch = "master"
   name = "github.com/tdewolff/minify"
   packages = [
     ".",
@@ -53,6 +52,7 @@
     "js"
   ]
   revision = "8d72a4127ae33b755e95bffede9b92e396267ce2"
+  version = "v2.3.5"
 
 [[projects]]
   branch = "master"
