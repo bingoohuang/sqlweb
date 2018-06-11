@@ -44,6 +44,7 @@
   revision = "75fb7ed4208cf72d323d7d02fd1a5964a7a9073c"
 
 [[projects]]
+  branch = "master"
   name = "github.com/tdewolff/minify"
   packages = [
     ".",
@@ -52,9 +53,9 @@
     "js"
   ]
   revision = "8d72a4127ae33b755e95bffede9b92e396267ce2"
-  version = "v2.3.5"
 
 [[projects]]
+  branch = "master"
   name = "github.com/tdewolff/parse"
   packages = [
     ".",
@@ -64,8 +65,7 @@
     "js",
     "strconv"
   ]
-  revision = "639f6272aec6b52094db77b9ec488214b0b4b1a1"
-  version = "v2.3.2"
+  revision = "d739d6fccb0971177e06352fea02d3552625efb1"
 
 [[projects]]
   name = "github.com/xwb1989/sqlparser"
@@ -87,6 +87,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4038d632943b3fdd783729fb8b34712ac4d8f3191635f45d0d9d0d7f6c938190"
+  inputs-digest = "b2780c3c4d70934b9b8a67ef3827a51ba56090205df56651b5092e35175f4a2a"
   solver-name = "gps-cdcl"
   solver-version = 1

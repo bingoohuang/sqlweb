@@ -28,6 +28,10 @@
   name = "github.com/tdewolff/minify"
   branch = "master"
 
+[[override]]
+  name = "github.com/tdewolff/parse"
+  branch = "master"
+
 [[constraint]]
   branch = "master"
   name = "github.com/bingoohuang/go-utils"
