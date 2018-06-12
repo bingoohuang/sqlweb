@@ -99,5 +99,15 @@
         update tt_f_staff set mobile = '{input2}' where USER_ID IN _result_0.USER_ID;\
         update tt_f_login set mobile = '{input2}' where USER_ID IN _result_0.USER_ID;\
     """
+    
+    [entries.home]
+    type = "link"
+    label = "Home"
+    userTemplate = true
+    openLink = "{{if homeArea == 'south-center'}}https://a.b.c{{else if homeArea == 'north-center'}}https://a.b.d{{/if}}/yoga/center/{{tcode}}/index/vision#"
 
-
+ 	[entries.copyWxAuthUrl]
+    type = "link"
+    label = "WxAuthUrl"
+    userTemplate = true
+    copy = "{{if homeArea == 'south-center'}}https://a.b.c{{else if homeArea == 'north-center'}}https://a.b.d{{/if}}/boss/wx-auth/wxAuth?merchantId={{tid}}&from=1"

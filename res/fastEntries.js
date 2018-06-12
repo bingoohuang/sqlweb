@@ -1,8 +1,26 @@
 (function () {
-    function replaceTcodeTid(val) {
-        val = val.replace(/\{tcode\}/g, activeMerchantCode)
-        val = val.replace(/\{tid\}/g, activeMerchantId)
-        return val
+    function parseTemplate(val, fastEntry, data) {
+        if (fastEntry.userTemplate) {
+            data.tcode = activeMerchantCode
+            data.tid = activeMerchantId
+            data.classifier = activeClassifier
+            data.merchantName = activeMerchantName
+            data.homeArea = activeHomeArea
+
+            return template.render(val, data)
+        } else {
+            for (var k in data) {
+                val = val.split('{' + k + '}').join(data[k])
+            }
+
+            val = val.split('{tcode}').join(activeMerchantCode)
+            val = val.split('{tid}').join(activeMerchantId)
+            val = val.split('{classifier}').join(activeClassifier)
+            val = val.split('{merchantName}').join(activeMerchantName)
+            val = val.split('{homeArea}').join(activeHomeArea)
+
+            return val
+        }
     }
 
     $.createFastEntries = function (fastEntriesConfig) {
@@ -42,12 +60,10 @@
                             'placeholder="' + (placeholders[i] || '') + '" value="' + (defaultValues[i] || '') + '" ' +
                             '>'
                     }
-                } else if (entryType = 'link') {
+                } else if (entryType === 'link') {
                     fastEntriesHtml += '<span class="clickable" entryKey="' + key + '">' + entry.label + '</span>'
                 }
             }
-
-
         })
 
         $('#fastEntriesDiv').html(fastEntriesHtml)
@@ -65,42 +81,18 @@
                 if (!entryKey) return
 
                 var fastEntry = fastEntriesConfig[entryKey]
-                var separator = fastEntry.separator || ','
                 var inputsize = $(this).attr('inputsize')
+                var data = {}
                 if (inputsize === "1") {
-                    var input = $(this).val()
-
-                    if (fastEntry.sql) {
-                        var sql = fastEntry.sql.replace(/\{input\}/g, input)
-
-                        $.executeMultiSqlsAjax(replaceTcodeTid(sql), true)
-                    } else if (fastEntry.action) {
-                        var action = fastEntry.action.replace(/\{input\}/g, input)
-                        executeFastAction(replaceTcodeTid(action), separator)
-                    }
+                    data.input = $(this).val()
                 } else {
                     var $input = $(this)
-                    var sql = fastEntry.sql
-                    var action = fastEntry.action
-
                     for (var i = +inputsize; i >= 0; --i) {
-                        var input = $input.val()
-
-                        var p = new RegExp("\\{input" + i + "\\}", "g")
-                        if (sql) {
-                            sql = sql.replace(p, input)
-                        } else if (action) {
-                            action = action.replace(p, input)
-                        }
+                        data["input" + i] = $input.val()
                         $input = $input.prev('input')
                     }
-
-                    if (sql) {
-                        $.executeMultiSqlsAjax(replaceTcodeTid(sql), true)
-                    } else if (action) {
-                        executeFastAction(replaceTcodeTid(action), separator)
-                    }
                 }
+                executeFastEntry(fastEntry, data)
             }
         }).focus(function () {
             $(this).select()
@@ -109,14 +101,26 @@
         $('#fastEntriesDiv span.clickable').click(function () {
             var entryKey = $(this).attr('entryKey')
             var fastEntry = fastEntriesConfig[entryKey]
-            var separator = fastEntry.separator || ','
-            if (fastEntry.sql) {
-                $.executeMultiSqlsAjax(replaceTcodeTid(fastEntry.sql))
-            }
-            if (fastEntry.action) {
-                executeFastAction(replaceTcodeTid(fastEntry.action), separator)
-            }
+            executeFastEntry(fastEntry, {})
+
         })
+    }
+
+    function executeFastEntry(fastEntry, data) {
+        if (fastEntry.sql) {
+            $.executeMultiSqlsAjax(parseTemplate(fastEntry.sql, fastEntry, data), true)
+        }
+        if (fastEntry.action) {
+            executeFastAction(parseTemplate(fastEntry.action, fastEntry, data), fastEntry.separator || ',')
+        }
+        if (fastEntry.openLink) {
+            window.open(parseTemplate(fastEntry.openLink, fastEntry, data), "_blank")
+        }
+        if (fastEntry.copy) {
+            var copy = parseTemplate(fastEntry.copy, fastEntry, data)
+            $.copyTextToClipboard(copy)
+            $.copiedTips(copy)
+        }
     }
 
     function executeFastAction(action, separator) {
