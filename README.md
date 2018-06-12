@@ -67,6 +67,12 @@ More Tools for single table (Left click on the ...) :
 
 ![image](https://user-images.githubusercontent.com/1940588/37504406-120e6314-2919-11e8-8ba1-18c1a4c103b9.png)
 
+Sql Templates:
+![image](https://user-images.githubusercontent.com/1940588/41292213-7dd2602c-6e84-11e8-872d-227d98448fca.png)
+
+Copy Columns As TSV(Tab separated values, can be pasted in Excel very well):
+![image](https://user-images.githubusercontent.com/1940588/41292402-0d0b5622-6e85-11e8-97ba-d27accff362b.png)
+
 
 
 # others

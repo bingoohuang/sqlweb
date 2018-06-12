@@ -71,7 +71,7 @@
                 }
             })
 
-            var evalFinal = evalResult.join('\n\n')
+            var evalFinal = evalResult.join('\n')
             $.appendSqlToSqlEditor(evalFinal, true, true)
         })
     }
