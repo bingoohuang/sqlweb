@@ -43,8 +43,7 @@
                             '>'
                     }
                 } else if (entryType = 'link') {
-                    fastEntriesHtml += '<span class="clickable" entryKey="'
-                        + key + '">' + entry.label + '</span>'
+                    fastEntriesHtml += '<span class="clickable" entryKey="' + key + '">' + entry.label + '</span>'
                 }
             }
 
