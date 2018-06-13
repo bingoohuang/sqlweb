@@ -18,13 +18,17 @@
 
     $.sqlCodeMirror = codeMirror
 
+    $.getEditorText = function () {
+        var selected = codeMirror.somethingSelected()
+        return selected ? codeMirror.getSelection() : codeMirror.getValue()
+    }
+
     $.contextMenu({
         selector: '#sqlwebDiv .CodeMirror',
         zIndex: 10,
         callback: function (key, options) {
             if (key === 'FormatSql') {
-                var selected = codeMirror.somethingSelected()
-                var sql = selected ? codeMirror.getSelection() : codeMirror.getValue()
+                var sql = $.getEditorText()
                 var formattedSql = sqlFormatter.format(sql, {language: 'sql'})
 
                 if (selected) {
@@ -50,9 +54,7 @@
                 }
                 $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, 'show full columns from ' + tableName)
             } else if (key === 'ParseTemplate') {
-                var selected = codeMirror.somethingSelected()
-                var sql = selected ? codeMirror.getSelection() : codeMirror.getValue()
-
+                var sql = $.getEditorText()
                 $.templateSql(sql)
             }
         },
@@ -66,7 +68,7 @@
     })
 
     $.getEditorSql = function () {
-        return codeMirror.somethingSelected() ? codeMirror.getSelection() : codeMirror.getValue()
+        return $.getEditorText()
     }
 
     $('.executeQuery').prop("disabled", true).click(function () {

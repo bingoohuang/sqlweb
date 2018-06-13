@@ -43,6 +43,7 @@
         })
     }
 
+
     function attachEvalEvent(resultId) {
         $('#evalSql' + resultId).click(function () {
             var $table = $('#queryResult' + resultId)
@@ -53,6 +54,8 @@
 
             var evalResult = []
             var sqlTemplate = $('#executionResultDiv' + resultId).find('.sqlTd').text()
+
+            var templateEval = template.compile(sqlTemplate)
 
             $table.find('tbody tr').each(function (i, tr) {
                 var varValues = {}
@@ -67,7 +70,7 @@
                 })
 
                 if (usable) {
-                    evalResult.push($.templateEval(sqlTemplate, varValues))
+                    evalResult.push(templateEval(varValues))
                 }
             })
 
@@ -89,6 +92,41 @@
         })
     }
 
+    function attachPopulateFromEdidtorEvent(resultId) {
+        $('#populateFromEdidtor' + resultId).click(function () {
+            var $tbody = $('#queryResult' + resultId + " tbody")
+            var data = $.trim($.getEditorText())
+            if (data === "") {
+                alert('There is no data populated!')
+            }
+
+            var x = data.split('\n')
+
+            for (var i = 0; i < 5 && i < x.length; i++) {
+                y = x[i].split(/\s+/)
+                var $tds = $tbody.find('tr').eq(i).find('td')
+                $tds.eq(0).text(i+1)
+                for (var j = 0; j < y.length; ++j) {
+                    $tds.eq(j + 1).text(y[j])
+                }
+            }
+
+            var lastRow = $tbody.find('tr:last')
+            for (var i = 5; i < x.length; i++) {
+                y = x[i].split(/\s+/)
+
+                var $clone = lastRow.clone()
+                var $tds = $clone.find('td')
+                $tds.eq(0).text(i+1)
+                for (var j = 0; j < y.length; ++j) {
+                    $tds.eq(j + 1).text(y[j])
+                }
+
+                $tbody.append($clone)
+            }
+        })
+    }
+
     function attachCloseEvent(resultId) {
         $('#closeResult' + resultId).click(function () {
             $('#executionResultDiv' + resultId).remove()
@@ -102,6 +140,7 @@
         html += '<div id="divResult' + resultId + '" class="divResult">'
         html += '<div class="operateAreaDiv">'
         html += '<span class="opsSpan reRunSql" id="evalSql' + resultId + '">Eval</span>&nbsp;&nbsp;'
+        html += '<span class="opsSpan reRunSql" id="populateFromEdidtor' + resultId + '">Populate From Editor</span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="moreRows' + resultId + '">More Rows</span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="reTemplateSql' + resultId + '">Re Run</span>:'
         html += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
@@ -120,6 +159,7 @@
         showHideColumns(resultId)
         attachCloseEvent(resultId)
         attachEvalEvent(resultId)
+        attachPopulateFromEdidtorEvent(resultId)
         attachMoreRowsEvent(resultId)
         bindReExecuteSql('#reTemplateSql' + resultId, resultId)
     }

@@ -116,33 +116,15 @@
                 }
             })
         }
-        itemsData['Copy Where'] = {
-            name: 'Copy Where',
-            icon: 'link'
-        }
-        itemsData['Show Column'] = {
-            name: 'Show Column',
-            icon: 'link'
-        }
+        itemsData['Copy Where'] = {name: 'Copy Where', icon: 'link'}
+        itemsData['Show Column'] = {name: 'Show Column', icon: 'link'}
 
         var selector = '#queryResult' + queryResultId + ' td.' + $.escapeContextMenuCssName(columnName)
 
-        itemsHead['sqlInPart'] = {
-            name: 'Copy Columns As In Clause To Clipboard',
-            icon: 'link'
-        }
-        itemsHead['copyColumns'] = {
-            name: 'Copy Columns Values To Clipboard',
-            icon: 'link'
-        }
-        itemsHead['orderByAsc'] = {
-            name: 'Order By Asc',
-            icon: 'link'
-        }
-        itemsHead['orderByDesc'] = {
-            name: 'Order By Desc',
-            icon: 'link'
-        }
+        itemsHead['sqlInPart'] = {name: 'Copy Columns As In Clause To Clipboard', icon: 'link'}
+        itemsHead['copyColumns'] = {name: 'Copy Columns Values To Clipboard', icon: 'link'}
+        itemsHead['orderByAsc'] = {name: 'Order By Asc', icon: 'link'}
+        itemsHead['orderByDesc'] = {name: 'Order By Desc', icon: 'link'}
 
         if (linkColumnNames[columnName]) {
             $.contextMenu({
@@ -191,10 +173,8 @@
                     var columnsValue = createColumnsValue(queryResultId, columnName)
                     $.copyTextToClipboard(columnsValue)
                     $.copiedTips('Column values copied.')
-                } else if (key === 'orderByAsc') {
-                    $.sortingTable('queryResult' + queryResultId, columnIndex, true, 1)
-                } else if (key === 'orderByDesc') {
-                    $.sortingTable('queryResult' + queryResultId, columnIndex, false, 1)
+                } else if (key === 'orderByAsc' || key === 'orderByDesc') {
+                    $.sortingTable('queryResult' + queryResultId, columnIndex, key === 'orderByAsc', 1)
                 }
             },
             items: itemsHead
@@ -204,26 +184,16 @@
 
     $.createOrderByContextMenu = function (queryResultId) {
         var itemsHead = {}
-
-        itemsHead['orderByAsc'] = {
-            name: 'Order By Asc',
-            icon: 'link'
-        }
-        itemsHead['orderByDesc'] = {
-            name: 'Order By Desc',
-            icon: 'link'
-        }
+        itemsHead['orderByAsc'] = {name: 'Order By Asc', icon: 'link'}
+        itemsHead['orderByDesc'] = {name: 'Order By Desc', icon: 'link'}
 
         $.contextMenu({
             zIndex: 10,
             selector: '#queryResult' + queryResultId + ' td.headCell.contextMenu',
             callback: function (key, options) {
-                if (key === 'orderByAsc') {
+                if (key === 'orderByAsc' || key === 'orderByDesc') {
                     var columnIndex = $.findColumnIndex($('#queryResult' + queryResultId), $(this).text().toUpperCase())
-                    $.sortingTable('queryResult' + queryResultId, columnIndex, true, 0)
-                } else if (key === 'orderByDesc') {
-                    var columnIndex = $.findColumnIndex($('#queryResult' + queryResultId), $(this).text().toUpperCase())
-                    $.sortingTable('queryResult' + queryResultId, columnIndex, false, 0)
+                    $.sortingTable('queryResult' + queryResultId, columnIndex, key === 'orderByAsc', 0)
                 }
             },
             items: itemsHead

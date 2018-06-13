@@ -86,18 +86,27 @@
     }
 
     var FilterAndOrderHighlightedColumn = function ($resultTable) {
-        var specifiedValues = $.sqlCodeMirror.getValue()
-        var lines = specifiedValues.split('\n')
+        var lines = $.getEditorText().split('\n')
         var filteredLines = []
         var filteredValues = {}
+
+        var dupliates = []
         for (var i = 0; i < lines.length; ++i) {
             var lineValue = $.trim(lines[i])
-            if (lineValue.length > 0 && !filteredValues[lineValue]) {
+            if (lineValue.length === 0) continue;
+
+            if (filteredValues[lineValue]) {
+                dupliates.push(lineValue)
+            } else {
                 filteredLines.push(lineValue)
                 filteredValues[lineValue] = filteredLines.length
             }
         }
 
+        if (dupliates.length > 0) {
+            $.appendSqlToSqlEditor("\n\nDuplicated:\n" + dupliates.join('\n'), true, true)
+            alert(dupliates.length + " duplicated items found!")
+        }
 
         var compareColumnIndex = -1
         $resultTable.find('thead tr').each(function () {

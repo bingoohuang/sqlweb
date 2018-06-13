@@ -276,6 +276,11 @@
 
     $.wrapFieldName = wrapFieldName
 
+    var cellValue = function($cell) {
+        var old = $cell.attr('old');
+        return old === undefined ?  $cell.text() : old
+    }
+
     $.createWherePart = function (result, headRow, cells) {
         var sql = ' where '
         if (result.PrimaryKeysIndex.length > 0) {
@@ -285,7 +290,7 @@
 
                 var pkName = $(headRow.get(ki + 1)).text()
                 var $cell = $(cells.get(ki))
-                var pkValue = $cell.attr('old') || $cell.text()
+                var pkValue = cellValue($cell)
                 sql += wrapFieldName(pkName) + ' = \'' + $.escapeSqlValue(pkValue) + '\''
             }
             return sql
@@ -293,7 +298,7 @@
             var wherePart = ''
             cells.each(function (jndex, cell) {
                 if (jndex > 0) {
-                    var whereValue = $(this).attr('old') || $(cell).text()
+                    var whereValue = cellValue($(this))
                     wherePart += wherePart != '' ? ' and ' : ''
 
                     var fieldName = $(headRow.get(jndex + 1)).text()
