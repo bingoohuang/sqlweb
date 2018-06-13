@@ -151,6 +151,44 @@
         $tbody.find('tr').removeAttr('rowOdd').removeClass('rowOdd').filter(':odd').addClass('rowOdd').attr('rowOdd', 'true')
     }
 
+    $.filterSortTableByValues = function ($resultTable, compareColumnIndex, filteredValues) {
+        var $tbody = $resultTable.find('tbody')
+        var tbody = $tbody[0]
+        var tbodyLength = tbody.rows.length;
+
+        var rows = []
+        var filteredRows = []
+        for (var i = 0; i < tbodyLength; i++) {
+            var row = tbody.rows[i]
+
+            var cell = row.cells[compareColumnIndex]
+            var cellVal = cell ? $.trim(cell.innerText) : ""
+
+            if (filteredValues[cellVal]) {
+                rows.splice(filteredValues[cellVal] - 1, 0, row)
+            } else {
+                filteredRows.push(row)
+            }
+        }
+
+        for (var i = 0; i < rows.length; i++) {
+            // rearrange table rows by sorted rows
+            rows[i].cells[1].innerText = (i + 1)
+            $(filteredRows).toggle(true)
+            tbody.appendChild(rows[i])
+        }
+
+        for (var i = 0; i < filteredRows.length; i++) {
+            $(filteredRows).toggle(false)
+            filteredRows[i].cells[1].innerText = (i + 1)
+            tbody.appendChild(filteredRows[i])
+        }
+
+        $tbody.find('tr').removeAttr('rowOdd').removeClass('rowOdd')
+            .filter(':odd').addClass('rowOdd').attr('rowOdd', 'true')
+    }
+
+
     function compareCells(aRow, bRow, compareColumnIndex) {
         var aCell = aRow.cells[compareColumnIndex]
         var aVal = aCell ? aCell.innerText : ""
@@ -195,7 +233,7 @@
 
     $.firstUpperWord = function (sql) {
         var s = $.trim(sql)
-        var firstWord = s.replace(/\s.*/,'')
+        var firstWord = s.replace(/\s.*/, '')
         return firstWord.toUpperCase()
     }
 })()
