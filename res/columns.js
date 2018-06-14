@@ -85,6 +85,30 @@
         $.copiedTips('TSV copied.')
     }
 
+    $.findFirstHighlightedColumnIndex = function ($resultTable) {
+        var compareColumnIndex = -1
+        $resultTable.find('thead tr').eq(0).find('td').each(function (index, td) {
+            if ($(td).hasClass('highlight')) {
+                compareColumnIndex = index
+                return false // break
+            }
+        })
+
+        return compareColumnIndex
+    }
+
+
+    $.findHighlightedColumnIndexes = function ($resultTable) {
+        var highlightedColumnIndexes = []
+        $resultTable.find('thead tr').eq(0).find('td').each(function (index, td) {
+            if ($(td).hasClass('highlight')) {
+                highlightedColumnIndexes.push(index)
+            }
+        })
+
+        return highlightedColumnIndexes
+    }
+
     var FilterAndOrderHighlightedColumn = function ($resultTable) {
         var lines = $.getEditorText().split('\n')
         var filteredLines = []
@@ -108,16 +132,7 @@
             alert(dupliates.length + " duplicated items found!")
         }
 
-        var compareColumnIndex = -1
-        $resultTable.find('thead tr').each(function () {
-            $(this).find('td').each(function (index, td) {
-                if ($(td).hasClass('highlight')) {
-                    compareColumnIndex = index
-                    return false // break
-                }
-            })
-        })
-
+        var compareColumnIndex = $.findFirstHighlightedColumnIndex($resultTable)
         if (compareColumnIndex < 0) {
             alert("No column highlighted!")
             return

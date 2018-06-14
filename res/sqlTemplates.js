@@ -92,39 +92,67 @@
         })
     }
 
-    function attachPopulateFromEdidtorEvent(resultId) {
-        $('#populateFromEdidtor' + resultId).click(function () {
-            var $tbody = $('#queryResult' + resultId + " tbody")
-            var data = $.trim($.getEditorText())
-            if (data === "") {
-                alert('There is no data populated!')
+    function AutoIncrementHighlightedColumns($resultTable) {
+        var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
+        if (highlightedColumnIndexes.length == 0) {
+            alert("There is no columns highlighted!")
+            return
+        }
+
+        var baseValue = {}
+
+        var $tds = $resultTable.find('tbody tr:eq(0) td');
+        for (var i  = 0; i < highlightedColumnIndexes.length; ++i) {
+            var index = highlightedColumnIndexes[i];
+            var value = $tds.eq(index).text()
+            if (!value) {
+                alert("There is no base value in highlighted column at index " + (i+1) + "!")
+                return
             }
+            baseValue[index] = value
+        }
 
-            var x = data.split('\n')
-
-            for (var i = 0; i < 5 && i < x.length; i++) {
-                y = x[i].split(/\s+/)
-                var $tds = $tbody.find('tr').eq(i).find('td')
-                $tds.eq(0).text(i+1)
-                for (var j = 0; j < y.length; ++j) {
-                    $tds.eq(j + 1).text(y[j])
-                }
-            }
-
-            var lastRow = $tbody.find('tr:last')
-            for (var i = 5; i < x.length; i++) {
-                y = x[i].split(/\s+/)
-
-                var $clone = lastRow.clone()
-                var $tds = $clone.find('td')
-                $tds.eq(0).text(i+1)
-                for (var j = 0; j < y.length; ++j) {
-                    $tds.eq(j + 1).text(y[j])
-                }
-
-                $tbody.append($clone)
+        $resultTable.find('tbody tr:gt(0)').each(function (rowIndex, tr) {
+            var tds = $(tr).find('td')
+            for (var i  = 0; i < highlightedColumnIndexes.length; ++i) {
+                var index = highlightedColumnIndexes[i];
+                baseValue[index] = $.incr(baseValue[index])
+                tds.eq(index).text(baseValue[index])
             }
         })
+    }
+
+    function PopulateByEditorData($resultTable) {
+        var $tbody = $resultTable.find('tbody')
+        var data = $.trim($.getEditorText())
+        if (data === "") {
+            alert('There is no data populated!')
+        }
+
+        var x = data.split('\n')
+
+        for (var i = 0; i < 5 && i < x.length; i++) {
+            y = x[i].split(/\s+/)
+            var $tds = $tbody.find('tr').eq(i).find('td')
+            $tds.eq(0).text(i + 1)
+            for (var j = 0; j < y.length; ++j) {
+                $tds.eq(j + 1).text(y[j])
+            }
+        }
+
+        var lastRow = $tbody.find('tr:last')
+        for (var i = 5; i < x.length; i++) {
+            y = x[i].split(/\s+/)
+
+            var $clone = lastRow.clone()
+            var $tds = $clone.find('td')
+            $tds.eq(0).text(i + 1)
+            for (var j = 0; j < y.length; ++j) {
+                $tds.eq(j + 1).text(y[j])
+            }
+
+            $tbody.append($clone)
+        }
     }
 
     function attachCloseEvent(resultId) {
@@ -140,7 +168,6 @@
         html += '<div id="divResult' + resultId + '" class="divResult">'
         html += '<div class="operateAreaDiv">'
         html += '<span class="opsSpan reRunSql" id="evalSql' + resultId + '">Eval</span>&nbsp;&nbsp;'
-        html += '<span class="opsSpan reRunSql" id="populateFromEdidtor' + resultId + '">Populate From Editor</span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="moreRows' + resultId + '">More Rows</span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="reTemplateSql' + resultId + '">Re Run</span>:'
         html += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
@@ -159,9 +186,9 @@
         showHideColumns(resultId)
         attachCloseEvent(resultId)
         attachEvalEvent(resultId)
-        attachPopulateFromEdidtorEvent(resultId)
         attachMoreRowsEvent(resultId)
         bindReExecuteSql('#reTemplateSql' + resultId, resultId)
+        $.attachHighlightColumnEvent(resultId)
     }
 
     var showHideColumns = function (resultId) {
@@ -189,10 +216,16 @@
                     })
                     $.copyTextToClipboard(csv.join('\n'))
                     $.copiedTips('TSV copied.')
+                } else if (key === 'PopulateByEditorData') {
+                    PopulateByEditorData($resultTable)
+                } else if (key === 'AutoIncrementHighlightedColumns') {
+                    AutoIncrementHighlightedColumns($resultTable)
                 }
             },
             items: {
                 ExportAsTsv: {name: "Export As TSV To Clipboard", icon: "columns"},
+                PopulateByEditorData: {name: "Populate By Editor Data", icon: "columns"},
+                AutoIncrementHighlightedColumns: {name: "Auto Increment Highlighted Columns", icon: "columns"},
             }
         })
     }

@@ -236,4 +236,11 @@
         var firstWord = s.replace(/\s.*/, '')
         return firstWord.toUpperCase()
     }
+
+    $.incr = function (b) {
+        var a = b + ''
+        var l = a.length;
+        if (l <= 10) return +a + 1 + ''
+        return a.substr(0, l - 10) + (+a.substr(l - 10) + 1)
+    }
 })()
