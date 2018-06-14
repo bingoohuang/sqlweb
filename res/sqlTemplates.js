@@ -22,7 +22,11 @@
         for (var rowSeq = 1; rowSeq <= 5; ++rowSeq) {
             table += '<tr><td>' + rowSeq + '</td>'
             for (var i = 0; i < templateVars.length; ++i) {
-                table += '<td contenteditable="true"></td>'
+                if (rowSeq === 1) {
+                    table += '<td class="excelPasteable" colIndex="' + (i + 1) + '" contenteditable="true"></td>'
+                } else {
+                    table += '<td contenteditable="true"></td>'
+                }
             }
             table += '</tr>'
         }
@@ -92,7 +96,8 @@
         })
     }
 
-    function AutoIncrementHighlightedColumns($resultTable) {
+
+    function AutoIncrementHighlightedColumns($resultTable, autoIncr) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
         if (highlightedColumnIndexes.length == 0) {
             alert("There is no columns highlighted!")
@@ -102,11 +107,11 @@
         var baseValue = {}
 
         var $tds = $resultTable.find('tbody tr:eq(0) td');
-        for (var i  = 0; i < highlightedColumnIndexes.length; ++i) {
+        for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
             var index = highlightedColumnIndexes[i];
             var value = $tds.eq(index).text()
             if (!value) {
-                alert("There is no base value in highlighted column at index " + (i+1) + "!")
+                alert("There is no base value in highlighted column at index " + (i + 1) + "!")
                 return
             }
             baseValue[index] = value
@@ -114,12 +119,51 @@
 
         $resultTable.find('tbody tr:gt(0)').each(function (rowIndex, tr) {
             var tds = $(tr).find('td')
-            for (var i  = 0; i < highlightedColumnIndexes.length; ++i) {
-                var index = highlightedColumnIndexes[i];
-                baseValue[index] = $.incr(baseValue[index])
+            for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
+                var index = highlightedColumnIndexes[i]
+                if (autoIncr) {
+                    baseValue[index] = $.incr(baseValue[index])
+                }
                 tds.eq(index).text(baseValue[index])
             }
         })
+    }
+
+    var populateDataToTable = function (text, $resultTable, colIndex) {
+        var clipRows = text.split(/[\r\n]+/)
+        for (i = 0; i < clipRows.length; i++) {
+            clipRows[i] = clipRows[i].split(/\s+/)
+        }
+        // result clipRows[i][j]
+
+        var $tbody = $resultTable.find('tbody')
+
+        var colOffset = colIndex ? +colIndex : 1
+
+        var x = clipRows
+        var $rows = $tbody.find('tr')
+        for (var i = 0; i < $rows.length && i < x.length; i++) {
+            y = x[i]
+            var $tds = $rows.eq(i).find('td')
+            $tds.eq(0).text(i + 1)
+            for (var j = 0; j < y.length; ++j) {
+                $tds.eq(j + colOffset).text($.trim(y[j]))
+            }
+        }
+
+        var lastRow = $tbody.find('tr:last')
+        for (var i = $rows.length; i < x.length; i++) {
+            y = x[i]
+
+            var $clone = lastRow.clone()
+            var $tds = $clone.find('td')
+            $tds.eq(0).text(i + 1)
+            for (var j = 0; j < y.length; ++j) {
+                $tds.eq(j + colOffset).text($.trim(y[j]))
+            }
+
+            $tbody.append($clone)
+        }
     }
 
     function PopulateByEditorData($resultTable) {
@@ -129,30 +173,7 @@
             alert('There is no data populated!')
         }
 
-        var x = data.split('\n')
-
-        for (var i = 0; i < 5 && i < x.length; i++) {
-            y = x[i].split(/\s+/)
-            var $tds = $tbody.find('tr').eq(i).find('td')
-            $tds.eq(0).text(i + 1)
-            for (var j = 0; j < y.length; ++j) {
-                $tds.eq(j + 1).text(y[j])
-            }
-        }
-
-        var lastRow = $tbody.find('tr:last')
-        for (var i = 5; i < x.length; i++) {
-            y = x[i].split(/\s+/)
-
-            var $clone = lastRow.clone()
-            var $tds = $clone.find('td')
-            $tds.eq(0).text(i + 1)
-            for (var j = 0; j < y.length; ++j) {
-                $tds.eq(j + 1).text(y[j])
-            }
-
-            $tbody.append($clone)
-        }
+        populateDataToTable(data, $resultTable)
     }
 
     function attachCloseEvent(resultId) {
@@ -189,6 +210,18 @@
         attachMoreRowsEvent(resultId)
         bindReExecuteSql('#reTemplateSql' + resultId, resultId)
         $.attachHighlightColumnEvent(resultId)
+        attachSpreadPasteEvent(resultId)
+    }
+
+    var attachSpreadPasteEvent = function (resultId) {
+        var queryResultId = '#queryResult' + resultId
+        $(document).on('paste', queryResultId + ' td.excelPasteable', function (e) {
+            var clipText = $.clipboardText(e)
+            var $resultTable = $(queryResultId)
+            var $td = $(this)
+
+            populateDataToTable(clipText, $resultTable, $td.attr('colIndex'))
+        })
     }
 
     var showHideColumns = function (resultId) {
@@ -219,13 +252,16 @@
                 } else if (key === 'PopulateByEditorData') {
                     PopulateByEditorData($resultTable)
                 } else if (key === 'AutoIncrementHighlightedColumns') {
-                    AutoIncrementHighlightedColumns($resultTable)
+                    AutoIncrementHighlightedColumns($resultTable, true)
+                } else if (key  === 'DuplicateHighlightedColumns') {
+                    AutoIncrementHighlightedColumns($resultTable, false)
                 }
             },
             items: {
                 ExportAsTsv: {name: "Export As TSV To Clipboard", icon: "columns"},
                 PopulateByEditorData: {name: "Populate By Editor Data", icon: "columns"},
                 AutoIncrementHighlightedColumns: {name: "Auto Increment Highlighted Columns", icon: "columns"},
+                DuplicateHighlightedColumns: {name: "Duplicate Highlighted Columns", icon: "columns"},
             }
         })
     }

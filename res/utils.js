@@ -243,4 +243,26 @@
         if (l <= 10) return +a + 1 + ''
         return a.substr(0, l - 10) + (+a.substr(l - 10) + 1)
     }
+
+    $.clipboardText = function (e) {
+        if (e.clipboardData || e.originalEvent.clipboardData) {
+            return (e.originalEvent || e).clipboardData.getData('text/plain')
+        } else if (window.clipboardData) {
+            return  window.clipboardData.getData('Text')
+        }
+
+        alert("No clipboard available")
+        return ''
+    }
+
+    $(document).on('paste', '[contenteditable]', function (e) {
+        e.preventDefault()
+        var text = $.clipboardText(e)
+
+        if (document.queryCommandSupported('insertText')) {
+            document.execCommand('insertText', false, text)
+        } else {
+            document.execCommand('paste', false, text)
+        }
+    })
 })()
