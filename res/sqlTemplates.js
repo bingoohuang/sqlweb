@@ -92,7 +92,6 @@
         })
     }
 
-
     function AutoIncrementHighlightedColumns($resultTable, autoIncr) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
         if (highlightedColumnIndexes.length == 0) {
@@ -101,7 +100,6 @@
         }
 
         var baseValue = {}
-
         var $tds = $resultTable.find('tbody tr:eq(0) td')
         for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
             var index = highlightedColumnIndexes[i]
@@ -125,50 +123,49 @@
         })
     }
 
-    var populateDataToTable = function (text, $resultTable, $td) {
+    function splitRowsAndColumns(text) {
         var clipRows = text.split(/[\r\n]+/)
-        for (i = 0; i < clipRows.length; i++) {
+        for (var i = 0; i < clipRows.length; i++) {
             clipRows[i] = clipRows[i].split(/\s+/)
         }
         // result clipRows[i][j]
+        return clipRows
+    }
 
+    function populateDataToTable(text, $resultTable, $td) {
         var $tbody = $resultTable.find('tbody')
         var $rows = $tbody.find('tr')
 
         var colOffset = $td ? $td.parent().find('td').index($td) : 2
         var rowOffset = $td ? $rows.index($td.parent()) : 0
 
-        var x = clipRows
         var i = 0
+        var x = splitRowsAndColumns(text)
         for (; i + rowOffset < $rows.length && i < x.length; i++) {
-            y = x[i]
             var $tds = $rows.eq(i + rowOffset).find('td')
-            $tds.eq(1).text(i + rowOffset + 1)
-            for (var j = 0; j < y.length; ++j) {
-                $tds.eq(j + colOffset).text($.trim(y[j]))
-            }
+            populateRow($tds, x, i, rowOffset, colOffset)
         }
 
         var lastRow = $tbody.find('tr:last')
         for (; i < x.length; i++) {
-            y = x[i]
-
             var $clone = lastRow.clone()
-            var $tds = $clone.find('td')
-            $tds.eq(1).text(i + rowOffset + 1)
-            for (var j = 0; j < y.length; ++j) {
-                $tds.eq(j + colOffset).text($.trim(y[j]))
-            }
-
+            populateRow($clone.find('td'), x, i, rowOffset, colOffset)
             $tbody.append($clone)
         }
     }
 
+    function populateRow($tds, x, i, rowOffset, colOffset) {
+        $tds.eq(1).text(i + rowOffset + 1)
+        for (var y = x[i], j = 0; j < y.length; ++j) {
+            $tds.eq(j + colOffset).text($.trim(y[j]))
+        }
+    }
+
     function PopulateByEditorData($resultTable) {
-        var $tbody = $resultTable.find('tbody')
         var data = $.trim($.getEditorText())
         if (data === "") {
             alert('There is no data populated!')
+            return
         }
 
         populateDataToTable(data, $resultTable)
@@ -203,8 +200,6 @@
         html += createTable(resultId, templateVars) + '</div><br/>'
 
         $.replaceOrPrependResult(resultId, oldResultId, html)
-
-        showHideColumns(resultId)
         attachCloseEvent(resultId)
         attachEvalEvent(resultId)
         attachMoreRowsEvent(resultId)
@@ -218,13 +213,9 @@
     var attachSpreadPasteEvent = function (resultId) {
         var queryResultId = '#queryResult' + resultId
         $(document).on('paste', queryResultId + ' td[contenteditable]', function (e) {
-            var clipText = $.clipboardText(e)
-            var $resultTable = $(queryResultId)
-
-            populateDataToTable(clipText, $resultTable, $(this))
+            populateDataToTable($.clipboardText(e), $(queryResultId), $(this))
         })
     }
-
 
     var attachCopyRowsPasteEvent = function (resultId) {
         var qr = '#queryResult' + resultId;
@@ -233,11 +224,9 @@
             var $resultTable = $(qr)
 
             $resultTable.find('input:checked').each(function (index, chk) {
-                var $tr = $(chk).parents('tr')
-                $(chk).prop("checked", false)
+                var $tr = $(chk).prop("checked", false).parents('tr')
                 $tr.clone().addClass('clonedRow').insertAfter($tr)
             })
-
             $resultTable.find('tbody tr').each(function (index, tr) {
                 $(tr).find('td').eq(1).text(index + 1)
             })
@@ -253,16 +242,13 @@
             $resultTable.find('input:checked').each(function (index, chk) {
                 $(chk).parents('tr').remove()
             })
-
             $resultTable.find('tbody tr').each(function (index, tr) {
                 $(tr).find('td').eq(1).text(index + 1)
             })
         })
-
-
     }
 
-    attachHighlightColumnEvent = function (resultId) {
+    var attachHighlightColumnEvent = function (resultId) {
         var $resultTable = $('#queryResult' + resultId)
         $resultTable.find('thead tr').each(function () {
             $(this).find('td:gt(1)').click(function () {
