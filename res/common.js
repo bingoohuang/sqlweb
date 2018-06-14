@@ -38,10 +38,4 @@ var activeClassifier = null
             }
         }
     })
-
-    if (multiTenants === 'false') {
-        $.searchTenants('trr')
-    } else {
-        $('#multiTenantsDiv').show()
-    }
 })()

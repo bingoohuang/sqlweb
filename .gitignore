@@ -22,3 +22,4 @@ go-sql-web
 sqlHistory.json
 vendor
 go-sql-web.linux.bin.bz2
+go-sql-web.linux.bin

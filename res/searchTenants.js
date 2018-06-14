@@ -49,6 +49,12 @@
         })
     }
 
+    if (multiTenants === 'false') {
+        $.searchTenants('trr')
+    } else {
+        $('#multiTenantsDiv').show()
+    }
+
     $('.searchResult').on('click', 'span', function () {
         $('.searchResult span').removeClass('active')
         var $this = $(this).addClass('active')
