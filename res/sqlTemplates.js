@@ -12,7 +12,7 @@
 
     function createTable(resultId, templateVars) {
         var table = '<table id="queryResult' + resultId + '" class="queryResult">'
-        table += '<thead><tr><td>#</td>'
+        table += '<thead><tr><td></td><td>#</td>'
         for (var i = 0; i < templateVars.length; ++i) {
             table += '<td>' + templateVars[i] + '</td>'
         }
@@ -20,13 +20,9 @@
         table += '</tr></thead><tbody>'
 
         for (var rowSeq = 1; rowSeq <= 5; ++rowSeq) {
-            table += '<tr><td>' + rowSeq + '</td>'
+            table += '<tr><td><input type="checkbox"></td><td>' + rowSeq + '</td>'
             for (var i = 0; i < templateVars.length; ++i) {
-                if (rowSeq === 1) {
-                    table += '<td class="excelPasteable" colIndex="' + (i + 1) + '" contenteditable="true"></td>'
-                } else {
-                    table += '<td contenteditable="true"></td>'
-                }
+                table += '<td contenteditable="true"></td>'
             }
             table += '</tr>'
         }
@@ -87,10 +83,10 @@
         $('#moreRows' + resultId).click(function () {
             var $tbody = $('#queryResult' + resultId + " tbody")
             var $tr = $tbody.find('tr:last')
-            var seq = +$tr.find('td:first').text()
+            var seq = +$tr.find('td:eq(1)').text()
             for (var rowSeq = 5; rowSeq >= 1; --rowSeq) {
                 var $clone = $tr.clone()
-                $clone.find('td:first').text(rowSeq + seq)
+                $clone.find('td:eq(1)').text(rowSeq + seq)
                 $clone.insertAfter($tr)
             }
         })
@@ -106,9 +102,9 @@
 
         var baseValue = {}
 
-        var $tds = $resultTable.find('tbody tr:eq(0) td');
+        var $tds = $resultTable.find('tbody tr:eq(0) td')
         for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
-            var index = highlightedColumnIndexes[i];
+            var index = highlightedColumnIndexes[i]
             var value = $tds.eq(index).text()
             if (!value) {
                 alert("There is no base value in highlighted column at index " + (i + 1) + "!")
@@ -129,7 +125,7 @@
         })
     }
 
-    var populateDataToTable = function (text, $resultTable, colIndex) {
+    var populateDataToTable = function (text, $resultTable, $td) {
         var clipRows = text.split(/[\r\n]+/)
         for (i = 0; i < clipRows.length; i++) {
             clipRows[i] = clipRows[i].split(/\s+/)
@@ -137,27 +133,29 @@
         // result clipRows[i][j]
 
         var $tbody = $resultTable.find('tbody')
+        var $rows = $tbody.find('tr')
 
-        var colOffset = colIndex ? +colIndex : 1
+        var colOffset = $td ? $td.parent().find('td').index($td) : 2
+        var rowOffset = $td ? $rows.index($td.parent()) : 0
 
         var x = clipRows
-        var $rows = $tbody.find('tr')
-        for (var i = 0; i < $rows.length && i < x.length; i++) {
+        var i = 0
+        for (; i + rowOffset < $rows.length && i < x.length; i++) {
             y = x[i]
-            var $tds = $rows.eq(i).find('td')
-            $tds.eq(0).text(i + 1)
+            var $tds = $rows.eq(i + rowOffset).find('td')
+            $tds.eq(1).text(i + rowOffset + 1)
             for (var j = 0; j < y.length; ++j) {
                 $tds.eq(j + colOffset).text($.trim(y[j]))
             }
         }
 
         var lastRow = $tbody.find('tr:last')
-        for (var i = $rows.length; i < x.length; i++) {
+        for (; i < x.length; i++) {
             y = x[i]
 
             var $clone = lastRow.clone()
             var $tds = $clone.find('td')
-            $tds.eq(0).text(i + 1)
+            $tds.eq(1).text(i + rowOffset + 1)
             for (var j = 0; j < y.length; ++j) {
                 $tds.eq(j + colOffset).text($.trim(y[j]))
             }
@@ -188,8 +186,10 @@
 
         html += '<div id="divResult' + resultId + '" class="divResult">'
         html += '<div class="operateAreaDiv">'
-        html += '<span class="opsSpan reRunSql" id="evalSql' + resultId + '">Eval</span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="moreRows' + resultId + '">More Rows</span>&nbsp;&nbsp;'
+        html += '<span class="opsSpan reRunSql" id="evalSql' + resultId + '">Eval</span>&nbsp;&nbsp;'
+        html += '<button title="Clone Rows" id="copyRow' + resultId + '" class="copyRow"><span class="context-menu-icons context-menu-icon-cloneRows"></span></button>'
+        html += '<button title="Tag Rows As Deleted" id="deleteRows' + resultId + '"><span class="context-menu-icons context-menu-icon-deleteRows"></span></button>'
         html += '<span class="opsSpan reRunSql" id="reTemplateSql' + resultId + '">Re Run</span>:'
         html += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         html += '</div>'
@@ -209,38 +209,91 @@
         attachEvalEvent(resultId)
         attachMoreRowsEvent(resultId)
         bindReExecuteSql('#reTemplateSql' + resultId, resultId)
-        $.attachHighlightColumnEvent(resultId)
+        attachHighlightColumnEvent(resultId)
         attachSpreadPasteEvent(resultId)
+        attachDeleteRowsPasteEvent(resultId)
+        attachCopyRowsPasteEvent(resultId)
     }
 
     var attachSpreadPasteEvent = function (resultId) {
         var queryResultId = '#queryResult' + resultId
-        $(document).on('paste', queryResultId + ' td.excelPasteable', function (e) {
+        $(document).on('paste', queryResultId + ' td[contenteditable]', function (e) {
             var clipText = $.clipboardText(e)
             var $resultTable = $(queryResultId)
-            var $td = $(this)
 
-            populateDataToTable(clipText, $resultTable, $td.attr('colIndex'))
+            populateDataToTable(clipText, $resultTable, $(this))
         })
     }
 
+
+    var attachCopyRowsPasteEvent = function (resultId) {
+        var qr = '#queryResult' + resultId;
+
+        $('#copyRow' + resultId).click(function () {
+            var $resultTable = $(qr)
+
+            $resultTable.find('input:checked').each(function (index, chk) {
+                var $tr = $(chk).parents('tr')
+                $(chk).prop("checked", false)
+                $tr.clone().addClass('clonedRow').insertAfter($tr)
+            })
+
+            $resultTable.find('tbody tr').each(function (index, tr) {
+                $(tr).find('td').eq(1).text(index + 1)
+            })
+        })
+    }
+
+    var attachDeleteRowsPasteEvent = function (resultId) {
+        var qr = '#queryResult' + resultId;
+
+        $('#deleteRows' + resultId).click(function () {
+            var $resultTable = $(qr)
+
+            $resultTable.find('input:checked').each(function (index, chk) {
+                $(chk).parents('tr').remove()
+            })
+
+            $resultTable.find('tbody tr').each(function (index, tr) {
+                $(tr).find('td').eq(1).text(index + 1)
+            })
+        })
+
+
+    }
+
+    attachHighlightColumnEvent = function (resultId) {
+        var $resultTable = $('#queryResult' + resultId)
+        $resultTable.find('thead tr').each(function () {
+            $(this).find('td:gt(1)').click(function () {
+                var $td = $(this)
+                var currentIndex = $td.parent('tr').find('td').index($td)
+
+                $resultTable.find('tr').each(function () {
+                    $(this).find('td').eq(currentIndex).toggleClass('highlight')
+                })
+            })
+        })
+
+        showHideColumns(resultId)
+    }
+
     var showHideColumns = function (resultId) {
-        var queryResultId = '#queryResult' + resultId;
+        var queryResultId = '#queryResult' + resultId
         $.contextMenu({
             zIndex: 10,
             selector: '#resultId' + resultId,
             trigger: 'left',
             callback: function (key, options) {
                 var $resultTable = $(queryResultId)
-
                 if (key === 'ExportAsTsv') {
                     var csv = []
-                    $resultTable.find('tr:visible').each(function (index, tr) {
+                    $resultTable.find('tr').each(function (index, tr) {
                         var csvLine = []
                         var usable = false
-                        $(tr).find('td').each(function (index, td) {
+                        $(tr).find('td:gt(1)').each(function (index, td) {
                             var text = $(td).text()
-                            if (index > 0 && text !== "") usable = true
+                            if (text !== "") usable = true
 
                             csvLine.push($.csvString(text))
                         })
@@ -253,7 +306,7 @@
                     PopulateByEditorData($resultTable)
                 } else if (key === 'AutoIncrementHighlightedColumns') {
                     AutoIncrementHighlightedColumns($resultTable, true)
-                } else if (key  === 'DuplicateHighlightedColumns') {
+                } else if (key === 'DuplicateHighlightedColumns') {
                     AutoIncrementHighlightedColumns($resultTable, false)
                 }
             },
