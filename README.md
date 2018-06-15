@@ -6,6 +6,7 @@ sql web based on go-lang
 1. `go get -u github.com/jteeuwen/go-bindata/...`
 2. `go get golang.org/x/tools/cmd/goimports`
 3. `brew install dep`
+3. git clone git@github.com:bingoohuang/go-sql-web.git & cd go-sql-web
 3. `dep ensure`
 3. `./gobin.sh & go build -x -v` 
 5. build for linux :`env GOOS=linux GOARCH=amd64 go build -o go-sql-web.linux.bin`
@@ -86,3 +87,6 @@ Copy Columns As TSV(Tab separated values, can be pasted in Excel very well):
 
 ## refer
 1. [使用 dep 管理 Go 套件](https://blog.boatswain.io/zh/post/manage-go-dependencies-using-dep/)
+
+## UPX
+[Citing: ](https://grahamenos.com/rust-osx-linux-musl.html)If you’re concerned about the binary size of your new executable, check out UPX. After installing it on my laptop via brew install upx, I ran upx -9 on an executable created with the above instructions. While the executable was an overly simplistic example, upx compressed it down to 34% of the original size. Even if you don’t care about the size of the binary once it’s on the server, it at least made the scp go faster.
