@@ -17,6 +17,11 @@ table td {
     white-space: pre;
 }
 
+td textarea {
+    width: 98%;
+    border-width: 0;
+}
+
 .error, .changedCell {
     color: red;
 }

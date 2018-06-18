@@ -18,6 +18,11 @@
         return head + '</tr></thead>'
     }
 
+    var htmlEscaper = /[&<>"'\/]/g
+    $.isEscapeRequired = function (unsafe) {
+        return unsafe.length >= 1000 || htmlEscaper.test(unsafe)
+    }
+
     function createRows(result) {
         var rowHtml = ''
         for (var i = 0; i < result.Rows.length; i++) {
@@ -26,18 +31,18 @@
 
             for (var j = 0; j < result.Rows[i].length; ++j) {
                 var cellValue = result.Rows[i][j]
-                var tooLarge = cellValue.length >= 300
+                var needEscape = $.isEscapeRequired(cellValue)
 
-                if (tooLarge) {
+                if (needEscape) {
                     rowHtml += '<td class="dataCell textAreaTd '
                 } else {
                     rowHtml += '<td class="dataCell '
                 }
-                if (result.Headers && !tooLarge) {
+                if (result.Headers && !needEscape) {
                     rowHtml += $.escapeContextMenuCssName(result.Headers[j - 1])
                 }
 
-                if (tooLarge) {
+                if (needEscape) {
                     rowHtml += '"><textarea readonly>' + cellValue + '</textarea></td>'
                 } else {
                     rowHtml += '">' + cellValue + '</td>'
@@ -66,8 +71,7 @@
 
     function findColumnIndex(headers, headerName) {
         for (var i = 0; i < headers.length; ++i) {
-            var upperCaseHeader = headers[i].toUpperCase()
-            if (upperCaseHeader === headerName) return i
+            if (headers[i].toUpperCase() === headerName) return i
         }
 
         return -1

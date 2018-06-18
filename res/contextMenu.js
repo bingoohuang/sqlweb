@@ -6,7 +6,7 @@
     }
 
     $.copiedTips = function (tipsContent) {
-        if (tipsContent.length >= 300) {
+        if ($.isEscapeRequired(tipsContent)) {
             $('#tipsDiv').html('<textarea readonly>' + tipsContent + '</textarea>').show()
         } else {
             $('#tipsDiv').html(tipsContent).show()
