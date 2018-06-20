@@ -8,8 +8,7 @@ import (
 )
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
+	go_utils.HeadContentTypeHtml(w)
 	cookieValue := r.Context().Value("CookieValue")
 	loginedHtml := ""
 	if cookieValue != nil {

@@ -21,7 +21,7 @@ type UpdateResult struct {
 }
 
 func serveUpdate(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	go_utils.HeadContentTypeJson(w)
 
 	sqls := strings.TrimSpace(req.FormValue("sqls"))
 	tid := strings.TrimSpace(req.FormValue("tid"))

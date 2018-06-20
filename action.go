@@ -9,7 +9,7 @@ import (
 )
 
 func serveAction(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	go_utils.HeadContentTypeJson(w)
 
 	tid := strings.TrimSpace(r.FormValue("tid"))
 	action := strings.TrimSpace(r.FormValue("action"))

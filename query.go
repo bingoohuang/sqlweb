@@ -25,7 +25,7 @@ type QueryResult struct {
 }
 
 func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	go_utils.HeadContentTypeJson(w)
 	tid := strings.TrimSpace(req.FormValue("tid"))
 	columnName := strings.TrimSpace(req.FormValue("columnName"))
 
@@ -62,7 +62,7 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 
 func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 	//start := time.Now()
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	go_utils.HeadContentTypeJson(w)
 
 	//if !authOk(req) {
 	//	results := make([]*QueryResult, 1)
@@ -190,7 +190,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 }
 
 func serveQuery(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	go_utils.HeadContentTypeJson(w)
 	querySql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})

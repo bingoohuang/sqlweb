@@ -15,7 +15,7 @@ func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 	linksConfig := r.FormValue("linksConfig")
 	activeClassifier := r.FormValue("activeClassifier")
 
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	go_utils.HeadContentTypeJson(w)
 	configFile := classifiedLinksConfigFile(activeClassifier)
 	err := ioutil.WriteFile(configFile, []byte(linksConfig), 0644)
 	if err != nil {
@@ -49,7 +49,7 @@ func classifiedLinksConfigFile(activeClassifier string) string {
 }
 
 func serveLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	go_utils.HeadContentTypeJson(w)
 
 	activeClassifier := r.FormValue("activeClassifier")
 	configFile := classifiedLinksConfigFile(activeClassifier)

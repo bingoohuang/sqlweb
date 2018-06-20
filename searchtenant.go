@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"github.com/bingoohuang/go-utils"
 	"net/http"
 	"strings"
 )
@@ -16,7 +17,7 @@ type Merchant struct {
 }
 
 func serveSearchDb(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	go_utils.HeadContentTypeJson(w)
 	searchKey := strings.TrimSpace(req.FormValue("searchKey"))
 	if searchKey == "" {
 		http.Error(w, "searchKey required", 405)

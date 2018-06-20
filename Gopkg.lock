@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/bingoohuang/go-utils"
   packages = ["."]
-  revision = "f3b63d8bc5d4a082c0958002eedbd5609d3f664c"
+  revision = "4847ea2778fe4c9424aed9b4d461f6180827d34c"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -55,7 +55,6 @@
   version = "v2.3.5"
 
 [[projects]]
-  branch = "master"
   name = "github.com/tdewolff/parse"
   packages = [
     ".",
@@ -66,6 +65,7 @@
     "strconv"
   ]
   revision = "d739d6fccb0971177e06352fea02d3552625efb1"
+  version = "v2.3.3"
 
 [[projects]]
   name = "github.com/xwb1989/sqlparser"
@@ -81,8 +81,8 @@
 [[projects]]
   name = "google.golang.org/appengine"
   packages = ["cloudsql"]
-  revision = "150dc57a1b433e64154302bdc40b6bb8aefa313a"
-  version = "v1.0.0"
+  revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
+  version = "v1.1.0"
 
 [solve-meta]
   analyzer-name = "dep"
