@@ -49,23 +49,24 @@
             var $table = $('#queryResult' + resultId)
             var templateVars = {}
             $table.find('thead td').each(function (index, td) {
-                templateVars[index] = $(td).text()
+                if (index > 1) templateVars[index] = $(td).text()
             })
 
             var evalResult = []
             var sqlTemplate = $('#executionResultDiv' + resultId).find('.sqlTd').text()
 
-            var templateEval = template.compile(sqlTemplate)
+            var templateEval = template.compile(sqlTemplate, {escape: false})
 
             $table.find('tbody tr').each(function (i, tr) {
                 var varValues = {}
                 var usable = false
                 $(tr).find('td').each(function (index, td) {
-                    if (index > 0) {
+                    if (index > 1) {
                         var text = $(td).text()
                         if (text !== "") usable = true
 
-                        varValues[templateVars[index]] = text
+                        var val = $('#escapleSqlValues' + resultId).prop("checked") ? $.escapeSqlValue(text) : text;
+                        varValues[templateVars[index]] = val
                     }
                 })
 
@@ -183,6 +184,7 @@
 
         html += '<div id="divResult' + resultId + '" class="divResult">'
         html += '<div class="operateAreaDiv">'
+        html += '<span class="opsSpan"><input type="checkbox" checked id="escapleSqlValues' + resultId + '"><label for="escapleSqlValues' + resultId + '">Escape SQL values</label></span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="moreRows' + resultId + '">More Rows</span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="evalSql' + resultId + '">Eval</span>&nbsp;&nbsp;'
         html += '<button title="Clone Rows" id="copyRow' + resultId + '" class="copyRow"><span class="context-menu-icons context-menu-icon-cloneRows"></span></button>'
