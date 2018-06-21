@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"github.com/bingoohuang/go-utils"
 )
 
 type SqlHistory struct {
@@ -54,7 +55,7 @@ func showHistory() (header []string, data [][]string, executionTime, costTime st
 
 	reader := bufio.NewReader(file)
 
-	deque := NewCappedDeque(30)
+	deque := go_utils.NewFifoQueue(30)
 	for {
 		rowData, err := reader.ReadBytes('\n')
 		if err != nil {
