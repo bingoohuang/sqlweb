@@ -18,7 +18,7 @@
         return head + '</tr></thead>'
     }
 
-    var htmlEscaper = /[&<>"'\/]/g
+    var htmlEscaper = /[<>]/g
     $.isEscapeRequired = function (unsafe) {
         return unsafe.length >= 1000 || htmlEscaper.test(unsafe)
     }
