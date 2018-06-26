@@ -166,6 +166,10 @@ table.executionSummary tr:first-child {
     display: none;
 }
 
+.rowspanned {
+    display: none;
+}
+
 .underline {
     text-decoration: underline;
 }

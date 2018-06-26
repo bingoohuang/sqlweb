@@ -112,9 +112,9 @@
                         '<td class="dataCell" rowspan="' + rowspan + '">' + tenant.merchantCode + '</td>'
                 } else {
                     rowHtml +=
-                        '<td class="dataCell hide">' + tenant.merchantId + '</td>' +
-                        '<td class="dataCell hide">' + tenant.merchantName + '</td>' +
-                        '<td class="dataCell hide">' + tenant.merchantCode + '</td>'
+                        '<td class="dataCell rowspanned">' + tenant.merchantId + '</td>' +
+                        '<td class="dataCell rowspanned">' + tenant.merchantName + '</td>' +
+                        '<td class="dataCell rowspanned">' + tenant.merchantCode + '</td>'
                 }
 
                 rowHtml += '<td>' + (i + 1) + '</td>'
