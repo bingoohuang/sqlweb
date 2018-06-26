@@ -342,7 +342,10 @@ table.executionSummary tr:first-child {
 
 #screenShot canvas {
     background-color: white;
-    width: calc(100% - 200px);
-    margin-left: 100px;
-    transform: scale(0.95);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    max-width: 95%;
+    max-height: 95%;
 }
