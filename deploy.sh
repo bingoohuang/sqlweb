@@ -3,12 +3,18 @@
 # ./deploy.sh app@hd2.gw01 or ./deploy.sh app@hb2.gw01
 targetHost=$1
 deployName=go-sql-web
+fast=$2
 
-./gobin.sh
-rm -fr $deployName.linux.bin $deployName.linux.bin.bz2
-env GOOS=linux GOARCH=amd64 go build -o $deployName.linux.bin
-bzip2 $deployName.linux.bin
-rsync -avz --human-readable --progress -e "ssh -p 22" ./$deployName.linux.bin.bz2 $targetHost:./
+if [ "$fast" == "fast" ]; then
+    echo "jump building in fast mode"
+else
+    echo "rebuilding"
+    ./gobin.sh
+    env GOOS=linux GOARCH=amd64 go build -o $deployName.linux.bin
+    upx $deployName.linux.bin
+fi
+
+rsync -avz --human-readable --progress -e "ssh -p 22" ./$deployName.linux.bin $targetHost:./
 #scp ./$deployName.linux.bin.bz2 $targetHost:./
 scp ./deploy-gw01.to.smc01.sh $targetHost:./
 ssh -tt $targetHost "bash -s" << eeooff

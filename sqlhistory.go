@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
+	"github.com/bingoohuang/go-utils"
 	"os"
 	"strconv"
 	"strings"
 	"time"
-	"github.com/bingoohuang/go-utils"
 )
 
 type SqlHistory struct {

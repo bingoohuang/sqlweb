@@ -14,15 +14,15 @@ import (
 var (
 	contextPath  string
 	port         string
-	maxRows      *int
-	g_dataSource *string
+	maxRows      int
+	g_dataSource string
 
-	devMode      *bool // to disable css/js minify
-	authBasic    *bool
-	multiTenants *bool
+	devMode      bool // to disable css/js minify
+	authBasic    bool
+	multiTenants bool
 
-	northProxy *string
-	southProxy *string
+	northProxy string
+	southProxy string
 )
 
 var authParam go_utils.MustAuthParam
@@ -30,17 +30,17 @@ var authParam go_utils.MustAuthParam
 func init() {
 	contextPathArg := flag.String("contextPath", "", "context path")
 	portArg := flag.Int("port", 8381, "Port to serve.")
-	maxRows = flag.Int("maxRows", 1000, "Max number of rows to return.")
-	g_dataSource = flag.String("dataSource", "user:pass@tcp(127.0.0.1:3306)/?charset=utf8", "dataSource string.")
+	flag.IntVar(&maxRows, "maxRows", 1000, "Max number of rows to return.")
+	flag.StringVar(&g_dataSource, "dataSource", "user:pass@tcp(127.0.0.1:3306)/?charset=utf8", "dataSource string.")
 
 	go_utils.PrepareMustAuthFlag(&authParam)
 
-	devMode = flag.Bool("devMode", false, "devMode(disable js/css minify)")
-	authBasic = flag.Bool("authBasic", false, "authBasic based on poems")
-	multiTenants = flag.Bool("multiTenants", false, "support multiTenants")
+	flag.BoolVar(&devMode, "devMode", false, "devMode(disable js/css minify)")
+	flag.BoolVar(&authBasic, "authBasic", false, "authBasic based on poems")
+	flag.BoolVar(&multiTenants, "multiTenants", false, "support multiTenants")
 
-	northProxy = flag.String("northProxy", "http://127.0.0.1:8092", "northProxy")
-	southProxy = flag.String("southProxy", "http://127.0.0.1:8082", "southProxy")
+	flag.StringVar(&northProxy, "northProxy", "http://127.0.0.1:8092", "northProxy")
+	flag.StringVar(&southProxy, "southProxy", "http://127.0.0.1:8082", "southProxy")
 
 	flag.Parse()
 
@@ -66,7 +66,7 @@ func main() {
 	handleFunc(r, "/update", serveUpdate, false, true)
 	handleFunc(r, "/exportDatabase", exportDatabase, true, true)
 	handleFunc(r, "/importDatabase", importDatabase, false, true)
-	if *multiTenants {
+	if multiTenants {
 		handleFunc(r, "/multipleTenantsQuery", multipleTenantsQuery, true, true)
 	}
 	handleFunc(r, "/searchDb", serveSearchDb, false, true)
@@ -83,7 +83,7 @@ func main() {
 
 func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := go_utils.DumpRequest(f)
-	if requiredBasicAuth && *authBasic {
+	if requiredBasicAuth && authBasic {
 		wrap = go_utils.RandomPoemBasicAuth(wrap)
 	}
 
@@ -99,7 +99,7 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	if !*authBasic || *authParam.ForceLogin {
+	if !authBasic || *authParam.ForceLogin {
 		// fmt.Println("Redirect to", contextPath+"/home")
 		// http.Redirect(w, r, contextPath+"/home", 301)
 		serveHome(w, r)

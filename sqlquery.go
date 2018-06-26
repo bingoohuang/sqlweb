@@ -14,10 +14,10 @@ import (
 
 func selectDb(tid string) (string, string, error) {
 	if tid == "trr" {
-		return *g_dataSource, "", nil
+		return g_dataSource, "", nil
 	}
 
-	return selectDbByTid(tid, *g_dataSource)
+	return selectDbByTid(tid, g_dataSource)
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {
@@ -52,7 +52,7 @@ func executeQuery(querySql, dataSource string) (
 	}
 	defer db.Close()
 
-	return query(db, querySql, *maxRows)
+	return query(db, querySql, maxRows)
 }
 
 func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string, string, error, string) {

@@ -24,7 +24,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if searchKey == "trr" || !*multiTenants {
+	if searchKey == "trr" || !multiTenants {
 		var searchResult [1]Merchant
 		searchResult[0] = Merchant{
 			MerchantName: "trr",
@@ -39,7 +39,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
 		"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
-	_, data, _, _, err, _ := executeQuery(searchSql, *g_dataSource)
+	_, data, _, _, err, _ := executeQuery(searchSql, g_dataSource)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -83,7 +83,7 @@ func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 func searchMerchant(tid string) (*Merchant, error) {
 	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + tid + "'"
-	_, data, _, _, err, _ := executeQuery(searchSql, *g_dataSource)
+	_, data, _, _, err, _ := executeQuery(searchSql, g_dataSource)
 	if err != nil {
 		return nil, err
 	}

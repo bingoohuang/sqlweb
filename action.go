@@ -42,9 +42,9 @@ type Action interface {
 
 func findProxy(homeArea string) (string, error) {
 	if strings.Contains(homeArea, "south") {
-		return *southProxy, nil
+		return southProxy, nil
 	} else if strings.Contains(homeArea, "north") {
-		return *northProxy, nil
+		return northProxy, nil
 	}
 	return "", errors.New("unknown homeArea " + homeArea)
 }

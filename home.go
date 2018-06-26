@@ -20,16 +20,16 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	indexHtml := string(MustAsset("res/index.html"))
 	indexHtml = strings.Replace(indexHtml, "<LOGIN/>", loginedHtml, 1)
 
-	html := go_utils.MinifyHtml(indexHtml, *devMode)
+	html := go_utils.MinifyHtml(indexHtml, devMode)
 
 	mergeCss := go_utils.MergeCss(MustAsset, go_utils.FilterAssetNames(AssetNames(), ".css"))
-	css := go_utils.MinifyCss(mergeCss, *devMode)
+	css := go_utils.MinifyCss(mergeCss, devMode)
 	mergeScripts := go_utils.MergeJs(MustAsset, go_utils.FilterAssetNames(AssetNames(), ".js"))
-	js := go_utils.MinifyJs(mergeScripts, *devMode)
+	js := go_utils.MinifyJs(mergeScripts, devMode)
 	html = strings.Replace(html, "/*.CSS*/", css, 1)
 	html = strings.Replace(html, "/*.SCRIPT*/", js, 1)
 	html = strings.Replace(html, "${contextPath}", contextPath, -1)
-	html = strings.Replace(html, "${multiTenants}", strconv.FormatBool(*multiTenants), -1)
+	html = strings.Replace(html, "${multiTenants}", strconv.FormatBool(multiTenants), -1)
 
 	w.Write([]byte(html))
 }
