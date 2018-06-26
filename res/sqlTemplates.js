@@ -5,8 +5,8 @@
             '<table class="executionSummary"><tr>' +
             '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '</td>' +
             '<td>Template Processing</td>' +
-            '<td><span class="opsSpan" id="closeResult' + resultId + '">Close</span>' +
-            '</td>' +
+            '<td><span class="opsSpan" id="screenShot' + resultId + '">截图</span></td>' +
+            '<td><span class="opsSpan" id="closeResult' + resultId + '">Close</span></td>' +
             '</tr></table>'
     }
 
@@ -175,6 +175,10 @@
     function attachCloseEvent(resultId) {
         $('#closeResult' + resultId).click(function () {
             $('#executionResultDiv' + resultId).remove()
+        })
+        var rid =  resultId
+        $('#screenShot'+ rid).click(function () {
+            $.screenShot(rid)
         })
     }
 

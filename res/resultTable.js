@@ -62,7 +62,7 @@
             + '<span class="opsSpan" merchantIdIndex="' + holder.tiIndex
             + '" merchantNameIndex="' + holder.tnameIndex
             + '" merchantCodeIndex="' + holder.tcodeIndex
-            + '">ExecuteSqlAmongBelowTenants</span>'
+            + '">ExecuteSqlAmongTenants</span>'
             + '<span>BatchSize:<input class="batchSize" placeholder="20">'
             + '<label><input class="confirm" type="checkbox" name="checkbox" value="value">Confirm to Continue?</label>'
             + '</span>'
@@ -106,6 +106,7 @@
             '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
+            '<td><span class="opsSpan" id="screenShot' + resultId + '">截图</span></td>' +
             '<td>' +
             '<span class="opsSpan" id="closeResult' + resultId + '">Close</span>' +
             createMultipleTenantsExecutable(resultId, result, hasRows) +

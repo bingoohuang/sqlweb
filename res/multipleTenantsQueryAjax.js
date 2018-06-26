@@ -62,6 +62,7 @@
             '<td>Rows:&nbsp;<span id="summaryRows' + resultId + '">0</span></td>' +
             '<td>Time:&nbsp;' + $.js_yyyy_mm_dd_hh_mm_ss_SSS() + '</td>' +
             '<td>Cost:&nbsp;<span id="summaryCostTime' + resultId + '">0</span></td>' +
+            '<td><span class="opsSpan" id="screenShot' + resultId + '">截图</span></td>' +
             '<td><span class="opsSpan" id="closeResult' + resultId + '">Close</span></td>' +
             '</tr>' +
             '</table>'

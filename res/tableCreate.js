@@ -61,6 +61,10 @@
         $('#closeResult' + resultId).click(function () {
             $(divId).remove()
         })
+        var rid =  resultId
+        $('#screenShot'+ rid).click(function () {
+            $.screenShot(rid)
+        })
 
         var reExecuteSql = '#reExecuteSql' + resultId;
         $(reExecuteSql).click(function () {
