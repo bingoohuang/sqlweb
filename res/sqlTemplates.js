@@ -230,8 +230,9 @@
             var $resultTable = $(qr)
 
             $resultTable.find('input:checked').each(function (index, chk) {
-                var $tr = $(chk).prop("checked", false).parents('tr')
+                var $tr = $(chk).parents('tr')
                 $tr.clone().addClass('clonedRow').insertAfter($tr)
+                $(chk).prop("checked", false)
             })
             $resultTable.find('tbody tr').each(function (index, tr) {
                 $(tr).find('td').eq(1).text(index + 1)
