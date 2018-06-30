@@ -90,9 +90,39 @@
         return sql
     }
 
-    $.executeQueryAjax = function (classifier, tid, tcode, tname, sql, resultId, sqls, nextIndex, executeResultContext) {
+    var originalTid = null
+    var lastTenant = null
+    $.executeQueryAjax = function (classifier, tid, tcode, tname, sql, resultId, sqls, nextIndex, executeResultContext, forceTenant) {
         if (sqls && nextIndex > 0) {
             sql = translateSqlWithLastResults(sql, executeResultContext, nextIndex)
+        }
+
+        // /* tenant:18600010 */ select 1 from xxx
+        sql = $.trim(sql)
+        var tenantRe = /\/\*\s*tenant:\s*(.*?)\s*\*\/(.+)/
+        var tenantReResult = tenantRe.exec(sql)
+        if (tenantReResult) {
+            if (!originalTid) {
+                originalTid = tid
+            }
+
+            var tenant = tenantReResult[1]
+            sql = tenantReResult[2]
+
+            if (lastTenant !== tenant) {
+                lastTenant = tenant
+
+                $.searchTenants(tenant, function () {
+                    $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName,
+                        sql, resultId, sqls, nextIndex, executeResultContext, true)
+                })
+                return
+            }
+        } else if (!forceTenant && originalTid != null) {
+            $.searchTenants(originalTid, function () {
+                $.executeQueryAjax(classifier, tid, tcode, tname, sql, resultId, sqls, nextIndex, executeResultContext, true)
+            }, true)
+            return
         }
 
         $.ajax({
@@ -115,6 +145,12 @@
 
                 if (sqls && (nextIndex + 1) < sqls.length) {
                     $.executeQueryAjax(classifier, tid, tcode, tname, sqls[nextIndex + 1], resultId, sqls, nextIndex + 1, executeResultContext)
+                } else {
+                    if (originalTid) {
+                        $.searchTenants(originalTid, null, true)
+                    }
+                    originalTid = null
+                    lastTenant = null
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

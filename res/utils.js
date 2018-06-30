@@ -232,6 +232,12 @@
     }
 
     $.firstUpperWord = function (sql) {
+        var prefix = /\/\*.*?\*\/(.+)/
+        var prefixResult = prefix.exec(sql)
+        if (prefixResult) {
+            sql = prefixResult[1]
+        }
+
         var s = $.trim(sql)
         var firstWord = s.replace(/\s.*/, '')
         return firstWord.toUpperCase()

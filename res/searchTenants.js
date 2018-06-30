@@ -17,11 +17,11 @@
         $(this).select()
     })
 
-    $.searchTenants = function (searchKey) {
+    $.searchTenants = function (searchKey, callbackFn, byTenant) {
         $.ajax({
             type: 'POST',
             url: contextPath + "/searchDb",
-            data: {searchKey: searchKey},
+            data: {searchKey: searchKey, byTenant: !!byTenant},
             success: function (content, textStatus, request) {
                 var searchResult = $('.searchResult')
                 var searchHtml = ''
@@ -42,6 +42,8 @@
                 }
                 searchResult.html(searchHtml)
                 $('.searchResult span:first-child').click()
+
+                callbackFn && callbackFn()
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)

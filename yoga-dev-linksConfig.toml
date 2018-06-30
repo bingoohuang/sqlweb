@@ -36,6 +36,14 @@
     linksTo = ["tt_f_subscribe", "tt_f_subscribe_pay"]
 
 [entries]
+    [entries.xxx]
+    type = "input"
+    autoHide  = true
+    label = "改馆名"
+    placeholder = "新馆名"
+    width="120px"
+    sql = "update tt_f_merchant set MERCHANT_NAME = '{input}';/*tenant:trr*/update tr_f_merchant set  MERCHANT_NAME = '{input}' where MERCHANT_ID = '{tid}'"
+    
     [entries.member]
     type = "input"
     autoHide  = true

@@ -19,6 +19,7 @@ type Merchant struct {
 func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 	go_utils.HeadContentTypeJson(w)
 	searchKey := strings.TrimSpace(req.FormValue("searchKey"))
+	byTenant := strings.TrimSpace(req.FormValue("byTenant"))
 	if searchKey == "" {
 		http.Error(w, "searchKey required", 405)
 		return
@@ -36,9 +37,15 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
-		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
-		"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
+	searchSql := ""
+	if byTenant == "true" {
+		searchSql = "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
+			"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey + "' OR MERCHANT_CODE = '" + searchKey + "'"
+	} else {
+		searchSql = "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
+			"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
+			"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
+	}
 	_, data, _, _, err, _ := executeQuery(searchSql, g_dataSource)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
