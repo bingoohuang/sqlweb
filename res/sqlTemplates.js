@@ -43,7 +43,6 @@
         })
     }
 
-
     function attachEvalEvent(resultId) {
         $('#evalSql' + resultId).click(function () {
             var $table = $('#queryResult' + resultId)
@@ -62,7 +61,7 @@
                 var usable = false
                 $(tr).find('td').each(function (index, td) {
                     if (index > 1) {
-                        var text = $(td).text()
+                        var text = $.cellValue($(td))
                         if (text !== "") usable = true
 
                         var val = $('#escapleSqlValues' + resultId).prop("checked") ? $.escapeSqlValue(text) : text;

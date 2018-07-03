@@ -41,7 +41,7 @@
     }
 
     function cellValue(cells, seq) {
-        return cells.eq(seq).text()
+        return $.cellValue(cells.eq(seq))
     }
 
     function createAddColumn(cells, result, $rows, index) {

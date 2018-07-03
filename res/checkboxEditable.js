@@ -29,6 +29,7 @@
         }).blur(function () {
             var $this = $(this)
             var $td = $this.parent()
+            $this.val($.trim($this.val()))
             if ($td.attr('old') == $this.val()) {
                 $td.removeAttr('old').removeClass('changedCell')
             } else {
@@ -49,7 +50,8 @@
             })
         }).blur(function () {
             var $this = $(this)
-            if ($this.attr('old') == $this.text()) {
+            $this.text($.trim($this.text()))
+            if ($this.attr('old') ==  $this.text()) {
                 $this.removeAttr('old').removeClass('changedCell')
             } else {
                 $this.addClass('changedCell')

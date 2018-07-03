@@ -15,7 +15,7 @@
         cells.each(function (index, cell) {
             valueSql += index > 1 ? ', ' : ''
             if (index > 0) {
-                var newValue = $(cell).text()
+                var newValue = $.cellValue($(cell))
                 valueSql += "(null)" == newValue ? 'null' : ('\'' + $.escapeSqlValue(newValue) + '\'')
             }
         })
@@ -129,18 +129,18 @@
 
                 var pkName = headers[ki]
                 var $cell = cells.eq(ki + 1)
-                var pkValue = $cell.text()
+                var pkValue = $.cellValue($cell)
                 where += wrapFieldName(pkName) + ' = \'' + $.escapeSqlValue(pkValue) + '\''
             }
         } else {
             var wherePart = ''
             cells.each(function (index, cell) {
                 if (index > 0) {
-                    var whereValue = $(cell).text()
                     wherePart += wherePart != '' ? ' and ' : ''
-
                     var fieldName = headers[index - 1]
+
                     wherePart += wrapFieldName(fieldName)
+                    var whereValue = $.cellValue($(cell))
                     wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + $.escapeSqlValue(whereValue) + '\''
                 }
             })
@@ -261,12 +261,15 @@
                 var fieldName = $(headRow.get(jndex + 1)).text()
                 updateSql += wrapFieldName(fieldName)
 
-                var $cell = $(cell)
-                var newValue = $cell.hasClass('textAreaTd') ? $cell.find('textarea').val() : $cell.text()
+                var newValue = $.cellValue($(cell))
                 updateSql += "(null)" == newValue ? ' = null' : ' = \'' + $.escapeSqlValue(newValue) + '\''
             }
         })
         return updateSql
+    }
+
+    $.cellValue = function($cell) {
+        return $.trim($cell.hasClass('textAreaTd') ? $cell.find('textarea').val() : $cell.text())
     }
 
     function wrapFieldName(fieldName) {
