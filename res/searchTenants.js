@@ -55,6 +55,9 @@
         $.searchTenants('trr')
     } else {
         $('#multiTenantsDiv').show()
+        if (defaultTenant) {
+            $.searchTenants(defaultTenant)
+        }
     }
 
     $('.searchResult').on('click', 'span', function () {

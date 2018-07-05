@@ -167,6 +167,7 @@
                 } else if (key === 'CopyAsTsv') {
                     CopyAsTsv($resultTable)
                 } else if (key === 'MakeDraggable') {
+                    // http://www.danvk.org/wp/dragtable/index.html
                     dragtable.makeDraggable($resultTable[0])
                 } else if (key === 'FilterAndOrderHighlightedColumn') {
                     FilterAndOrderHighlightedColumn($resultTable)

@@ -30,6 +30,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	html = strings.Replace(html, "/*.SCRIPT*/", js, 1)
 	html = strings.Replace(html, "${contextPath}", contextPath, -1)
 	html = strings.Replace(html, "${multiTenants}", strconv.FormatBool(multiTenants), -1)
+	html = strings.Replace(html, "${defaultTenant}", defaultTenant, -1)
 
 	w.Write([]byte(html))
 }
