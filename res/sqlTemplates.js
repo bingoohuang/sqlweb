@@ -89,6 +89,7 @@
                 $clone.find('td:eq(1)').text(rowSeq + seq)
                 $clone.insertAfter($tr)
             }
+            $resultTable.tableHeadFixer({"left": 2})
         })
     }
 
@@ -152,6 +153,8 @@
             populateRow($clone.find('td'), x, i, rowOffset, colOffset)
             $tbody.append($clone)
         }
+
+        $resultTable.tableHeadFixer({"left": 2})
     }
 
     function populateRow($tds, x, i, rowOffset, colOffset) {
@@ -190,6 +193,7 @@
         html += '<span class="opsSpan"><input type="checkbox" checked id="escapleSqlValues' + resultId + '"><label for="escapleSqlValues' + resultId + '">Escape SQL values</label></span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="moreRows' + resultId + '">More Rows</span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="evalSql' + resultId + '">Eval</span>&nbsp;&nbsp;'
+        html += '<button title="Expand/Collapse Rows"  id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
         html += '<button title="Clone Rows" id="copyRow' + resultId + '" class="copyRow"><span class="context-menu-icons context-menu-icon-cloneRows"></span></button>'
         html += '<button title="Tag Rows As Deleted" id="deleteRows' + resultId + '"><span class="context-menu-icons context-menu-icon-deleteRows"></span></button>'
         html += '<span class="opsSpan reRunSql" id="reTemplateSql' + resultId + '">Re Run</span>:'
@@ -202,9 +206,16 @@
             return
         }
 
-        html += createTable(resultId, templateVars) + '</div><br/>'
+        html += '<div id="collapseDiv' + resultId + '" class="collapseDiv">'
+        html += createTable(resultId, templateVars)
+        html += '</div>'
+
+
+        html += '</div><br/>'
 
         $.replaceOrPrependResult(resultId, oldResultId, html)
+
+        $.attachExpandRowsEvent(resultId, true)
         attachCloseEvent(resultId)
         attachEvalEvent(resultId)
         attachMoreRowsEvent(resultId)
@@ -236,6 +247,8 @@
             $resultTable.find('tbody tr').each(function (index, tr) {
                 $(tr).find('td').eq(1).text(index + 1)
             })
+
+            $resultTable.tableHeadFixer({"left": 2})
         })
     }
 

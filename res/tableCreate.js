@@ -18,12 +18,14 @@
     }
 
     function attachCopyRowsEvent(resultId) {
-        $('#copyRow' + resultId).click(function () {
-            var $checkedRows = $.chosenRows(resultId)
+        var rid = resultId
+        $('#copyRow' + rid).click(function () {
+            var $checkedRows = $.chosenRows(rid)
             if ($checkedRows.length == 0) {
                 alert('please specify which row to copy')
             } else {
                 copyRows($checkedRows)
+                $("#queryResult" + rid).tableHeadFixer({"left": 2})
             }
         })
     }
@@ -61,8 +63,8 @@
         $('#closeResult' + resultId).click(function () {
             $(divId).remove()
         })
-        var rid =  resultId
-        $('#screenShot'+ rid).click(function () {
+        var rid = resultId
+        $('#screenShot' + rid).click(function () {
             $.screenShot(rid)
         })
 
@@ -111,12 +113,13 @@
     }
 
     $.attachExpandRowsEvent = function (resultId) {
-        var buttonId = '#expandRows' + resultId
-        var collapseDiv = '#collapseDiv' + resultId
+        var rid = resultId
+        $('#expandRows' + rid).click(function () {
+            $('#collapseDiv' + rid).toggleClass('collapseDiv')
+        })
 
-        $(buttonId).click(function () {
-            $(collapseDiv).toggleClass('collapseDiv')
-        }).toggle($(collapseDiv).height() >= 300)
+        // https://github.com/lai32290/TableHeadFixer
+        $("#queryResult" + rid).tableHeadFixer({"left": 2})
     }
 
     $.tableCreate = function (result, sql, oldResultId, classifier, tid, tcode, tname) {

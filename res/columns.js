@@ -3,17 +3,19 @@
         var $resultTable = $('#queryResult' + resultId)
         $resultTable.find('thead tr').each(function () {
             $(this).find('td').click(function () {
-                var currentIndex = -1
-                var currentTd = this;
-                $(this).parent('tr').find('td').each(function (index, td) {
-                    if (td === currentTd) {
-                        currentIndex = index
-                        return false
-                    }
-                })
+                var currentTd = $(this);
 
+                if (currentTd.hasClass('highlight')) {
+                    currentTd.css({"background-color": currentTd.attr('old-background-color')})
+                    currentTd.removeAttr('old-background-color')
+                } else {
+                    currentTd.attr('old-background-color', currentTd.css("background-color"))
+                    currentTd.css({"background-color": "rgba(20, 255, 20, .5)"})
+                }
+
+                var highlightIndex = $(this).parent('tr').find('td').index(currentTd)
                 $resultTable.find('tr').each(function () {
-                    $(this).find('td').eq(currentIndex).toggleClass('highlight')
+                    $(this).find('td').eq(highlightIndex).toggleClass('highlight')
                 })
             })
         })

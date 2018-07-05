@@ -40,11 +40,7 @@
     }
 
     function equalsAnyOf(text, filters) {
-        for (var i = 0; i < filters.length; ++i) {
-            if (text == filters[i]) return true;
-        }
-
-        return false;
+        return $.inArray(text, filters) >= 0
     }
 
     function containsAnyOf(text, filters) {
