@@ -19,11 +19,14 @@
                     $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, 'show full columns from ' + tableName)
                 } else if (key == 'ShowCreateTable') {
                     $.showSqlAjax('show create table ' + tableName)
+                } else if (key == 'RenameTable') {
+                    $.appendSqlToSqlEditor('RENAME TABLE ' + tableName + ' TO ' + tableName + "_new", true, false)
                 }
             },
             items: {
                 ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
                 ShowCreateTable: {name: 'Show Create Table', icon: 'create-table'},
+                RenameTable: {name: 'Rename Table', icon: 'create-table'},
             }
         })
     }
