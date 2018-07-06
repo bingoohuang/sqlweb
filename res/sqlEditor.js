@@ -13,7 +13,8 @@
         smartIndent: true,
         lineNumbers: true,
         matchBrackets: true,
-        extraKeys: extraKeys
+        extraKeys: extraKeys,
+        hint: CodeMirror.hint.sql
     })
 
     $.sqlCodeMirror = codeMirror

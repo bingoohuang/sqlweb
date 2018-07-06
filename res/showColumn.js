@@ -20,7 +20,7 @@
         })
     }
 
-    function createRowsColumnInfo(rows, classifier, tableName, columnName) {
+    function createRowsColumnInfo(rows, classifier, tableName) {
         for (var i = 0; i < rows.length; ++i) {
             createColumnInfo(rows[i], classifier, tableName)
         }
@@ -48,7 +48,7 @@
     function showColumnInfo(classifier, content, tableName, columnName) {
         if (!content || !content.Rows || !content.Rows.length) return
 
-        createRowsColumnInfo(content.Rows, classifier, tableName, columnName)
+        createRowsColumnInfo(content.Rows, classifier, tableName)
         tryShowColumnInfo(classifier, tableName, columnName)
     }
 

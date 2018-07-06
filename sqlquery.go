@@ -24,7 +24,7 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
 		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "' AND STATE = '2'"
 
-	_, data, _, _, err, _ := executeQuery(queryDbSql, ds)
+	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, maxRows)
 	if err != nil {
 		return "", "", err
 	}
@@ -43,7 +43,7 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 		"?charset=utf8mb4,utf8&timeout=3s", row[5], nil
 }
 
-func executeQuery(querySql, dataSource string) (
+func executeQuery(querySql, dataSource string, max int) (
 	[]string /*header*/, [][]string, /*data*/
 	string /*executionTime*/, string /*costTime*/, error, string /* msg */) {
 	db, err := sql.Open("mysql", dataSource)
@@ -52,7 +52,7 @@ func executeQuery(querySql, dataSource string) (
 	}
 	defer db.Close()
 
-	return query(db, querySql, maxRows)
+	return query(db, querySql, max)
 }
 
 func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string, string, error, string) {

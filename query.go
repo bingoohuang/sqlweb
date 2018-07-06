@@ -14,6 +14,7 @@ import (
 type QueryResult struct {
 	Headers          []string
 	Rows             [][]string
+	TableColumns     map[string][]string
 	Error            string
 	ExecutionTime    string
 	CostTime         string
@@ -39,7 +40,7 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 		"WHERE TABLE_SCHEMA NOT IN('information_schema','mysql','performance_schema') " +
 		"AND COLUMN_NAME = '" + columnName + "'"
 
-	_, rows, executionTime, costTime, err, msg := processSql(tid, querySql, dbDataSource)
+	_, rows, executionTime, costTime, err, msg := processSql(tid, querySql, dbDataSource, 0)
 
 	queryResult := struct {
 		Rows          [][]string
@@ -195,6 +196,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		return unicode.IsSpace(r) || r == ';'
 	})
 	tid := strings.TrimSpace(req.FormValue("tid"))
+	withColumns := strings.TrimSpace(req.FormValue("withColumns"))
 
 	dbDataSource, databaseName, err := selectDb(tid)
 	if err != nil {
@@ -207,7 +209,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	headers, rows, executionTime, costTime, err, msg := processSql(tid, querySql, dbDataSource)
+	headers, rows, executionTime, costTime, err, msg := processSql(tid, querySql, dbDataSource, 0)
 	primaryKeysIndex := findPrimaryKeysIndex(tableName, primaryKeys, headers)
 
 	queryResult := QueryResult{
@@ -222,15 +224,42 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		Msg:              msg,
 	}
 
+	if "true" == withColumns {
+		tableColumns := make(map[string][]string)
+		columnsSql := `select TABLE_NAME, COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_SCHEMA = '` + databaseName + `' order by TABLE_NAME`
+		_, colRows, _, _, _, _ := processSql(tid, columnsSql, dbDataSource, 0)
+
+		tableName := ""
+		var columns []string = nil
+
+		for _, row := range colRows {
+			if tableName != row[1] {
+				if tableName != "" {
+					tableColumns[tableName] = columns
+					columns = make([]string, 0)
+				}
+				tableName = row[1]
+			}
+
+			columns = append(columns, row[2])
+		}
+
+		if tableName != "" {
+			tableColumns[tableName] = columns
+		}
+
+		queryResult.TableColumns = tableColumns
+	}
+
 	json.NewEncoder(w).Encode(queryResult)
 }
 
-func processSql(tid, querySql, dbDataSource string) ([]string, [][]string, string, string, error, string) {
+func processSql(tid, querySql, dbDataSource string, max int) ([]string, [][]string, string, string, error, string) {
 	isShowHistory := strings.EqualFold("show history", querySql)
 	if isShowHistory {
 		return showHistory()
 	} else {
 		saveHistory(tid, querySql)
-		return executeQuery(querySql, dbDataSource)
+		return executeQuery(querySql, dbDataSource, max)
 	}
 }

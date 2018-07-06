@@ -61,7 +61,7 @@ func findPrimaryKeysIndex(tableName string, primaryKeys, headers []string) []int
 
 func findTablePrimaryKeys(tableName string, dbDataSource string) []string {
 	primaryKeys := make([]string, 0)
-	_, data, _, _, err, _ := executeQuery("desc "+tableName, dbDataSource)
+	_, data, _, _, err, _ := executeQuery("desc "+tableName, dbDataSource, 0)
 	if err != nil {
 		return primaryKeys
 	}

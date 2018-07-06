@@ -46,7 +46,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 			"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
 			"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
 	}
-	_, data, _, _, err, _ := executeQuery(searchSql, g_dataSource)
+	_, data, _, _, err, _ := executeQuery(searchSql, g_dataSource, maxRows)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -74,7 +74,7 @@ func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 	queryDbSql := "SELECT MERCHANT_ID, DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
 		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "' AND STATE = '2'"
 
-	_, data, _, _, err, _ := executeQuery(queryDbSql, ds)
+	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, maxRows)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 func searchMerchant(tid string) (*Merchant, error) {
 	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + tid + "'"
-	_, data, _, _, err, _ := executeQuery(searchSql, g_dataSource)
+	_, data, _, _, err, _ := executeQuery(searchSql, g_dataSource, maxRows)
 	if err != nil {
 		return nil, err
 	}
