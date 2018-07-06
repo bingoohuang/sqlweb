@@ -121,9 +121,8 @@
         table += '<div id="divTranspose' + resultId + '" class="hide"></div>'
         table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
-        if (hasRows) {
-            table += '<input id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
-        }
+        table += '<input id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
+
         table += '<button title="Transpose Rows" id="rowTranspose' + resultId + '"><span class="context-menu-icons context-menu-icon-transpose"></span></button>'
         table += '<button title="Mark Rows or Cells" id="markRowsOrCells' + resultId + '"><span class="context-menu-icons context-menu-icon-mark"></span></button>'
         table += '<button id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
