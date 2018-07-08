@@ -25,12 +25,25 @@
         })
     }
 
-    function importDb(tid, tcode, homeArea, classifier, tname) {
 
+    function importDb(tid, tcode, homeArea, classifier, tname) {
+        $('#file').uploader({
+            url: contextPath + "/importDatabase",
+            dataType: 'json',
+            method: 'POST',
+            data: {tcode: tcode},
+            done: function (e, data) {
+                console.info('All files uploading')
+            },
+            error:function (jqAjaxOptions, jqXHR, textStatus, errorThrown) {
+                alert(jqAjaxOptions.responseText)
+            }
+        }).click()
     }
 
     function exportDb(tid, tcode, homeArea, classifier, tname) {
         window.open(contextPath + '/exportDatabase?tid=' + tid, '_blank')
     }
+
 
 })()

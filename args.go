@@ -8,14 +8,15 @@ import (
 )
 
 var (
-	contextPath  string
-	port         string
-	maxRows      int
-	g_dataSource string
+	contextPath string
+	port        string
+	maxRows     int
+	gDatasource string
 
 	devMode      bool // to disable css/js minify
 	authBasic    bool
 	multiTenants bool
+	importDb     bool
 
 	northProxy string
 	southProxy string
@@ -29,10 +30,11 @@ func init() {
 	contextPathArg := flag.String("contextPath", "", "context path")
 	portArg := flag.Int("port", 8381, "Port to serve.")
 	flag.IntVar(&maxRows, "maxRows", 1000, "Max number of rows to return.")
-	flag.StringVar(&g_dataSource, "dataSource", "user:pass@tcp(127.0.0.1:3306)/?charset=utf8", "dataSource string.")
+	flag.StringVar(&gDatasource, "dataSource", "user:pass@tcp(127.0.0.1:3306)/?charset=utf8", "dataSource string.")
 
 	go_utils.PrepareMustAuthFlag(&authParam)
 
+	flag.BoolVar(&importDb, "importDb", false, "importDb allowed or not")
 	flag.BoolVar(&devMode, "devMode", false, "devMode(disable js/css minify)")
 	flag.BoolVar(&authBasic, "authBasic", false, "authBasic based on poems")
 	flag.BoolVar(&multiTenants, "multiTenants", false, "support multiTenants")

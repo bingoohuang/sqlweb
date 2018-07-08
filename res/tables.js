@@ -117,21 +117,21 @@
     }
 
     var withColumnsCache = {}
-    $.showTablesAjax = function (activeMerchantId) {
-        var withColumns = !withColumnsCache[activeMerchantId]
+    $.showTablesAjax = function (tid) {
+        var withColumns = !withColumnsCache[tid]
         $.ajax({
             type: 'POST',
             url: contextPath + "/query",
-            data: {tid: activeMerchantId, sql: 'show tables', withColumns: withColumns},
+            data: {tid: tid, sql: 'show tables', withColumns: withColumns},
             success: function (content, textStatus, request) {
                 if (content && content.Error) {
                     return alert(content.Error)
                 }
 
                 if (withColumns) {
-                    withColumnsCache[activeMerchantId] = content.TableColumns
+                    withColumnsCache[tid] = content.TableColumns
                 }
-                showTables(content, withColumnsCache[activeMerchantId])
+                showTables(content, withColumnsCache[tid])
                 $('.tablesWrapper').show()
             },
             error: function (jqXHR, textStatus, errorThrown) {

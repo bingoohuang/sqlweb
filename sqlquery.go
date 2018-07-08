@@ -14,15 +14,20 @@ import (
 
 func selectDb(tid string) (string, string, error) {
 	if tid == "trr" {
-		return g_dataSource, "", nil
+		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", gDatasource, 0)
+		if err != nil {
+			return "", "", err
+		}
+
+		return gDatasource, rows[0][1], nil
 	}
 
-	return selectDbByTid(tid, g_dataSource)
+	return selectDbByTid(tid, gDatasource)
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {
 	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
-		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "' AND STATE = '2'"
+		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "'"
 
 	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, maxRows)
 	if err != nil {
@@ -45,7 +50,7 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 
 func executeQuery(querySql, dataSource string, max int) (
 	[]string /*header*/, [][]string, /*data*/
-	string /*executionTime*/, string /*costTime*/, error, string /* msg */) {
+	string   /*executionTime*/, string /*costTime*/, error, string /* msg */) {
 	db, err := sql.Open("mysql", dataSource)
 	if err != nil {
 		return nil, nil, "", "", err, ""

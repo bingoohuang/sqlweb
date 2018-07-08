@@ -21,7 +21,9 @@ func main() {
 	handleFunc(r, "/favicon.ico", go_utils.ServeFavicon("res/favicon.ico", MustAsset, AssetInfo), true, false)
 	handleFunc(r, "/update", serveUpdate, false, true)
 	handleFunc(r, "/exportDatabase", exportDatabase, true, true)
-	handleFunc(r, "/importDatabase", importDatabase, false, true)
+	if importDb {
+		handleFuncNoDump(r, "/importDatabase", importDatabase, false, true)
+	}
 	if multiTenants {
 		handleFunc(r, "/multipleTenantsQuery", multipleTenantsQuery, true, true)
 	}
@@ -35,6 +37,23 @@ func main() {
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
+	wrap := f
+	if requiredBasicAuth && authBasic {
+		wrap = go_utils.RandomPoemBasicAuth(wrap)
+	}
+
+	if requiredBasicAuth {
+		wrap = go_utils.MustAuth(wrap, authParam)
+	}
+
+	if requiredGzip {
+		wrap = go_utils.GzipHandlerFunc(wrap)
+	}
+
+	r.HandleFunc(contextPath+path, wrap)
 }
 
 func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
@@ -55,7 +74,7 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	if !authBasic || *authParam.ForceLogin {
+	if !authBasic || authParam.ForceLogin {
 		// fmt.Println("Redirect to", contextPath+"/home")
 		// http.Redirect(w, r, contextPath+"/home", 301)
 		serveHome(w, r)

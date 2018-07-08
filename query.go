@@ -100,7 +100,7 @@ func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 }
 
 func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string) {
-	dbDataSource, databaseName, err := selectDbByTid(tid, g_dataSource)
+	dbDataSource, databaseName, err := selectDbByTid(tid, gDatasource)
 	if err != nil {
 		resultChan <- &QueryResult{
 			Error: go_utils.Error(err),
