@@ -50,7 +50,7 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 
 func executeQuery(querySql, dataSource string, max int) (
 	[]string /*header*/, [][]string, /*data*/
-	string   /*executionTime*/, string /*costTime*/, error, string /* msg */) {
+	string /*executionTime*/, string /*costTime*/, error, string /* msg */) {
 	db, err := sql.Open("mysql", dataSource)
 	if err != nil {
 		return nil, nil, "", "", err, ""

@@ -33,7 +33,7 @@
             method: 'POST',
             data: {tcode: tcode},
             done: function (e, data) {
-                console.info('All files uploading')
+                alert('导入完成')
             },
             error:function (jqAjaxOptions, jqXHR, textStatus, errorThrown) {
                 alert(jqAjaxOptions.responseText)

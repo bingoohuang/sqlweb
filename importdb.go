@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"fmt"
+	"unicode"
 )
 
 type ImportResult struct {
@@ -24,7 +24,7 @@ func importDatabase(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tcode, sqlFileName, err := ParseUploaedFile(r, w)
+	tcode, sqlFileName, err := ParseUploadedFile(r, w)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -43,11 +43,16 @@ func importDatabase(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mysqlImport := "mysql -h" + d.Host + " -P" + d.Port + " -u" + d.Username + " -p" + d.Password + " " + d.Database + "<" + sqlFileName
-	fmt.Println("mysqlImport:", mysqlImport)
 	stdout, err := go_utils.ExecuteBash(mysqlImport)
+	ignoredErr := "mysql: [Warning] Using a password on the command line interface can be insecure."
 	if err != nil {
-		http.Error(w, err.Error(), 405)
-		return
+		errMsg := strings.TrimFunc(err.Error(), func(r rune) bool {
+			return unicode.IsSpace(r) || !unicode.IsPrint(r)
+		})
+		if errMsg != ignoredErr {
+			http.Error(w, errMsg, 405)
+			return
+		}
 	}
 
 	json.NewEncoder(w).Encode(&ImportResult{
@@ -56,7 +61,7 @@ func importDatabase(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func ParseUploaedFile(r *http.Request, w http.ResponseWriter) (string, string, error) {
+func ParseUploadedFile(r *http.Request, w http.ResponseWriter) (string, string, error) {
 	r.ParseMultipartForm(32 << 20)
 	file, _, err := r.FormFile("file")
 	if err != nil {

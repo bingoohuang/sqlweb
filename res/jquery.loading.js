@@ -33,9 +33,9 @@
         $(document)
             .ajaxSend(function (event, jqxhr, settings) {
                 $loadingElement.html('Loading...').show()
-                settings.countSeconds = 0
+                var countSeconds = 0
                 settings.intervalFn = setInterval(function () {
-                    $(loadingElement).html('Loading(' + ++settings.countSeconds + 's)...')
+                    $(loadingElement).html('Loading(' + ++countSeconds + 's)...')
                 }, 1000)
             })
             .ajaxComplete(function (event, jqxhr, settings) {
