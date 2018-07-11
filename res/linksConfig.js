@@ -115,51 +115,21 @@
     function createLinksConfig(linksConfig) {
         $.createFastEntries(linksConfig.entries)
 
-        var $linksConfig = {tables: {}, fields: {}}
-        /*
-        tables: {
-            tt_f_user: {"user_id": "user_id"},
-            tt_f_member: {"member_id": "user_id"},
-            tt_f_mbr_card: {"user_id": "user_id"}
-        },
-        fields: {
-            user_id: {
-                tt_f_user: "user_id",
-                tt_f_member: "member_id",
-                tt_f_mbr_card: "user_id"
-            }
-            member_id: {
-                tt_f_user: "user_id",
-                tt_f_member: "member_id",
-                tt_f_mbr_card: "user_id"
-            }
-        }
-        */
-
+        $.linksConfig = []
         $.each(linksConfig.links, function (key, value) {
-            var fieldTable = {}
-            var upperLinkedField = key.toUpperCase()
-            $linksConfig.fields[upperLinkedField] = fieldTable
+            var relativeFieldGroup = []
 
             $.each(value.linksTo, function (index, linkTo) {
                 var dotIndex = linkTo.indexOf('.')
 
                 var tableName = dotIndex < 0 ? linkTo : linkTo.substring(0, dotIndex)
                 var filedName = dotIndex < 0 ? key : linkTo.substring(dotIndex + 1)
-                var upperTable = tableName.toUpperCase()
-                var upperField = filedName.toUpperCase()
 
-                $linksConfig.tables[upperTable] = $linksConfig.tables[upperTable] || {}
-                $linksConfig.tables[upperTable][upperField] = upperLinkedField
-
-                if (upperLinkedField !== upperField) {
-                    $linksConfig.fields[upperField] = fieldTable
-                }
-
-                fieldTable[upperTable] = upperField
+                relativeFieldGroup.push(tableName.toUpperCase())
+                relativeFieldGroup.push(filedName.toUpperCase())
             })
-        })
 
-        $.linksConfig = $linksConfig
+            $.linksConfig.push(relativeFieldGroup)
+        })
     }
 })()

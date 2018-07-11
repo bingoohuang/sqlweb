@@ -73,9 +73,10 @@
     }
 
 
-    var linkTo = function (classifier, tid, tcode, tname, queryResultId, columnName, key, linkedToTables, cell) {
-        var linkedTableName = key.substring(4)
-        var linkedField = linkedToTables[linkedTableName]
+    var linkTo = function (classifier, tid, tcode, tname, queryResultId, columnName, linkKey, cell) {
+        var parts = linkKey.split('#') //  var linkKey = 'link#' + i + "#" + linkedTable + "#" + linkedField;
+        var linkedTableName = parts[2]
+        var linkedField = parts[3]
 
         var sql = "select * from " + linkedTableName + " where " + linkedField + (cell.hasClass('headCell')
             ? " in (" + createInPart(queryResultId, columnName) + ")"
@@ -88,6 +89,37 @@
         $.copyTextToClipboard(' where ' + columnName + ("(null)" == cellValue ? "is null" : " = '" + $.escapeSqlValue(cellValue) + "'"))
     }
 
+    var createContextItems = function (itemsData, itemsHead, relativeFieldGroup, upperTable, upperColumn) {
+        for (var i = 0; i + 1 < relativeFieldGroup.length; i += 2) {
+            var linkedTable = relativeFieldGroup[i];
+            var linkedField = relativeFieldGroup[i + 1];
+            if (linkedTable === upperTable && linkedField === upperColumn) continue
+
+            var itemData = {
+                name: '-> ' + linkedTable + (linkedField === upperColumn ? '' : '.' + linkedField),
+                icon: 'link'
+            }
+            var linkKey = 'link#' + i + "#" + linkedTable + "#" + linkedField
+            itemsData[linkKey] = itemData
+            itemsHead[linkKey] = itemData
+        }
+    }
+    var findLinkedTableField = function (relativeFieldGroup, upperTable, upperColumn) {
+        for (var i = 0; i + 1 < relativeFieldGroup.length; i += 2) {
+            if (relativeFieldGroup[i] === upperTable && relativeFieldGroup[i + 1] === upperColumn) return true
+        }
+
+        return false
+    }
+
+    var findLinkedTable = function (relativeFieldGroup, upperTable) {
+        for (var i = 0; i + 1 < relativeFieldGroup.length; i += 2) {
+            if (relativeFieldGroup[i] === upperTable) return true
+        }
+
+        return false
+    }
+
 
     var createLinkToTableColumnContextMenu = function (classifier, tid, tcode, tname, queryResultId, tableName, columnName, linkColumnNames) {
         var itemsHead = {}
@@ -97,22 +129,9 @@
         var upperColumn = columnName.toUpperCase()
 
         if (linkColumnNames[columnName]) {
-            var linkedToTables = $.linksConfig.fields[upperColumn]
-            $.each(linkedToTables, function (key, value) {
-                var linkedTable = key
-                var linkedField = value
-
-                var isTableNameEqual = linkedTable === upperTable
-                var isFieldNameEqual = linkedField === upperColumn
-                if (isTableNameEqual && isFieldNameEqual) {
-                    // ignore
-                } else {
-                    var itemData = {
-                        name: '-> ' + linkedTable + (isFieldNameEqual ? '' : '.' + linkedField),
-                        icon: 'link'
-                    }
-                    itemsData['link' + linkedTable] = itemData
-                    itemsHead['link' + linkedTable] = itemData
+            $.each($.linksConfig, function (index, relativeFieldGroup) {
+                if (findLinkedTableField(relativeFieldGroup, upperTable, upperColumn)) {
+                    createContextItems(itemsData, itemsHead, relativeFieldGroup, upperTable, upperColumn)
                 }
             })
         }
@@ -132,7 +151,7 @@
                 selector: selector + '.dataCell',
                 callback: function (key, options) {
                     if (key.indexOf('link') == 0) {
-                        linkTo(classifier, tid, tcode, tname, queryResultId, columnName, key, linkedToTables, $(this))
+                        linkTo(classifier, tid, tcode, tname, queryResultId, columnName, key, $(this))
                     } else if (key === 'Copy Where') {
                         processCopyWhere(columnName, $(this).text())
                         $.copiedTips('Where clause copied.')
@@ -164,7 +183,7 @@
             selector: selector + '.headCell',
             callback: function (key, options) {
                 if (key.indexOf('link') == 0) {
-                    linkTo(classifier, tid, tcode, tname, queryResultId, columnName, key, linkedToTables, $(this))
+                    linkTo(classifier, tid, tcode, tname, queryResultId, columnName, key, $(this))
                 } else if (key === 'sqlInPart') {
                     var inPart = columnName + " in (" + createInPart(queryResultId, columnName) + ")"
                     $.copyTextToClipboard(inPart)
@@ -265,14 +284,34 @@
     $.isInLinkedTable = function (tableName) {
         if (!tableName) return false
 
-        return !!$.linksConfig.tables[tableName.toUpperCase()]
+        var upperTable = tableName.toUpperCase()
+
+        for (var i = 0; i < $.linksConfig.length; i++) {
+            var relativeFieldGroup = $.linksConfig[i]
+
+            if (findLinkedTable(relativeFieldGroup, upperTable)) {
+                return true
+            }
+        }
+
+        return false
     }
 
     $.isInLinkedTableField = function (tableName, columnName) {
         if (!columnName) return false
 
-        var fieldMap = $.linksConfig.tables[tableName.toUpperCase()]
-        return fieldMap && fieldMap[columnName.toUpperCase()]
+        var upperTable = tableName.toUpperCase()
+        var upperColumn = columnName.toUpperCase()
+
+        for (var i = 0; i < $.linksConfig.length; i++) {
+            var relativeFieldGroup = $.linksConfig[i]
+
+            if (findLinkedTableField(relativeFieldGroup, upperTable, upperColumn)) {
+                return true
+            }
+        }
+
+        return false
     }
 
 })()
