@@ -60,6 +60,7 @@ type CacheAction struct {
 	Tenant *Merchant
 	Key    string
 	Value  string
+	Score  string
 	Ttl    string
 	Op     string // Set/Get/Clear
 }
@@ -72,6 +73,8 @@ func (t *CacheAction) Execute() ([]byte, error) {
 
 	if t.Op == "Get" {
 		return go_utils.HttpGet(proxy + "/getCache?key=" + url.QueryEscape(t.Key))
+	} else if t.Op == "ZAdd" {
+		return go_utils.HttpGet(proxy + "/zaddCache?key=" + url.QueryEscape(t.Key) + "&value=" + t.Value + "&score=" + t.Score)
 	} else if t.Op == "Set" {
 		return go_utils.HttpGet(proxy + "/setCache?key=" + url.QueryEscape(t.Key) + "&value=" + t.Value + "&ttl=" + t.Ttl)
 	} else if t.Op == "Clear" {
@@ -87,6 +90,7 @@ func findAction(action string, merchant *Merchant, key string, r *http.Request) 
 			Tenant: merchant,
 			Key:    key,
 			Value:  strings.TrimSpace(r.FormValue("value")),
+			Score:  strings.TrimSpace(r.FormValue("score")),
 			Ttl:    strings.TrimSpace(r.FormValue("ttl")),
 			Op:     strings.TrimSpace(r.FormValue("op")),
 		}
