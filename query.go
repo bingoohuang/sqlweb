@@ -62,21 +62,7 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 }
 
 func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
-	//start := time.Now()
 	go_utils.HeadContentTypeJson(w)
-
-	//if !authOk(req) {
-	//	results := make([]*QueryResult, 1)
-	//	results[0] = &QueryResult{Headers: nil, Rows: nil,
-	//		Error:         "dangerous sql, please get authorized first!",
-	//		ExecutionTime: start.Format("2006-01-02 15:04:05.000"),
-	//		CostTime:      time.Since(start).String(),
-	//	}
-	//
-	//	json.NewEncoder(w).Encode(results)
-	//	return
-	//}
-
 	sqlString := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
@@ -100,7 +86,7 @@ func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 }
 
 func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string) {
-	dbDataSource, databaseName, err := selectDbByTid(tid, gDatasource)
+	dbDataSource, databaseName, err := selectDbByTid(tid, appConfig.DataSource)
 	if err != nil {
 		resultChan <- &QueryResult{
 			Error: go_utils.Error(err),
@@ -198,27 +184,27 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 	tid := strings.TrimSpace(req.FormValue("tid"))
 	withColumns := strings.TrimSpace(req.FormValue("withColumns"))
 
-	dbDataSource, databaseName, err := selectDb(tid)
+	ds, dbName, err := selectDb(tid)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
 	}
 
-	_, tableName, primaryKeys, sqlAllowed := parseSql(w, querySql, dbDataSource)
+	_, tableName, primaryKeys, sqlAllowed := parseSql(w, querySql, ds)
 	if !sqlAllowed {
 		return
 	}
 
-	headers, rows, executionTime, costTime, err, msg := processSql(tid, querySql, dbDataSource, 0)
+	headers, rows, execTime, costTime, err, msg := processSql(tid, querySql, ds, appConfig.MaxQueryRows)
 	primaryKeysIndex := findPrimaryKeysIndex(tableName, primaryKeys, headers)
 
 	queryResult := QueryResult{
 		Headers:          headers,
 		Rows:             rows,
 		Error:            go_utils.Error(err),
-		ExecutionTime:    executionTime,
+		ExecutionTime:    execTime,
 		CostTime:         costTime,
-		DatabaseName:     databaseName,
+		DatabaseName:     dbName,
 		TableName:        tableName,
 		PrimaryKeysIndex: primaryKeysIndex,
 		Msg:              msg,
@@ -226,8 +212,9 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 
 	if "true" == withColumns {
 		tableColumns := make(map[string][]string)
-		columnsSql := `select TABLE_NAME, COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_SCHEMA = '` + databaseName + `' order by TABLE_NAME`
-		_, colRows, _, _, _, _ := processSql(tid, columnsSql, dbDataSource, 0)
+		columnsSql := `select TABLE_NAME, COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS ` +
+			`where TABLE_SCHEMA = '` + dbName + `' order by TABLE_NAME`
+		_, colRows, _, _, _, _ := processSql(tid, columnsSql, ds, 0)
 
 		tableName := ""
 		var columns []string = nil
@@ -258,8 +245,8 @@ func processSql(tid, querySql, dbDataSource string, max int) ([]string, [][]stri
 	isShowHistory := strings.EqualFold("show history", querySql)
 	if isShowHistory {
 		return showHistory()
-	} else {
-		saveHistory(tid, querySql)
-		return executeQuery(querySql, dbDataSource, max)
 	}
+
+	saveHistory(tid, querySql)
+	return executeQuery(querySql, dbDataSource, max)
 }

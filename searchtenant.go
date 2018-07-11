@@ -25,7 +25,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if searchKey == "trr" || !multiTenants {
+	if searchKey == "trr" || !appConfig.MultiTenants {
 		var searchResult [1]Merchant
 		searchResult[0] = Merchant{
 			MerchantName: "trr",
@@ -46,7 +46,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 			"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
 			"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
 	}
-	_, data, _, _, err, _ := executeQuery(searchSql, gDatasource, maxRows)
+	_, data, _, _, err, _ := executeQuery(searchSql, appConfig.DataSource, appConfig.MaxQueryRows)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -74,7 +74,7 @@ func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 	queryDbSql := "SELECT MERCHANT_ID, DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
 		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "'"
 
-	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, maxRows)
+	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, appConfig.MaxQueryRows)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func searchMerchantByTcode(tcode string) (*Merchant, error) {
 }
 
 func searchMerchantBySql(searchSql string) (*Merchant, error) {
-	_, data, _, _, err, _ := executeQuery(searchSql, gDatasource, maxRows)
+	_, data, _, _, err, _ := executeQuery(searchSql, appConfig.DataSource, appConfig.MaxQueryRows)
 	if err != nil {
 		return nil, err
 	}

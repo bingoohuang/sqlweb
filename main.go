@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func main() {
@@ -21,27 +22,27 @@ func main() {
 	handleFunc(r, "/favicon.ico", go_utils.ServeFavicon("res/favicon.ico", MustAsset, AssetInfo), true, false)
 	handleFunc(r, "/update", serveUpdate, false, true)
 	handleFunc(r, "/exportDatabase", exportDatabase, true, true)
-	if importDb {
+	if appConfig.ImportDb {
 		handleFuncNoDump(r, "/importDatabase", importDatabase, false, true)
 	}
-	if multiTenants {
+	if appConfig.MultiTenants {
 		handleFunc(r, "/multipleTenantsQuery", multipleTenantsQuery, true, true)
 	}
 	handleFunc(r, "/searchDb", serveSearchDb, false, true)
 	handleFunc(r, "/action", serveAction, false, true)
 	http.Handle("/", r)
 
-	fmt.Println("start to listen at ", port)
-	go_utils.OpenExplorerWithContext(contextPath, port)
+	fmt.Println("start to listen at ", appConfig.ListenPort)
+	go_utils.OpenExplorerWithContext(appConfig.ContextPath, strconv.Itoa(appConfig.ListenPort))
 
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	if err := http.ListenAndServe(":"+strconv.Itoa(appConfig.ListenPort), nil); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := f
-	if requiredBasicAuth && authBasic {
+	if requiredBasicAuth && appConfig.AuthBasic {
 		wrap = go_utils.RandomPoemBasicAuth(wrap)
 	}
 
@@ -53,12 +54,12 @@ func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGz
 		wrap = go_utils.GzipHandlerFunc(wrap)
 	}
 
-	r.HandleFunc(contextPath+path, wrap)
+	r.HandleFunc(appConfig.ContextPath+path, wrap)
 }
 
 func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := go_utils.DumpRequest(f)
-	if requiredBasicAuth && authBasic {
+	if requiredBasicAuth && appConfig.AuthBasic {
 		wrap = go_utils.RandomPoemBasicAuth(wrap)
 	}
 
@@ -70,15 +71,15 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 		wrap = go_utils.GzipHandlerFunc(wrap)
 	}
 
-	r.HandleFunc(contextPath+path, wrap)
+	r.HandleFunc(appConfig.ContextPath+path, wrap)
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	if !authBasic || authParam.ForceLogin {
+	if !appConfig.AuthBasic || authParam.ForceLogin {
 		// fmt.Println("Redirect to", contextPath+"/home")
 		// http.Redirect(w, r, contextPath+"/home", 301)
 		serveHome(w, r)
 	} else {
-		go_utils.ServeWelcome(w, MustAsset("res/welcome.html"), contextPath)
+		go_utils.ServeWelcome(w, MustAsset("res/welcome.html"), appConfig.ContextPath)
 	}
 }

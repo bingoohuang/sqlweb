@@ -1,0 +1,24 @@
+ContextPath = ""
+ListenPort  = 8381
+MaxQueryRows  = 1000
+DataSource = "user:pass@tcp(127.0.0.1:3306)/db?charset=utf8"
+DevMode = false
+AuthBasic = false
+MultiTenants = false
+ImportDb = false
+DefaultTenant = ""
+
+EncryptKey = ""
+CookieName = "i-raiyee-cn-auth"
+RedirectUri = ""
+LocalUrl  = ""
+ForceLogin  = false
+
+[YogaProxy.north]
+Proxy="http://127.0.0.1:8092"
+
+[YogaProxy.south]
+Proxy="http://127.0.0.1:8082"
+
+[YogaProxy.huanan]
+Proxy="http://127.0.0.1:8093"

@@ -112,14 +112,16 @@
         })
     }
 
-    $.attachExpandRowsEvent = function (resultId) {
+    $.attachExpandRowsEvent = function (resultId, totalRows) {
         var rid = resultId
         $('#expandRows' + rid).click(function () {
             $('#collapseDiv' + rid).toggleClass('collapseDiv')
         })
 
         // https://github.com/lai32290/TableHeadFixer
-        $("#queryResult" + rid).tableHeadFixer({"left": 2})
+        if (totalRows < 100) {
+            $("#queryResult" + rid).tableHeadFixer({"left": 2})
+        }
     }
 
     $.tableCreate = function (result, sql, oldResultId, classifier, tid, tcode, tname) {
@@ -133,13 +135,14 @@
         var rowUpdateReady = result.TableName && result.TableName != ""
         var resultId = oldResultId !== null && oldResultId >= 0 ? oldResultId : ++queryResultId
         var contextMenuHolder = {}
+        var totalRows = result.Rows && result.Rows.length > 0 ? result.Rows.length : 0
         var table = $.createResultTableHtml(result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tcode, tname)
 
         $.replaceOrPrependResult(resultId, oldResultId, table)
 
         $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd').attr('rowOdd', 'true')
         $.attachSearchTableEvent(resultId)
-        $.attachExpandRowsEvent(resultId)
+        $.attachExpandRowsEvent(resultId, totalRows)
         $.attachOpsResultDivEvent(resultId)
         $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tcode, tname)
         $.createTableToolsContextMenu(classifier, tid, tcode, tname, result, resultId)

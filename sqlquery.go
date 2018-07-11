@@ -14,22 +14,22 @@ import (
 
 func selectDb(tid string) (string, string, error) {
 	if tid == "trr" {
-		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", gDatasource, 0)
+		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", appConfig.DataSource, 0)
 		if err != nil {
 			return "", "", err
 		}
 
-		return gDatasource, rows[0][1], nil
+		return appConfig.DataSource, rows[0][1], nil
 	}
 
-	return selectDbByTid(tid, gDatasource)
+	return selectDbByTid(tid, appConfig.DataSource)
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {
 	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
 		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "'"
 
-	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, maxRows)
+	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, appConfig.MaxQueryRows)
 	if err != nil {
 		return "", "", err
 	}

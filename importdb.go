@@ -36,7 +36,7 @@ func importDatabase(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	d, err := searchMerchantDb(t.MerchantId, gDatasource)
+	d, err := searchMerchantDb(t.MerchantId, appConfig.DataSource)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return

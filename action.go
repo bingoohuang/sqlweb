@@ -41,11 +41,11 @@ type Action interface {
 }
 
 func findProxy(homeArea string) (string, error) {
-	if strings.Contains(homeArea, "south") {
-		return southProxy, nil
-	} else if strings.Contains(homeArea, "north") {
-		return northProxy, nil
+	proxy, ok := appConfig.YogaProxy[homeArea]
+	if ok {
+		return proxy.Proxy, nil
 	}
+
 	return "", errors.New("unknown homeArea " + homeArea)
 }
 

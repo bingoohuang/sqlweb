@@ -24,3 +24,4 @@ vendor
 go-sql-web.linux.bin.bz2
 go-sql-web.linux.bin
 exported
+appConfigTest.toml
