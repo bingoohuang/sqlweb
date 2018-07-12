@@ -12,7 +12,7 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	handleFunc(r, "/", serveWelcome, false, true)
+	handleFunc(r, "/", serveWelcome, false, false)
 	handleFunc(r, "/home", serveHome, true, true)
 	handleFunc(r, "/query", serveQuery, true, true)
 	handleFunc(r, "/tablesByColumn", serveTablesByColumn, false, true)
