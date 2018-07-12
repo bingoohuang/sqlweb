@@ -312,13 +312,19 @@ table.executionSummary tr:first-child {
     background: yellow;
 }
 
-#tipsDiv {
+#tipsDivWrap {
     position: fixed;
     background: yellow;
     display: none;
     right: 10px;
     bottom: 30px;
     text-align: center;
+}
+
+#tipsDivClose {
+    cursor: pointer;
+    text-decoration: underline;
+    color: crimson;
 }
 
 /* copy from https://html2canvas.hertzen.com/*/
@@ -348,4 +354,8 @@ table.executionSummary tr:first-child {
     transform: translateX(-50%) translateY(-50%);
     max-width: 95%;
     max-height: 95%;
+}
+
+div.jconfirm-content {
+    white-space: pre-wrap;
 }

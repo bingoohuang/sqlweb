@@ -13,7 +13,7 @@
 
     function attachDeleteRowsEvent(resultId) {
         $('#deleteRows' + resultId).click(function () {
-            $.chosenRows(resultId).addClass('deletedRow')
+            $.chosenRows(resultId).toggleClass('deletedRow')
         })
     }
 

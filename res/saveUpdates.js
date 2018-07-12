@@ -34,9 +34,9 @@
             }
 
             var joinedSqls = sqls.join(';\n')
-            if (confirm(joinedSqls + ';\n\nAre you sure to save ?')) {
+            $.confirmMe('Are you sure to save ?', joinedSqls, function () {
                 $.executeUpdate(tid, sqlRowIndices, joinedSqls, $rows)
-            }
+            })
         })
     }
 
@@ -119,9 +119,9 @@
             }
 
             var joinedSqls = sqls.join(';\n')
-            if (confirm(joinedSqls + ';\n\nAre you sure to save ?')) {
+            $.confirmMe('Are you sure to save?', joinedSqls, function () {
                 $.executeUpdate(tid, sqlRowIndices, joinedSqls, $rows, true)
-            }
+            })
         })
     }
 })()

@@ -1,14 +1,19 @@
 (function () {
-    $.executeMultiSqlsAjax = function (sql, confirmUpdate) {
-        if (confirmUpdate && $.firstUpperWord(sql) != 'SELECT') {
-            if (!confirm(sql + '\n\nAre you sure to execute ?')) {
-                return
-            }
-        }
-
+    function executeMultiSqls(sql) {
         var sqls = $.splitSqls(sql, ';')
         var executeResultContext = []
         $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, sqls[0], null, sqls, 0, executeResultContext)
+    }
+
+    $.executeMultiSqlsAjax = function (sql, confirmUpdate) {
+        if (confirmUpdate && $.firstUpperWord(sql) != 'SELECT') {
+            $.confirmMe('Are you sure to execute ?', sql, function () {
+                executeMultiSqls(sql)
+            })
+            return
+        }
+
+        executeMultiSqls(sql)
     }
 
     /*

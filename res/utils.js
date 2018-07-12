@@ -254,11 +254,31 @@
         if (e.clipboardData || e.originalEvent.clipboardData) {
             return (e.originalEvent || e).clipboardData.getData('text/plain')
         } else if (window.clipboardData) {
-            return  window.clipboardData.getData('Text')
+            return window.clipboardData.getData('Text')
         }
 
         alert("No clipboard available")
         return ''
+    }
+
+
+    $.confirmMe = function (title, content, okFunc) {
+        $.confirm({
+            title: title,
+            content: content,
+            type: 'blue',
+            buttons: {
+                ok: {
+                    text: "ok!",
+                    btnClass: 'btn-primary',
+                    keys: ['enter'],
+                    action: okFunc
+                },
+                cancel: function () {
+
+                }
+            }
+        });
     }
 
     $(document).on('paste', '[contenteditable]', function (e) {

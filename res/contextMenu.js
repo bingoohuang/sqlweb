@@ -7,15 +7,21 @@
 
     $.copiedTips = function (tipsContent) {
         if ($.isEscapeRequired(tipsContent)) {
-            $('#tipsDiv').html('<textarea readonly>' + tipsContent + '</textarea>').show()
+            $('#tipsDiv').html('<textarea readonly>' + tipsContent + '</textarea>')
         } else {
-            $('#tipsDiv').html(tipsContent).show()
+            $('#tipsDiv').html(tipsContent)
         }
 
+        $('#tipsDivWrap').show()
+
         setTimeout(function () {
-            $('#tipsDiv').hide()
+            $('#tipsDivWrap').hide()
         }, 60000 * 5)
     }
+
+    $('#tipsDivClose').click(function () {
+        $('#tipsDivWrap').hide()
+    })
 
     $.chosenRows = function (resultId) {
         return $.isCheckboxEditable(resultId)
