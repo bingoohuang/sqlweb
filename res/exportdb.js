@@ -10,7 +10,7 @@
                 var homeArea = $this.attr('homeArea')
                 var classifier = $this.attr('classifier')
                 var tname = $this.text()
-                // alert(tid + ',' + tcode + ',' + homeArea + ',' + classifier + ',' + tname)
+                // $.alertMe(tid + ',' + tcode + ',' + homeArea + ',' + classifier + ',' + tname)
 
                 if (key === 'ExportDb') {
                     exportDb(tid, tcode, homeArea, classifier, tname)
@@ -33,10 +33,10 @@
             method: 'POST',
             data: {tcode: tcode},
             done: function (e, data) {
-                alert('导入完成')
+                $.alertMe('导入完成')
             },
             error:function (jqAjaxOptions, jqXHR, textStatus, errorThrown) {
-                alert(jqAjaxOptions.responseText)
+                $.alertMe(jqAjaxOptions.responseText)
             }
         }).click()
     }

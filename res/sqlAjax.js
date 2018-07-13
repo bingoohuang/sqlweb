@@ -136,7 +136,8 @@
             data: {tid: tid, sql: sql},
             success: function (content, textStatus, request) {
                 if (content && content.Error) {
-                    return alert(content.Error)
+                    $.alertMe(content.Error)
+                    return
                 }
 
                 $.copiedTips(sql)
@@ -159,7 +160,7 @@
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
         $('.tablesWrapper').hide()
@@ -172,7 +173,7 @@
             data: {tid: tid, sqls: sqls},
             success: function (content, textStatus, request) {
                 if (!content.Ok) {
-                    alert(content.Message)
+                    $.alertMe(content.Message)
                     return
                 }
 
@@ -194,7 +195,7 @@
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     }

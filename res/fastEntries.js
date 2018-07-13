@@ -136,10 +136,10 @@
             url: contextPath + "/action",
             data: paramObject,
             success: function (content, textStatus, request) {
-                alert("OK: " + content)
+                $.alertMe("OK: " + content)
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     }

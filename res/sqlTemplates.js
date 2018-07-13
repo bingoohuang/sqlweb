@@ -96,7 +96,7 @@
     function AutoIncrementHighlightedColumns($resultTable, autoIncr) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
         if (highlightedColumnIndexes.length == 0) {
-            alert("There is no columns highlighted!")
+            $.alertMe("There is no columns highlighted!")
             return
         }
 
@@ -106,7 +106,7 @@
             var index = highlightedColumnIndexes[i]
             var value = $tds.eq(index).text()
             if (!value) {
-                alert("There is no base value in highlighted column at index " + (i + 1) + "!")
+                $.alertMe("There is no base value in highlighted column at index " + (i + 1) + "!")
                 return
             }
             baseValue[index] = value
@@ -167,7 +167,7 @@
     function PopulateByEditorData($resultTable) {
         var data = $.trim($.getEditorText())
         if (data === "") {
-            alert('There is no data populated!')
+            $.alertMe('There is no data populated!')
             return
         }
 
@@ -202,7 +202,7 @@
 
         var templateVars = $.templateParse(sql)
         if (!templateVars || templateVars.length == 0) {
-            alert('No template variables found')
+            $.alertMe('No template variables found')
             return
         }
 

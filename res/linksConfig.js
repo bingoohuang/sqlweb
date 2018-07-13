@@ -18,7 +18,7 @@
                 callback: function (key, options) {
                     if (key === 'FindTablesByColumn') {
                         if (!tomlEditor.somethingSelected()) {
-                            alert("Please choose the column name first")
+                            $.alertMe("Please choose the column name first")
                             return
                         }
 
@@ -48,11 +48,11 @@
 
                     createLinksConfig(JSON.parse(content.Json))
                 } else {
-                    alert(content.OK)
+                    $.alertMe(content.OK)
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     })
@@ -75,7 +75,7 @@
                 $('#tablesWithSpecifiedColumn').html(tablesHtml)
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     }
@@ -105,7 +105,7 @@
                 createLinksConfig(JSON.parse(content.Json))
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     }

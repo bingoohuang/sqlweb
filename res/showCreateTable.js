@@ -22,14 +22,15 @@
             data: {tid: activeMerchantId, sql: sql},
             success: function (content, textStatus, request) {
                 if (content && content.Error) {
-                    return alert(content.Error)
+                    $.alertMe(content.Error)
+                    return
                 }
 
                 var createTableSql = content.Rows[0][2]
                 $.appendSqlToSqlEditor(createTableSql)
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
         $('.tablesWrapper').hide()

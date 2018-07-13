@@ -359,3 +359,7 @@ table.executionSummary tr:first-child {
 div.jconfirm-content {
     white-space: pre-wrap;
 }
+
+.jconfirm-box {
+    width: 50%;
+}

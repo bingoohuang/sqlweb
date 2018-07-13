@@ -20,12 +20,18 @@ func serveAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	merchant, err := searchMerchant(tid)
-	if err != nil {
-		http.Error(w, err.Error(), 405)
-		return
-	}
+	var merchant *Merchant
+	if tid == "trr" {
+		merchant = &Merchant{HomeArea:appConfig.TrrHomeArea}
+	} else {
+		var err error
+		merchant, err = searchMerchant(tid)
+		if err != nil {
+			http.Error(w, err.Error(), 405)
+			return
+		}
 
+	}
 	act := findAction(action, merchant, key, r)
 	s, err := act.Execute()
 	if err != nil {

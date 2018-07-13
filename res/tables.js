@@ -125,7 +125,8 @@
             data: {tid: tid, sql: 'show tables', withColumns: withColumns},
             success: function (content, textStatus, request) {
                 if (content && content.Error) {
-                    return alert(content.Error)
+                    $.alertMe(content.Error)
+                    return
                 }
 
                 if (withColumns) {
@@ -135,7 +136,7 @@
                 $('.tablesWrapper').show()
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     }

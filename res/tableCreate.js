@@ -22,7 +22,7 @@
         $('#copyRow' + rid).click(function () {
             var $checkedRows = $.chosenRows(rid)
             if ($checkedRows.length == 0) {
-                alert('please specify which row to copy')
+                $.alertMe('please specify which row to copy')
             } else {
                 copyRows($checkedRows)
                 $("#queryResult" + rid).tableHeadFixer({"left": 2})
@@ -89,7 +89,7 @@
         multipleTenantsExecutable.find('.opsSpan').click(function () {
             var sql = $.trim($.getEditorSql())
             if (sql === "") {
-                alert("please input the sql!")
+                $.alertMe("please input the sql!")
                 return
             }
 

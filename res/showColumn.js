@@ -10,12 +10,13 @@
             data: {tid: tid, sql: 'show full columns from ' + tableName},
             success: function (content, textStatus, request) {
                 if (content && content.Error) {
-                    return alert(content.Error)
+                    $.alertMe(content.Error)
+                    return
                 }
                 showColumnInfo(classifier, content, tableName, columnName)
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     }

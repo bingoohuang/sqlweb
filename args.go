@@ -18,6 +18,7 @@ type AppConfig struct {
 	MaxQueryRows  int
 	DataSource    string
 	DefaultTenant string
+	TrrHomeArea   string
 
 	DevMode      bool // to disable css/js minify
 	AuthBasic    bool

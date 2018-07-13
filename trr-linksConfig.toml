@@ -1,0 +1,14 @@
+[tables] # 单表查询时附加语句配置
+	[tables.easyhi_pay_order]
+    appendSql = "order by create_time desc limit 10"
+    
+
+[entries]
+    [entries.restartTask]
+    type = "input#input"
+    autoHide  = true
+    placeholder = "系统短名#任务号"
+    defaultValue = "promotion#"
+    label = "重启任务"
+    separator = "#"
+    action = "action=CacheAction#op=ZAdd#key=easyhi-tasks-test:{input1}#value={input2}#score=0"

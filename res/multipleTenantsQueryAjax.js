@@ -24,7 +24,7 @@
                     // Maybe :
                     // [{"Headers":null,"Rows":null,"Error":"dangerous sql, please get authorized first!","ExecutionTime":"2018-03-09 13:41:06.443",
                     // "CostTime":"8.591µs","DatabaseName":"","TableName":"","PrimaryKeysIndex":null,"Msg":"","Tid":""}]
-                    alert(content[0].Error)
+                    $.alertMe(content[0].Error)
                     return
                 }
 
@@ -48,7 +48,7 @@
                 }, 100)
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     }

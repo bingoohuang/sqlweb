@@ -131,17 +131,17 @@
 
         if (dupliates.length > 0) {
             $.appendSqlToSqlEditor("\n\nDuplicated:\n" + dupliates.join('\n'), true, true)
-            alert(dupliates.length + " duplicated items found!")
+            $.alertMe(dupliates.length + " duplicated items found!")
         }
 
         var compareColumnIndex = $.findFirstHighlightedColumnIndex($resultTable)
         if (compareColumnIndex < 0) {
-            alert("No column highlighted!")
+            $.alertMe("No column highlighted!")
             return
         }
 
         if (filteredLines.length == 0) {
-            alert("No Values Specified!")
+            $.alertMe("No Values Specified!")
             return
         }
 

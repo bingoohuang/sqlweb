@@ -29,7 +29,7 @@
                 }
             })
             if (sqls.length == 0) {
-                alert('There is no changes to save!')
+                $.alertMe('There is no changes to save!')
                 return
             }
 
@@ -114,7 +114,7 @@
 
             })
             if (sqls.length == 0) {
-                alert('There is no changes to save!')
+                $.alertMe('There is no changes to save!')
                 return
             }
 

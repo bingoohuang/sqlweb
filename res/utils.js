@@ -257,12 +257,20 @@
             return window.clipboardData.getData('Text')
         }
 
-        alert("No clipboard available")
+        $.alertMe("No clipboard available")
         return ''
+    }
+
+    $.alertMe = function (content) {
+        $.dialog({
+            title: "提示",
+            content: content
+        })
     }
 
 
     $.confirmMe = function (title, content, okFunc) {
+        // https://github.com/craftpip/jquery-confirm
         $.confirm({
             title: title,
             content: content,
@@ -278,7 +286,7 @@
 
                 }
             }
-        });
+        })
     }
 
     $(document).on('paste', '[contenteditable]', function (e) {

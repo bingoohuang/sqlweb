@@ -8,7 +8,7 @@
             $('#tidtcodeSpan').text('')
             var searchKey = $.trim($('.searchKey').val())
             if (searchKey === '') {
-                alert("please input tid/tcode/tname")
+                $.alertMe("please input tid/tcode/tname")
                 return
             }
             $.searchTenants(searchKey)
@@ -46,7 +46,7 @@
                 callbackFn && callbackFn()
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
             }
         })
     }
