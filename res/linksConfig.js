@@ -112,6 +112,8 @@
 
     $.ReloadConfig = ReloadConfig
 
+    $.SingleTableQueryAppends = {}
+
     function createLinksConfig(linksConfig) {
         $.createFastEntries(linksConfig.entries)
 
@@ -131,5 +133,12 @@
 
             $.linksConfig.push(relativeFieldGroup)
         })
+
+
+        $.SingleTableQueryAppends = {}
+        $.each(linksConfig.tables, function (tableName, value) {
+            $.SingleTableQueryAppends[tableName.toUpperCase()] = value.appendSql
+        })
+
     }
 })()

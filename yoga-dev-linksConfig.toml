@@ -1,3 +1,7 @@
+[tables] # 单表查询时附加语句配置
+    [tables.tt_f_user]
+    appendSql = "order by create_time desc limit 10"
+
 [links]
     [links.user_id]
     linksTo = ["tt_f_mbr_card.member_id",  "tt_f_user", "tt_f_user_role", "tt_f_member", "tt_f_coach", "tt_f_staff", "tt_f_subscribe", "tt_f_login", "tt_l_remark.operate_user_id", "tt_f_schedule.coach_id"]

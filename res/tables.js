@@ -156,6 +156,13 @@
 
     $('.tables').on('click', 'span', function (event) {
         var tableName = $(this).text()
-        $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, 'select * from ' + tableName)
+
+        var sql = 'select * from ' + tableName
+        var appendSql = $.SingleTableQueryAppends[tableName.toUpperCase()];
+        if (appendSql) {
+            sql += ' ' + appendSql
+        }
+
+        $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, sql)
     })
 })()
