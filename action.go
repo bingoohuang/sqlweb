@@ -20,18 +20,12 @@ func serveAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var merchant *Merchant
-	if tid == "trr" {
-		merchant = &Merchant{HomeArea:appConfig.TrrHomeArea}
-	} else {
-		var err error
-		merchant, err = searchMerchant(tid)
-		if err != nil {
-			http.Error(w, err.Error(), 405)
-			return
-		}
-
+	merchant, err := searchMerchant(tid)
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
 	}
+
 	act := findAction(action, merchant, key, r)
 	s, err := act.Execute()
 	if err != nil {
@@ -53,13 +47,6 @@ func findProxy(homeArea string) (string, error) {
 	}
 
 	return "", errors.New("unknown homeArea " + homeArea)
-}
-
-type UnknownAction struct {
-}
-
-func (t *UnknownAction) Execute() ([]byte, error) {
-	return nil, errors.New("unknown action")
 }
 
 type CacheAction struct {
@@ -103,4 +90,11 @@ func findAction(action string, merchant *Merchant, key string, r *http.Request) 
 	}
 
 	return &UnknownAction{}
+}
+
+type UnknownAction struct {
+}
+
+func (t *UnknownAction) Execute() ([]byte, error) {
+	return nil, errors.New("unknown action")
 }

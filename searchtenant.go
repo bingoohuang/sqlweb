@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/bingoohuang/go-utils"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -71,10 +72,10 @@ type MerchantDb struct {
 }
 
 func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
-	queryDbSql := "SELECT MERCHANT_ID, DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
+	sql := "SELECT MERCHANT_ID, DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
 		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "'"
 
-	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, appConfig.MaxQueryRows)
+	_, data, _, _, err, _ := executeQuery(sql, ds, appConfig.MaxQueryRows)
 	if err != nil {
 		return nil, err
 	}
@@ -88,17 +89,21 @@ func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 }
 
 func searchMerchant(tid string) (*Merchant, error) {
-	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
+	if tid == "trr" {
+		return &Merchant{MerchantName: tid, MerchantId: tid, MerchantCode: tid, HomeArea: appConfig.TrrHomeArea, Classifier: tid}, nil
+	}
+
+	sql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + tid + "'"
 
-	return searchMerchantBySql(searchSql)
+	return searchMerchantBySql(sql)
 }
 
 func searchMerchantByTcode(tcode string) (*Merchant, error) {
-	searchSql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
+	sql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_CODE = '" + tcode + "'"
 
-	return searchMerchantBySql(searchSql)
+	return searchMerchantBySql(sql)
 }
 
 func searchMerchantBySql(searchSql string) (*Merchant, error) {
@@ -108,7 +113,7 @@ func searchMerchantBySql(searchSql string) (*Merchant, error) {
 	}
 
 	if len(data) != 1 {
-		return nil, errors.New("merchant query result 0 or more than 1")
+		return nil, errors.New("merchant query result " + strconv.Itoa(len(data)) + " other than 1")
 	}
 
 	v := data[0]
