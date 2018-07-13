@@ -62,6 +62,8 @@
                     }
                 } else if (entryType === 'link') {
                     fastEntriesHtml += '<span class="clickable" entryKey="' + key + '">' + entry.label + '</span>'
+                } else {
+                    $.alertMe("Unknown entryType " + entryType + " for separator " + separator)
                 }
             }
         })
@@ -69,9 +71,7 @@
         $('#fastEntriesDiv').html(fastEntriesHtml)
 
         $('#fastEntriesDiv span.authHidable').click(function () {
-            var $span = $(this)
-            $span.next().toggle()
-            $span.toggleClass('underline')
+            $(this).toggleClass('underline').next().toggle()
         })
 
         $('#fastEntriesDiv input').keydown(function (event) {
