@@ -56,7 +56,9 @@
     } else {
         $('#multiTenantsDiv').show()
         if (defaultTenant) {
-            $.searchTenants(defaultTenant)
+            $.searchTenants(defaultTenant, function () {
+                tableApp.initTable()
+            })
         }
     }
 
@@ -75,7 +77,8 @@
             '　<span title="home area" class="context-menu-icons context-menu-icon-earth">' + activeHomeArea + '</span>')
 
         $('.executeQuery').prop("disabled", false)
-        $.showTablesAjax(activeMerchantId)
+        tableApp.initTable()
+        // $.showTablesAjax(activeMerchantId)
 
         $('#fastEntriesDiv').show()
     })

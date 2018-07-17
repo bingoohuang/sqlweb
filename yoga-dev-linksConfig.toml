@@ -1,16 +1,13 @@
-[tables] # 单表查询时附加语句配置
-    [tables.tt_f_user]
-    appendSql = "order by create_time desc limit 10"
-
 [links]
     [links.user_id]
-    linksTo = ["tt_f_mbr_card.member_id",  "tt_f_user", "tt_f_user_role", "tt_f_member", "tt_f_coach", "tt_f_staff", "tt_f_subscribe", "tt_f_login", "tt_l_remark.operate_user_id", "tt_f_schedule.coach_id"]
+    linksTo = ["tt_f_mbr_card.member_id", "tt_f_user", "tt_f_user_role", "tt_f_member", "tt_f_coach", "tt_f_staff", "tt_f_subscribe"
+    ,"tt_f_mbr_card.member_id", "tt_f_login", "tt_l_remark.operate_user_id", "tt_f_schedule.coach_id"]
     
     [links.member_id]
     linksTo = ["tt_f_member", "tt_f_mbr_card", "tt_f_subscribe_card"]
      
     [links.MBR_CARD_ID]
-    linksTo = ["tt_f_mbr_card", "tt_l_mbrcard_chg", "tt_f_subscribe_pay.PAY_ID"]
+    linksTo = ["tt_f_mbr_card", "tt_l_mbrcard_chg", "tt_f_subscribe_pay.PAY_ID", "TT_F_APPLY.TYPE_ID", "TT_F_MBR_CARD_FORBID"]
 
     [links.CARD_ID]
     linksTo = ["tt_f_mbr_card", "tt_f_card", "tt_f_card_rule", "tt_f_card_timeslot"]
@@ -40,86 +37,13 @@
     linksTo = ["tt_f_subscribe", "tt_f_subscribe_pay"]
 
 [entries]
-    [entries.xxx]
-    type = "input"
-    autoHide  = true
-    label = "改馆名"
-    placeholder = "新馆名"
-    width="120px"
-    sql = "update tt_f_merchant set MERCHANT_NAME = '{input}';/*tenant:trr*/update tr_f_merchant set  MERCHANT_NAME = '{input}' where MERCHANT_ID = '{tid}'"
-    
-    [entries.member]
-    type = "input"
-    autoHide  = true
-    placeholder = "手机号码/姓名/userId"
-    label = "查找用户"
-    sql = """\
-    	select * from tt_f_user where nickname like '%{input}%' or mobile like '%{input}%' or user_id = '{input}';\
-    	select ur.USER_ID, ur.role_id, r.role_name from TT_F_USER_ROLE ur left join tt_f_role r on ur.role_id = r.role_id where ur.USER_ID IN _result_0.USER_ID\
-        """
-    
-    [entries.findMemberCard]
-    type = "input,input"
-    placeholder = "会员卡号,会员卡ID"
-    autoHide = true
-    width="45px,120px"
-    label = "查找会员卡"
-    sql = "select * from tt_f_mbr_card where mbr_card_id = '{input2}' or card_no = '{input1}'"
-
     [entries.findMerchant]
     type = "link"
     label = "查找馆主"
     sql = "select * from tt_f_user where user_id in (select user_id from tt_f_user_role where role_id = '100')"
-    
-    [entries.findUserByCard]
-    type = "input"
-    autoHide  = true
-    placeholder = "会员卡号"
-    width="45px"
-    label = "卡找会员"
-    sql = "select * from tt_f_user where user_id in (select user_id from tt_f_member where member_id in (select member_id from tt_f_mbr_card where mbr_card_id = '{input}'))"
-    
-    [entries.memberWithCards]
-    type = "link"
-    label = "有卡会员"
-    sql = "select * from tt_f_user where user_id in (select user_id from tt_f_member where member_id in (select member_id from tt_f_mbr_card where state != 0))"
-    
-    [entries.captcha]
-    type = "input,input,input"
-    autoHide  = true
-    placeholder = "验证码,有效期,手机号"
-    defaultValue = "1234,60s,"
-    label = "发验证码"
-    action = "action=CacheAction,op=SetCaptcha,value={input1},ttl={input2},key=captcha:{input3}:/login"
-    width="35px,35px,75px"
-
-    [entries.clearMerchantConfigCache]
-    type = "link"
-    label = "清空商户配置缓存"
-    separator = "#"
-    action = "action=CacheAction#op=Clear#key=westcache:yoga:{tcode}:MerchantConfigBoService.getMerchantConfig,westcache:yoga:{tcode}:ConfigService.getAllConfigs"
-
-    [entries.updateMerchantOwnerMobile]
-    type = "input,input"
-    autoHide  = true
-    placeholder = "老手机号码,新手机号码"
-    width="80px,80px"
-    label = "改馆主手机号码"
-    sql = """\
-        select * from tt_f_user where mobile = '{input1}' and user_id in (select user_id from tt_f_user_role where role_id = '100');\
-        update tt_f_user set mobile = '{input2}' where USER_ID IN _result_0.USER_ID;\
-        update tt_f_staff set mobile = '{input2}' where USER_ID IN _result_0.USER_ID;\
-        update tt_f_login set mobile = '{input2}' where USER_ID IN _result_0.USER_ID;\
-    """
-    
-    [entries.home]
+	[entries.home]
     type = "link"
     label = "Home"
     userTemplate = true
-    openLink = "{{if homeArea == 'south-center'}}https://a.b.c{{else if homeArea == 'north-center'}}https://a.b.d{{/if}}/yoga/center/{{tcode}}/index/vision#"
+    openLink = "https://test.go.easy-hi.com/yoga-system/center/{{tcode}}/index/vision#"
 
- 	[entries.copyWxAuthUrl]
-    type = "link"
-    label = "WxAuthUrl"
-    userTemplate = true
-    copy = "{{if homeArea == 'south-center'}}https://a.b.c{{else if homeArea == 'north-center'}}https://a.b.d{{/if}}/boss/wx-auth/wxAuth?merchantId={{tid}}&from=1"

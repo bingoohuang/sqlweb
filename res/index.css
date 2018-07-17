@@ -22,6 +22,11 @@ td textarea {
     border-width: 0;
 }
 
+.MainDivs {
+    overflow: hidden;
+    position: relative;
+}
+
 .error, .changedCell {
     color: red;
 }
@@ -113,6 +118,7 @@ span.clickable {
 
 div.executionResult {
     margin-top: -18px;
+    overflow: auto;
 }
 
 #editorDiv {
@@ -234,7 +240,6 @@ table.executionSummary tr:first-child {
 
 .collapseDiv {
     max-height: 300px;
-    overflow: auto;
 }
 
 .sqlTd {
@@ -254,6 +259,7 @@ table.executionSummary tr:first-child {
 
 #linksConfigDiv {
     display: none;
+    overflow: auto;
 }
 
 #fastEntriesDiv {

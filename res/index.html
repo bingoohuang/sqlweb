@@ -41,8 +41,6 @@
                 <button class="executeQuery">Run SQL</button>
                 <button class="clearResult">Clear Result</button>
 
-                <input class="searchTableNames" placeholder="Type to search tables">
-
                 <span id="rightSpan">
                     <button class="backwardSql"><span
                             class="context-menu-icons context-menu-icon-backward"></span></button>
@@ -78,7 +76,20 @@
 <div class="hide">
     <input id="file" type="file" name="file" multiple accept=".sql,.txt">
 </div>
-
+<div id="rightTable">
+    <div class="tablesRightBox" style="display: none;" v-show="isShow">
+        <input class="searchTableNames" placeholder="Type to search tables" v-model="tableNameFilterText">
+        <input type="checkbox" v-model="selectMode">
+        <span @click="truncateTables" v-if="selectMode">Truncate</span>
+        <span @click="renameTables" v-if="selectMode">Rename</span>
+        <div class="itemTables" v-if="tableNames.length >0">
+            <div v-for="tableName in showTableNames"><label><input type="checkbox" name="selectedTable" :value="tableName" v-if="selectMode"><span class="itemSpan" @click="selectTable(tableName)">{{tableName}}</span></label></div>
+        </div>
+    </div>
+    <div id="tableBoxSwitch" class="context-menu-icon-columns context-menu-icons"
+         @click="switchShow">{{switchText}}</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/codemirror/5.38.0/codemirror.min.js"></script>
 <script src="https://cdn.bootcss.com/codemirror/5.38.0/mode/sql/sql.min.js"></script>

@@ -1,0 +1,41 @@
+#rightTable {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.tablesRightBox {
+    padding: 10px;
+    background-color: #f7f7f7;
+    box-sizing: border-box;
+    height: 100%;
+    width: 250px;
+}
+
+#tableBoxSwitch {
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    width: 20px;
+    background-color: wheat;
+    text-align: center;
+    padding: 10px 0px;
+    font-size: 12px;
+}
+
+.itemTables {
+    width: 100%;
+    height: calc(100% - 20px);
+    white-space: nowrap;
+    overflow: auto;
+}
+
+.itemTables .itemSpan {
+    cursor: pointer;
+}
+
+.MainDivsShowTable {
+    width: calc(100% - 250px);
+}

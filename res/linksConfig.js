@@ -1,4 +1,5 @@
 (function () {
+    $.linksConfig = []
     function toogleLinksConfigDiv() {
         $('#linksConfigDiv').toggle()
         $('#sqlwebDiv').toggle()
@@ -117,7 +118,6 @@
     function createLinksConfig(linksConfig) {
         $.createFastEntries(linksConfig.entries)
 
-        $.linksConfig = []
         $.each(linksConfig.links, function (key, value) {
             var relativeFieldGroup = []
 

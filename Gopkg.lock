@@ -64,7 +64,7 @@
     "html",
     "js"
   ]
-  revision = "84a56e44b8cc9db981a83f74a2db2e4d05bbf508"
+  revision = "862cf97f2647bb3d35277f5438337ec06f219e43"
 
 [[projects]]
   branch = "master"
@@ -77,7 +77,7 @@
     "js",
     "strconv"
   ]
-  revision = "2e4de17ce3e4d1d57092b0e33355e39d5f1d819c"
+  revision = "04f41a4e4663cc2993acf6e68ad9aaeb30aa0ff0"
 
 [[projects]]
   name = "github.com/xwb1989/sqlparser"

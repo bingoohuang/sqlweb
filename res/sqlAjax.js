@@ -5,7 +5,7 @@
         $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, sqls[0], null, sqls, 0, executeResultContext)
     }
 
-    $.executeMultiSqlsAjax = function (sql, confirmUpdate) {
+    $.executeMultiSqlsAjax = function (sql, confirmUpdate = false) {
         if (confirmUpdate && $.firstUpperWord(sql) != 'SELECT') {
             $.confirmMe('Are you sure to execute ?', sql, function () {
                 executeMultiSqls(sql)

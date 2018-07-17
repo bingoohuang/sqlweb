@@ -51,10 +51,12 @@
         "222": "quote"
     }
 
+    $.ExcludedIntelliSenseTriggerKeys = ExcludedIntelliSenseTriggerKeys
+
     function isCharForShowHint(str) {
         return str.length === 1 && str.match(/[a-z\._0-9]/i)
     }
-
+    $.isCharForShowHint = isCharForShowHint
     function showTables(result, tableColumns) {
         var resultHtml = ''
         if (result.Rows && result.Rows.length > 0) {
