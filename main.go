@@ -12,7 +12,7 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	handleFunc(r, "/", serveWelcome, false, false)
+	handleFunc(r, "/", serveWelcome, false, true)
 	handleFunc(r, "/home", serveHome, true, true)
 	handleFunc(r, "/query", serveQuery, true, true)
 	handleFunc(r, "/tablesByColumn", serveTablesByColumn, false, true)
@@ -47,7 +47,7 @@ func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGz
 	}
 
 	if requiredBasicAuth {
-		wrap = go_utils.MustAuth(wrap, authParam)
+		wrap = go_utils.MustAuth(wrap, *authParam)
 	}
 
 	if requiredGzip {
@@ -64,7 +64,7 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 	}
 
 	if requiredBasicAuth {
-		wrap = go_utils.MustAuth(wrap, authParam)
+		wrap = go_utils.MustAuth(wrap, *authParam)
 	}
 
 	if requiredGzip {

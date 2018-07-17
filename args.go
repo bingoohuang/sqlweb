@@ -37,7 +37,7 @@ type AppConfig struct {
 var configFile string
 var appConfig AppConfig
 
-var authParam go_utils.MustAuthParam
+var authParam *go_utils.MustAuthParam
 
 func init() {
 	flag.StringVar(&configFile, "configFile", "appConfig.toml", "config file path")
@@ -49,5 +49,13 @@ func init() {
 
 	if appConfig.ContextPath != "" && strings.Index(appConfig.ContextPath, "/") < 0 {
 		appConfig.ContextPath = "/" + appConfig.ContextPath
+	}
+
+	authParam = &go_utils.MustAuthParam{
+		EncryptKey:  appConfig.EncryptKey,
+		CookieName:  appConfig.CookieName,
+		RedirectUri: appConfig.RedirectUri,
+		LocalUrl:    appConfig.LocalUrl,
+		ForceLogin:  appConfig.ForceLogin,
 	}
 }
