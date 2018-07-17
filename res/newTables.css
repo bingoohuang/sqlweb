@@ -11,7 +11,10 @@
     background-color: #f7f7f7;
     box-sizing: border-box;
     height: 100%;
-    width: 250px;
+}
+
+.tablesRightBox span {
+    text-decoration: underline;
 }
 
 #tableBoxSwitch {
