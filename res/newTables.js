@@ -15,10 +15,13 @@ tableApp = new Vue({
             return this.isShow ? '合' : '开'
         },
         showTableNames() {
-            let parts = this.tableNameFilterText.split('|').map(item => item.trim()).filter(item => item.length > 0)
+            let parts = this.tableNameFilterText.split('|')
+                .map(item => item.trim())
+                .filter(item => item.length > 0)
+                .map(item => item.toUpperCase())
             if (parts.length === 0) return this.tableNames;
 
-            return this.tableNames.filter(tableName => parts.some(part => tableName.indexOf(part) > -1))
+            return this.tableNames.filter(tableName => parts.some(part => tableName.toUpperCase().indexOf(part) > -1))
         }
     },
     mounted() {

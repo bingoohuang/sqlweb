@@ -80,8 +80,10 @@
     <div class="tablesRightBox" style="display: none;" v-show="isShow">
         <input class="searchTableNames" placeholder="Type to search tables" v-model="tableNameFilterText">
         <input type="checkbox" v-model="selectMode">
-        <span @click="truncateTables" v-if="selectMode">Truncate</span>
-        <span @click="renameTables" v-if="selectMode">Rename</span>
+        <div>
+            <span @click="truncateTables" v-if="selectMode">Truncate</span>
+            <span @click="renameTables" v-if="selectMode">Rename</span>
+        </div>
         <div class="itemTables" v-if="tableNames.length >0">
             <div v-for="tableName in showTableNames"><label><input type="checkbox" name="selectedTable" :value="tableName" v-if="selectMode"><span class="itemSpan" @click="selectTable(tableName)">{{tableName}}</span></label></div>
         </div>
