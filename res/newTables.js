@@ -31,7 +31,6 @@ tableApp = new Vue({
         initTable() {
             var self = this
             var tid = activeMerchantId
-            console.log(tid)
             var withColumns = !this.withColumnsCache[tid]
             $.ajax({
                 type: 'POST',
@@ -57,6 +56,7 @@ tableApp = new Vue({
             this.tableNames = content.Rows.map(row => row[1])
             this.isShow = true
             $('.MainDivs').addClass('MainDivsShowTable')
+            $('#tipsDivWrap').addClass('tipsDivWrapPosition')
             $.ReloadConfig()
 
             var timeout = null
@@ -108,8 +108,10 @@ tableApp = new Vue({
         switchShow() {
             if (this.isShow) {
                 $('.MainDivs').removeClass('MainDivsShowTable')
+                $('#tipsDivWrap').removeClass('tipsDivWrapPosition')
             } else {
                 $('.MainDivs').addClass('MainDivsShowTable')
+                $('#tipsDivWrap').addClass('tipsDivWrapPosition')
             }
             this.isShow = !this.isShow
         }

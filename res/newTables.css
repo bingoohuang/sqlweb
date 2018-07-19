@@ -43,3 +43,9 @@
 .MainDivsShowTable {
     width: calc(100% - 250px);
 }
+.tableModifyBtn {
+    cursor: pointer;
+}
+.tipsDivWrapPosition {
+    right: calc(10px + 250px) !important;
+}
