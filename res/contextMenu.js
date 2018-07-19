@@ -148,8 +148,10 @@
 
         itemsHead['sqlInPart'] = {name: 'Copy Columns As In Clause To Clipboard', icon: 'link'}
         itemsHead['copyColumns'] = {name: 'Copy Columns Values To Clipboard', icon: 'link'}
-        itemsHead['orderByAsc'] = {name: 'Order By Asc', icon: 'link'}
-        itemsHead['orderByDesc'] = {name: 'Order By Desc', icon: 'link'}
+        itemsHead['orderByAsc'] = {name: 'Order By Asc Local', icon: 'link'}
+        itemsHead['orderByDesc'] = {name: 'Order By Desc Local', icon: 'link'}
+        itemsHead['RerunOrderByAsc'] = {name: 'Rerun Order By Asc', icon: 'link'}
+        itemsHead['RerunOrderByDesc'] = {name: 'Rerun Order By Desc', icon: 'link'}
 
         if (linkColumnNames[columnName]) {
             $.contextMenu({
@@ -200,6 +202,17 @@
                     $.copiedTips('Column values copied.')
                 } else if (key === 'orderByAsc' || key === 'orderByDesc') {
                     $.sortingTable('queryResult' + queryResultId, columnIndex, key === 'orderByAsc', 1)
+                } else if (key === 'RerunOrderByAsc' || key === 'RerunOrderByDesc') {
+                    var sqlDiv = $('#sqlDiv' + queryResultId)
+                    var orderBy = ' order by ' + columnName + (key === 'RerunOrderByAsc' ? ' asc' : ' desc')
+                    var upperSql = sqlDiv.text().toUpperCase()
+                    var pos = upperSql.indexOf('ORDER BY')
+                    if (pos < 0) {
+                        sqlDiv.text(sqlDiv.text() + orderBy)
+                    } else {
+                        sqlDiv.text(sqlDiv.text().substr(0, pos) + orderBy)
+                    }
+                    $('#reExecuteSql' + queryResultId).click()
                 }
             },
             items: itemsHead
