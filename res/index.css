@@ -372,3 +372,7 @@ div.jconfirm-content {
 .jconfirm-box {
     width: 50%;
 }
+
+.queryResult {
+    margin-bottom: 10px;
+}
