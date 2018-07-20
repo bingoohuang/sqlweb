@@ -24,9 +24,6 @@ tableApp = new Vue({
             return this.tableNames.filter(tableName => parts.some(part => tableName.toUpperCase().indexOf(part) > -1))
         }
     },
-    mounted() {
-
-    },
     methods: {
         initTable() {
             var self = this
@@ -56,7 +53,6 @@ tableApp = new Vue({
             this.tableNames = content.Rows.map(row => row[1])
             this.isShow = true
             $('.MainDivs').addClass('MainDivsShowTable')
-            $('#tipsDivWrap').addClass('tipsDivWrapPosition')
             $.ReloadConfig()
 
             var timeout = null
@@ -108,10 +104,8 @@ tableApp = new Vue({
         switchShow() {
             if (this.isShow) {
                 $('.MainDivs').removeClass('MainDivsShowTable')
-                $('#tipsDivWrap').removeClass('tipsDivWrapPosition')
             } else {
                 $('.MainDivs').addClass('MainDivsShowTable')
-                $('#tipsDivWrap').addClass('tipsDivWrapPosition')
             }
             this.isShow = !this.isShow
         }

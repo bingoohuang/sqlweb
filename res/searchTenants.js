@@ -28,21 +28,23 @@
                 var hasContent = content && content.length
                 if (hasContent) {
                     for (var j = 0; j < content.length; j++) {
-                        searchHtml += '<span tid="' + content[j].MerchantId
-                            + '" tcode="' + content[j].MerchantCode
-                            + '" homeArea="' + content[j].HomeArea
-                            + '" classifier="' + content[j].Classifier
-                            + '" class="context-menu-icons context-menu-icon-tenant">' + content[j].MerchantName + '</span>'
+                        const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[j]
+                        searchHtml += `<option value="${MerchantId + '|' + MerchantCode + '|' + HomeArea + '|' + Classifier + '|' + MerchantName}">${MerchantName}</option>`
                     }
-
+                    $('.searchResult').select2();
+                    $('.searchResult').on('select2:select', function (e) {
+                        selectDB(e.params.data.id)
+                    });
                     $.exportDb()
                 } else {
                     $('.executeQuery').prop("disabled", true)
                     $('.tables').html('')
                 }
                 searchResult.html(searchHtml)
-                $('.searchResult span:first-child').click()
-
+                if (content.length > 0) {
+                    const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[0]
+                    selectDB(`${MerchantId + '|' + MerchantCode + '|' + HomeArea + '|' + Classifier + '|' + MerchantName}`)
+                }
                 callbackFn && callbackFn()
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -62,15 +64,14 @@
         }
     }
 
-    $('.searchResult').on('click', 'span', function () {
-        $('.searchResult span').removeClass('active')
-        var $this = $(this).addClass('active')
-
-        activeMerchantId = $this.attr('tid')
-        activeMerchantCode = $this.attr('tcode')
-        activeHomeArea = $this.attr('homeArea')
-        activeClassifier = $this.attr('classifier')
-        activeMerchantName = $this.text()
+    function selectDB(data) {
+        if (!data) return
+        const arr = data.split('|');
+        activeMerchantId = arr[0]
+        activeMerchantCode = arr[1]
+        activeHomeArea = arr[2]
+        activeClassifier = arr[3]
+        activeMerchantName = arr[4]
 
         $('#tidtcodeSpan').html('　<span title="tid" class="context-menu-icons context-menu-icon-id" onclick="prompt(\'tid:\', \'' + activeMerchantId + '\')"></span>' +
             '　<span title="tcode" class="context-menu-icons context-menu-icon-code">' + activeMerchantCode + '</span>' +
@@ -81,6 +82,7 @@
         // $.showTablesAjax(activeMerchantId)
 
         $('#fastEntriesDiv').show()
-    })
+    }
+
 
 })()

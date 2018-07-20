@@ -7,6 +7,7 @@
     <link href="https://cdn.bootcss.com/codemirror/5.38.0/codemirror.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/codemirror/5.38.0/addon/hint/show-hint.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/jquery-confirm/3.3.2/jquery-confirm.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
     <style>
         /*.CSS*/
     </style>
@@ -16,7 +17,8 @@
 <div class="MainDivs SqlWebDiv">
     <div id="multiTenantsDiv" class="hide">
         <input placeholder="Find tenants by tid/tcode/name" class="searchKey">
-        <span class="searchResult"></span><span id="tidtcodeSpan"></span>
+        <select class="searchResult"></select>
+        </span><span id="tidtcodeSpan"></span>
     </div>
 
     <div id="linksConfigDiv">
@@ -103,6 +105,7 @@
 <script src="https://cdn.bootcss.com/jquery-contextmenu/2.6.4/jquery.ui.position.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sql-formatter@2.3.1/dist/sql-formatter.min.js"></script>
 <script src="https://cdn.bootcss.com/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 <script>
     var contextPath = '${contextPath}';
     var multiTenants = '${multiTenants}';

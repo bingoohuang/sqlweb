@@ -142,8 +142,8 @@
         contextMenuHolder.queryResultId = resultId
         contextMenuHolder.tableName = result.TableName
         contextMenuHolder.hasRows = hasRows
-
-        table += '<div id="collapseDiv' + resultId + '" class="collapseDiv">' +
+        var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault
+        table += '<div id="collapseDiv' + resultId + `" class="collapseDiv ${mac ? 'hide-scrollbar' : ''}">` +
             '<table id="queryResult' + resultId + '" class="queryResult">'
 
         if (result.Headers && result.Headers.length > 0) {

@@ -11,7 +11,7 @@
     }
 
     function createTable(resultId, templateVars) {
-        var table = '<table id="queryResult' + resultId + '" class="queryResult">'
+        var table = '<table id="queryResult' + resultId + `" class="queryResult">`
         table += '<thead><tr><td></td><td>#</td>'
         for (var i = 0; i < templateVars.length; ++i) {
             table += '<td>' + templateVars[i] + '</td>'
@@ -178,8 +178,8 @@
         $('#closeResult' + resultId).click(function () {
             $('#executionResultDiv' + resultId).remove()
         })
-        var rid =  resultId
-        $('#screenShot'+ rid).click(function () {
+        var rid = resultId
+        $('#screenShot' + rid).click(function () {
             $.screenShot(rid)
         })
     }
@@ -205,8 +205,8 @@
             $.alertMe('No template variables found')
             return
         }
-
-        html += '<div id="collapseDiv' + resultId + '" class="collapseDiv">'
+        var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault
+        html += '<div id="collapseDiv' + resultId + `" class="collapseDiv ${mac ? 'hide-scrollbar' : ''}">`
         html += createTable(resultId, templateVars)
         html += '</div>'
 

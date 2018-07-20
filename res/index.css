@@ -1,3 +1,6 @@
+* {
+    outline: none;
+}
 body {
     min-width: 1200px;
 }
@@ -36,7 +39,7 @@ td textarea {
 }
 
 .searchResult {
-    max-width: 500px;
+    width: 200px;
     display: inline-block;
     white-space: nowrap;
     overflow: auto;

@@ -1,5 +1,6 @@
 (function () {
     var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault // 判断是否为Mac
+
     var runKey = (mac ? "Cmd" : "Ctrl") + "-Enter"
     var extraKeys = {}
     extraKeys[runKey] = function (cm) {
