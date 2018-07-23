@@ -20,7 +20,7 @@
 
     var htmlEscaper = /[<]/g
     $.isEscapeRequired = function (unsafe) {
-        return unsafe.length >= 1000 || htmlEscaper.test(unsafe)
+        return unsafe.length >= 100 || htmlEscaper.test(unsafe)
     }
 
     function createRows(result) {
@@ -142,8 +142,7 @@
         contextMenuHolder.queryResultId = resultId
         contextMenuHolder.tableName = result.TableName
         contextMenuHolder.hasRows = hasRows
-        var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault
-        table += '<div id="collapseDiv' + resultId + `" class="collapseDiv ${mac ? 'hide-scrollbar' : ''}">` +
+        table += '<div id="collapseDiv' + resultId + `" class="collapseDiv">` +
             '<table id="queryResult' + resultId + '" class="queryResult">'
 
         if (result.Headers && result.Headers.length > 0) {
@@ -159,7 +158,7 @@
             table += '<td><div class="chk checkMe"><input type="checkbox"></div></td>'
             table += '<td class="dataCell">' + new Array((result.Headers ? result.Headers.length : 0) + 1).join('</td><td class="dataCell">') + '</td></tr>'
         }
-        table += '</tbody></table></div><br/>'
+        table += '</tbody></table></div>'
 
         return table
     }

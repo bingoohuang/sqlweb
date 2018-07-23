@@ -26,7 +26,6 @@ td textarea {
 }
 
 .MainDivs {
-    overflow: hidden;
     position: relative;
 }
 
@@ -119,16 +118,11 @@ span.clickable {
     padding-top: 1px;
 }
 
-div.executionResult {
-    margin-top: -18px;
-    overflow: auto;
-}
-
 #editorDiv {
     margin-bottom: 18px;
 }
 
-thead {
+.headRow {
     background-color: aliceblue;
 }
 
@@ -243,6 +237,7 @@ table.executionSummary tr:first-child {
 
 .collapseDiv {
     max-height: 300px;
+    overflow: auto;
 }
 
 .sqlTd {
@@ -326,7 +321,7 @@ table.executionSummary tr:first-child {
     background: yellow;
     display: none;
     right: 10px;
-    bottom: 30px;
+    bottom: 10px;
     text-align: center;
 }
 
@@ -374,5 +369,5 @@ div.jconfirm-content {
 }
 
 .queryResult {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }

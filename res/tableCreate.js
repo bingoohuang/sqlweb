@@ -25,7 +25,6 @@
                 $.alertMe('please specify which row to copy')
             } else {
                 copyRows($checkedRows)
-                $("#queryResult" + rid).tableHeadFixer({"left": 2})
             }
         })
     }
@@ -117,11 +116,6 @@
         $('#expandRows' + rid).click(function () {
             $('#collapseDiv' + rid).toggleClass('collapseDiv')
         })
-
-        // https://github.com/lai32290/TableHeadFixer
-        if (totalRows < 100) {
-            $("#queryResult" + rid).tableHeadFixer({"left": 2})
-        }
     }
 
     $.tableCreate = function (result, sql, oldResultId, classifier, tid, tcode, tname) {

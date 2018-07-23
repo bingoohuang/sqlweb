@@ -89,7 +89,6 @@
                 $clone.find('td:eq(1)').text(rowSeq + seq)
                 $clone.insertAfter($tr)
             }
-            $resultTable.tableHeadFixer({"left": 2})
         })
     }
 
@@ -153,8 +152,6 @@
             populateRow($clone.find('td'), x, i, rowOffset, colOffset)
             $tbody.append($clone)
         }
-
-        $resultTable.tableHeadFixer({"left": 2})
     }
 
     function populateRow($tds, x, i, rowOffset, colOffset) {
@@ -205,13 +202,12 @@
             $.alertMe('No template variables found')
             return
         }
-        var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault
-        html += '<div id="collapseDiv' + resultId + `" class="collapseDiv ${mac ? 'hide-scrollbar' : ''}">`
+        html += '<div id="collapseDiv' + resultId + `" class="collapseDiv">`
         html += createTable(resultId, templateVars)
         html += '</div>'
 
 
-        html += '</div><br/>'
+        html += '</div>'
 
         $.replaceOrPrependResult(resultId, oldResultId, html)
 
@@ -247,8 +243,6 @@
             $resultTable.find('tbody tr').each(function (index, tr) {
                 $(tr).find('td').eq(1).text(index + 1)
             })
-
-            $resultTable.tableHeadFixer({"left": 2})
         })
     }
 

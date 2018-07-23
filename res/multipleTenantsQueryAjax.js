@@ -54,7 +54,6 @@
     }
 
     var tableCreateSimpleHeadHtml = function (headers, sql, resultId) {
-        var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault
         var seqNum = $.convertSeqNum(resultId)
         var table = '<div class="executionResult" id="executionResultDiv' + resultId + '">' +
             '<table class="executionSummary"><tr>' +
@@ -73,7 +72,7 @@
         table += '<button id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
         table += '<span class="sqlTd">' + sql + '</span>'
         table += '</div>'
-        table += '<div id="collapseDiv' + resultId + `" class="collapseDiv ${mac ? 'hide-scrollbar' : ''}">`
+        table += '<div id="collapseDiv' + resultId + `" class="collapseDiv">`
 
         table += '<table id="queryResult' + resultId + `" class="queryResult">`
         table += '<thead><tr class="headRow"><td></td>'
@@ -90,7 +89,7 @@
         }
         table += '</tr></thead>'
 
-        table += '<tbody></tbody></table></div><br/><div></div>'
+        table += '<tbody></tbody></table></div><div></div>'
 
         return table
     }
