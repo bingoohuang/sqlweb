@@ -135,7 +135,7 @@ tableApp = new Vue({
                 selectedTableName.push($(item).attr('value'))
             })
             if (selectedTableName.length <= 0) return alert("No tables checked")
-            $.executeMultiSqlsAjax(`truncate table ${selectedTableName.join(', ')};`, true)
+            $.executeMultiSqlsAjax(`truncate table ${selectedTableName.join(';\ntruncate table ')};` , true)
         }
     }
 })
