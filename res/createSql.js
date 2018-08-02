@@ -55,7 +55,7 @@
     }
 
     $.createInsertSqlPrefix = function (result) {
-        return 'insert into ' + wrapFieldName(result.TableName) + '(' + createFieldNamesList(result) + ') values'
+        return 'insert into ' + wrapFieldName(result.TableName || '') + '(' + createFieldNamesList(result) + ') values'
     }
 
     $.createSelectEqlTemplate = function (result) {

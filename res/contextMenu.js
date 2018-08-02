@@ -238,6 +238,53 @@
         })
     }
 
+    $.createTableToolsContextMenuInMultiTenantResult = function (resultId) {
+        $.contextMenu({
+            zIndex: 10,
+            selector: '#tableTools' + resultId,
+            trigger: 'left',
+            callback: function (key, options) {
+                if (key === 'CreateInsertSQLsHighlightedColumns') {
+                    var $resultTable = $('#queryResult' + resultId)
+
+
+                    var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
+                    if (highlightedColumnIndexes.length == 0) {
+                        $.alertMe("There is no columns highlighted!")
+                        return
+                    }
+
+                    var fields = []
+                    var $tds = $resultTable.find('thead tr:eq(0) td')
+                    for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
+                        var value = $tds.eq(highlightedColumnIndexes[i]).text()
+                        fields.push($.escapeSqlValue(value))
+                    }
+
+                    var values = []
+                    $resultTable.find('tbody tr:visible').each(function (rowIndex, tr) {
+                        var tds = $(tr).find('td')
+                        var line = []
+                        for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
+                            var index = highlightedColumnIndexes[i]
+                            line.push("'" + $.escapeSqlValue(tds.eq(index).text()) + "'")
+                        }
+                        values.push('(' + line.join(',') + ')')
+                    })
+
+                    $.appendSqlToSqlEditor('insert into xxx(' + fields.join(", ") + ") values \n" + values.join(',\n'), true)
+                }
+            },
+            items: {
+                CreateInsertSQLsHighlightedColumns: {
+                    name: "Create Insert SQLs for Highlighted Columns",
+                    icon: "columns"
+                }
+            }
+        })
+
+    }
+
     $.createTableToolsContextMenu = function (classifier, tid, tcode, tname, result, resultId) {
         if (result.TableName === '') return
 
