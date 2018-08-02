@@ -29,9 +29,10 @@
                 if (hasContent) {
                     for (var j = 0; j < content.length; j++) {
                         const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[j]
-                        searchHtml += `<option value="${MerchantId + '|' + MerchantCode + '|' + HomeArea + '|' + Classifier + '|' + MerchantName}">${MerchantName}</option>`
+                        // activeMerchantId|activeMerchantCode|activeHomeArea|activeClassifier|activeMerchantName|activeMerchantNamePinyin
+                        searchHtml += `<option value="${MerchantId + '|' + MerchantCode + '|' + HomeArea + '|' + Classifier + '|' + MerchantName + '|' + $.toPinyin(MerchantName)}">${MerchantName}</option>`
                     }
-                    $('.searchResult').select2();
+                    $('.searchResult').select2({matcher: matcherCustom});
                     $('.searchResult').on('select2:select', function (e) {
                         selectDB(e.params.data.id)
                     });
@@ -66,12 +67,13 @@
 
     function selectDB(data) {
         if (!data) return
-        const arr = data.split('|');
+        const arr = data.split('|')
         activeMerchantId = arr[0]
         activeMerchantCode = arr[1]
         activeHomeArea = arr[2]
         activeClassifier = arr[3]
         activeMerchantName = arr[4]
+
 
         $('#tidtcodeSpan').html('　<span title="tid" class="context-menu-icons context-menu-icon-id" onclick="prompt(\'tid:\', \'' + activeMerchantId + '\')"></span>' +
             '　<span title="tcode" class="context-menu-icons context-menu-icon-code">' + activeMerchantCode + '</span>' +
@@ -84,5 +86,12 @@
         $('#fastEntriesDiv').show()
     }
 
+    function matcherCustom(params, data) {
+        const queryStr = $.trim(params.term).toLowerCase()
+        if (queryStr === '') return data
+        console.log(data.id.indexOf(queryStr) >= 0)
+        if (data.id.indexOf(queryStr) >= 0) return data
+        return null
+    }
 
 })()
