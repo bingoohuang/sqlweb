@@ -95,7 +95,7 @@
     function matcherCustom(params, data) {
         const queryStr = $.trim(params.term).toLowerCase()
         if (queryStr === '') return data
-        if (data.id.indexOf(queryStr) >= 0) return data
+        if (data.id.toLowerCase().indexOf(queryStr) >= 0) return data
         return null
     }
 
