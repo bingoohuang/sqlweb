@@ -19,7 +19,26 @@
         }
         return l.toLowerCase()
     }
-
+    $.simplePinyin = function(f) {
+        var e = f.length;
+        var l = "";
+        var k = new RegExp("[a-zA-Z0-9- ]");
+        for (var j = 0; j < e; j++) {
+            var m = f.substr(j, 1);
+            var g = c(m, d);
+            if (k.test(m)) {
+                l += m
+            } else {
+                if (g !== false) {
+                    l += g.substring(0,1).toLowerCase()
+                }
+            }
+        };
+        while (l.indexOf("--") > 0) {
+            l = l.replace("--", "-")
+        }
+        return l
+    };
     var d = {
         a: "\u554a\u963f\u9515",
         ai: "\u57c3\u6328\u54ce\u5509\u54c0\u7691\u764c\u853c\u77ee\u827e\u788d\u7231\u9698\u8bf6\u6371\u55f3\u55cc\u5ad2\u7477\u66a7\u7839\u953f\u972d",

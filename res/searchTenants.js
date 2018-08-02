@@ -29,8 +29,14 @@
                 if (hasContent) {
                     for (var j = 0; j < content.length; j++) {
                         const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[j]
-                        // activeMerchantId|activeMerchantCode|activeHomeArea|activeClassifier|activeMerchantName|activeMerchantNamePinyin
-                        searchHtml += `<option value="${MerchantId + '|' + MerchantCode + '|' + HomeArea + '|' + Classifier + '|' + MerchantName + '|' + $.toPinyin(MerchantName)}">${MerchantName}</option>`
+                        // activeMerchantId|activeMerchantCode|activeHomeArea|activeClassifier|activeMerchantName|activeMerchantNamePinyin|activeMerchantNameSimplePinyin
+                        searchHtml += `<option value="${MerchantId
+                        + '|' + MerchantCode
+                        + '|' + HomeArea
+                        + '|' + Classifier
+                        + '|' + MerchantName
+                        + '|' + $.toPinyin(MerchantName)
+                        + '|' + $.simplePinyin(MerchantName)}">${MerchantName}</option>`
                     }
                     $('.searchResult').select2({matcher: matcherCustom});
                     $('.searchResult').on('select2:select', function (e) {
@@ -89,7 +95,6 @@
     function matcherCustom(params, data) {
         const queryStr = $.trim(params.term).toLowerCase()
         if (queryStr === '') return data
-        console.log(data.id.indexOf(queryStr) >= 0)
         if (data.id.indexOf(queryStr) >= 0) return data
         return null
     }
