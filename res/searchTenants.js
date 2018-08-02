@@ -38,11 +38,15 @@
                         + '|' + $.toPinyin(MerchantName)
                         + '|' + $.simplePinyin(MerchantName)}">${MerchantName}</option>`
                     }
+                    searchHtml += `<option value="trr|trr|trr|trr|trr|trr|trr">trr</option>`
                     $('.searchResult').select2({matcher: matcherCustom});
-                    $('.select2-search__field').attr('placeholder', 'tid|tcode|名称|缩写|全拼|HomeArea')
                     $('.searchResult').on('select2:select', function (e) {
                         selectDB(e.params.data.id)
                     });
+                    $('.searchResult').on('select2:open', function (e) {
+                        $('.select2-search__field').attr('placeholder', 'tid|tcode|名称|缩写|全拼|HomeArea')
+                    });
+
                     $.exportDb()
                 } else {
                     $('.executeQuery').prop("disabled", true)
