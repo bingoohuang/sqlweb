@@ -39,6 +39,7 @@
                         + '|' + $.simplePinyin(MerchantName)}">${MerchantName}</option>`
                     }
                     $('.searchResult').select2({matcher: matcherCustom});
+                    $('.select2-search__field').attr('placeholder', 'tid|tcode|名称|缩写|全拼|HomeArea')
                     $('.searchResult').on('select2:select', function (e) {
                         selectDB(e.params.data.id)
                     });
