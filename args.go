@@ -32,6 +32,8 @@ type AppConfig struct {
 	RedirectUri string
 	LocalUrl    string
 	ForceLogin  bool
+
+	WriteAuthUserNames []string // UserNames which has write auth
 }
 
 var configFile string

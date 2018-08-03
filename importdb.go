@@ -19,6 +19,11 @@ type ImportResult struct {
 func importDatabase(w http.ResponseWriter, r *http.Request) {
 	go_utils.HeadContentTypeJson(w)
 
+	if !writeAuthOk(r) {
+		http.Error(w, "write auth required", 405)
+		return
+	}
+
 	if !CommandExist("mysql") {
 		http.Error(w, "mysql client not well installed", 405)
 		return
