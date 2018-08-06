@@ -38,7 +38,7 @@
                         + '|' + $.toPinyin(MerchantName)
                         + '|' + $.simplePinyin(MerchantName)}">${MerchantName}</option>`
                     }
-                    searchHtml += `<option value="trr|trr|trr|trr|trr|trr|trr">trr</option>`
+                    searchHtml += `<option value="trr|trr|south-center|trr|trr|trr|trr">trr</option>`
                     $('.searchResult').select2({matcher: matcherCustom});
                     $('.searchResult').on('select2:select', function (e) {
                         selectDB(e.params.data.id)
