@@ -7,24 +7,12 @@ import (
 	"strings"
 )
 
-func parseSql(w http.ResponseWriter, querySql, dbDataSource string) (bool, string, []string, bool) {
+func parseSql(querySql, dbDataSource string) (bool, string, []string, bool) {
 	var tableName string
 	var primaryKeys []string
-	//start := time.Now()
 	isSelect := false
-
 	firstWord := strings.ToUpper(go_utils.FirstWord(querySql))
 	switch firstWord {
-	case "INSERT", "DELETE", "UPDATE", "SET":
-		//if !authOk(r) {
-		//	json.NewEncoder(w).Encode(QueryResult{Headers: nil, Rows: nil,
-		//		Error:         "dangerous sql, please get authorized first!",
-		//		ExecutionTime: start.Format("2006-01-02 15:04:05.000"),
-		//		CostTime:      time.Since(start).String(),
-		//	})
-		//	log.Println("sql", querySql, "is not allowed because of insert/delete/update/set")
-		//	return isSelect, "", nil, false
-		//}
 	case "SELECT":
 		isSelect = true
 		sqlParseResult, err := sqlparser.Parse(querySql)
@@ -34,11 +22,19 @@ func parseSql(w http.ResponseWriter, querySql, dbDataSource string) (bool, strin
 				primaryKeys = findTablePrimaryKeys(tableName, dbDataSource)
 			}
 		}
-	default:
+	case "SHOW":
 		isSelect = true
+	case "INSERT", "DELETE", "UPDATE", "SET":
+		fallthrough
+	default:
 	}
 
 	return isSelect, tableName, primaryKeys, true
+}
+
+func writeAuthOk(r *http.Request) bool {
+	return len(appConfig.WriteAuthUserNames) == 0 ||
+		go_utils.IndexOf(loginedUserName(r), appConfig.WriteAuthUserNames) >= 0
 }
 
 func findPrimaryKeysIndex(tableName string, primaryKeys, headers []string) []int {

@@ -66,6 +66,18 @@ func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 	sqlString := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
+
+	sqls := go_utils.SplitSqls(sqlString, ';')
+	for _, sql := range sqls {
+		if go_utils.IsQuerySql(sql) {
+			continue
+		}
+		if !writeAuthOk(req) {
+			http.Error(w, "write auth required", 405)
+			return
+		}
+	}
+
 	tids := req.FormValue("multipleTenantIds")
 	multipleTenantIds := strings.FieldsFunc(tids, func(c rune) bool { return c == ',' })
 
@@ -181,6 +193,12 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 	querySql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
+
+	if !go_utils.IsQuerySql(querySql) && !writeAuthOk(req) {
+		http.Error(w, "write auth required", 405)
+		return
+	}
+
 	tid := strings.TrimSpace(req.FormValue("tid"))
 	withColumns := strings.TrimSpace(req.FormValue("withColumns"))
 
@@ -190,7 +208,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	_, tableName, primaryKeys, sqlAllowed := parseSql(w, querySql, ds)
+	_, tableName, primaryKeys, sqlAllowed := parseSql(querySql, ds)
 	if !sqlAllowed {
 		return
 	}

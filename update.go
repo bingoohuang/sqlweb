@@ -20,11 +20,16 @@ type UpdateResult struct {
 	RowsResult []UpdateResultRow
 }
 
-func serveUpdate(w http.ResponseWriter, req *http.Request) {
+func serveUpdate(w http.ResponseWriter, r *http.Request) {
 	go_utils.HeadContentTypeJson(w)
 
-	sqls := strings.TrimSpace(req.FormValue("sqls"))
-	tid := strings.TrimSpace(req.FormValue("tid"))
+	if !writeAuthOk(r) {
+		http.Error(w, "write auth required", 405)
+		return
+	}
+
+	sqls := strings.TrimSpace(r.FormValue("sqls"))
+	tid := strings.TrimSpace(r.FormValue("tid"))
 
 	dataSource, _, err := selectDb(tid)
 	if err != nil {

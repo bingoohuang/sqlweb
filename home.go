@@ -7,6 +7,16 @@ import (
 	"strings"
 )
 
+func loginedUserName(r *http.Request) string {
+	cookieValue := r.Context().Value("CookieValue")
+	if cookieValue == nil {
+		return ""
+	}
+
+	cookie := cookieValue.(*go_utils.CookieValueImpl)
+	return cookie.Name
+}
+
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	go_utils.HeadContentTypeHtml(w)
 	cookieValue := r.Context().Value("CookieValue")
