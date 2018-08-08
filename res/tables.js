@@ -67,7 +67,6 @@
         }
         $('.tables').html(resultHtml)
         $('.searchTableNames').change()
-        $.ReloadConfig()
 
         var timeout = null
         var editor = $.sqlCodeMirror

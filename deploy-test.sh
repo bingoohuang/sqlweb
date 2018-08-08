@@ -16,6 +16,7 @@ fi
 
 rsync -avz --human-readable --progress -e "ssh -p 22" ./$deployName.linux.bin $targetHost:.
 ssh -tt $targetHost "bash -s" << eeooff
+mkdir -p ./app/$deployName/
 cd ./app/$deployName/
 ps -ef|grep $deployName|grep -v grep|awk '{print \$2}'|xargs -r kill -9
 cp -f ~/$deployName.linux.bin .

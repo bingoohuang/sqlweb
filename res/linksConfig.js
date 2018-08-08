@@ -16,7 +16,7 @@
             $.contextMenu({
                 selector: '#linksConfigDiv .CodeMirror',
                 zIndex: 10,
-                callback: function (key, options) {
+                callback: function (key) {
                     if (key === 'FindTablesByColumn') {
                         if (!tomlEditor.somethingSelected()) {
                             $.alertMe("Please choose the column name first")
@@ -34,6 +34,8 @@
                     ReloadConfig: {name: 'Reset Config', icon: 'reload'},
                 }
             })
+
+            ReloadConfig()
         }
     })
     $('#CloseConfig').click(toogleLinksConfigDiv)
@@ -42,8 +44,8 @@
         $.ajax({
             type: 'POST',
             url: contextPath + "/saveLinksConfig",
-            data: {linksConfig: tomlEditor.getValue(), activeClassifier: activeClassifier},
-            success: function (content, textStatus, request) {
+            data: {linksConfig: tomlEditor.getValue()},
+            success: function (content) {
                 if (content.OK === "OK") {
                     toogleLinksConfigDiv()
 
@@ -63,7 +65,7 @@
             type: 'POST',
             url: contextPath + "/tablesByColumn",
             data: {tid: activeMerchantId, columnName: columnName},
-            success: function (content, textStatus, request) {
+            success: function (content) {
                 var tablesHtml = ''
                 if (content.Rows.length == 0) {
                     tablesHtml += '<div>There are no tables which has column ' + columnName + '</div>'
@@ -84,20 +86,12 @@
     // refer : https://codemirror.net/mode/toml/index.html
     var tomlEditor = null
 
-    var lastActiveClassifier  = null
-
     function ReloadConfig() {
-        if (lastActiveClassifier === activeClassifier) {
-            return
-        }
-
-        lastActiveClassifier = activeClassifier
-
         $.ajax({
             type: 'POST',
             url: contextPath + "/loadLinksConfig",
-            data: {activeClassifier: lastActiveClassifier},
-            success: function (content, textStatus, request) {
+            data: {},
+            success: function (content) {
                 if (tomlEditor != null) {
                     tomlEditor.setValue(content.LinksConfig)
                 } else {
@@ -111,21 +105,34 @@
         })
     }
 
-    $.ReloadConfig = ReloadConfig
-
     $.SingleTableQueryAppends = {}
+
+    function removePostfixTag(key) {
+        var pos = key.indexOf("-")
+        if (pos > 0) {
+            return key.substr(0, pos)
+        } else {
+            return key
+        }
+    }
 
     function createLinksConfig(linksConfig) {
         $.createFastEntries(linksConfig.entries)
 
-        $.each(linksConfig.links, function (key, value) {
+        $.each(linksConfig.links, function (key, entry) {
+            if (entry.classifiers && entry.classifiers.indexOf(activeClassifier) < 0) return true
+            if (entry.excludeClassifiers && entry.excludeClassifiers.indexOf(activeClassifier) >= 0) return true
+
+            var field = entry.field || removePostfixTag(key)
+
             var relativeFieldGroup = []
 
-            $.each(value.linksTo, function (index, linkTo) {
+            $.each(entry.linksTo, function (index, linkTo) {
+
                 var dotIndex = linkTo.indexOf('.')
 
                 var tableName = dotIndex < 0 ? linkTo : linkTo.substring(0, dotIndex)
-                var filedName = dotIndex < 0 ? key : linkTo.substring(dotIndex + 1)
+                var filedName = dotIndex < 0 ? field : linkTo.substring(dotIndex + 1)
 
                 relativeFieldGroup.push(tableName.toUpperCase())
                 relativeFieldGroup.push(filedName.toUpperCase())
@@ -139,6 +146,5 @@
         $.each(linksConfig.tables, function (tableName, value) {
             $.SingleTableQueryAppends[tableName.toUpperCase()] = value.appendSql
         })
-
     }
 })()

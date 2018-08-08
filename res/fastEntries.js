@@ -27,6 +27,9 @@
         var fastEntriesHtml = ''
 
         $.each(fastEntriesConfig, function (key, entry) {
+            if (entry.classifiers && entry.classifiers.indexOf(activeClassifier) < 0) return true
+            if (entry.excludeClassifiers && entry.excludeClassifiers.indexOf(activeClassifier) >= 0) return true
+
             if (fastEntriesHtml !== '') {
                 fastEntriesHtml += '<span class="separator">|</span>'
             }

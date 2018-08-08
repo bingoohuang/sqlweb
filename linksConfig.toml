@@ -1,22 +1,32 @@
 # http://toml-online-parser.ovonick.com/
 
 [links]
-    [links.user_id]
+    [links.user_id-et]
+    classifiers = ["et"]
+    linksTo = ["easyhi_user", "easyhi_user_role", "tt_f_coach_worktime.COACH_ID", "tt_f_coach_timeoffwork.COACH_ID"]
+  
+    [links.user_id-yoga]
+    classifiers = ["yoga", "yoga-dev"]
     linksTo = ["tt_f_user", "tt_f_user_role", "tt_f_member", "tt_f_mbr_card.member_id", "tt_f_coach", "tt_f_staff", "tt_f_subscribe", "tt_f_login"]
     
     [links.MBR_CARD_ID]
+    classifiers = ["yoga", "yoga-dev"]
     linksTo = ["tt_f_mbr_card", "tt_l_mbrcard_chg"]
 
     [links.CARD_ID]
+    classifiers = ["yoga", "yoga-dev"]
     linksTo = ["tt_f_mbr_card", "tt_f_card", "tt_f_card_rule"]
     
     [links.COURSE_ID]
+    classifiers = ["yoga", "yoga-dev"]
     linksTo = ["tt_f_card_rule", "tt_f_schedule", "tt_f_course"]
     
     [links.COACH_ID]
+    classifiers = ["yoga", "yoga-dev"]
     linksTo = ["tt_f_card_rule", "tt_f_coach", "tt_f_schedule", "tt_f_coach_rest"]
     
     [links.MOBILE]
+    classifiers = ["yoga", "yoga-dev"]
     linksTo = ["tt_f_user", "tt_f_login"]
 
 
@@ -27,7 +37,15 @@
     label = "查找用户"
     sql = "select * from tt_f_user where nickname like '%{input}%' or mobile like '%{input}%'"
 
-    [entries.merchant]
+    [entries.merchantYoga]
+    classifiers = ["yoga", "yoga-dev"]
     type = "link"
-    label = "查找馆主"
+    label = "找馆主"
     sql = "select * from tt_f_user_role where role_id = '100'"
+    
+    
+    [entries.merchantOther]
+    excludeClassifiers = ["yoga", "yoga-dev"]
+    type = "link"
+    label = "找馆主"
+    sql = "select * from easyhi_user where user_id in (select user_id from easyhi_user_role where role_name = '馆主')"

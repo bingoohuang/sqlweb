@@ -53,7 +53,6 @@ tableApp = new Vue({
             this.tableNames = content.Rows.map(row => row[1])
             this.isShow = true
             $('.MainDivs').addClass('MainDivsShowTable')
-            $.ReloadConfig()
 
             var timeout = null
             var editor = $.sqlCodeMirror
