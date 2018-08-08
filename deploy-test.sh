@@ -20,7 +20,7 @@ mkdir -p ./app/$deployName/
 cd ./app/$deployName/
 ps -ef|grep $deployName|grep -v grep|awk '{print \$2}'|xargs -r kill -9
 cp -f ~/$deployName.linux.bin .
-./start-go-sql-web.linux.sh
+nohup ./go-sql-web.linux.bin 2>&1  >> go-sql-web.out &
 exit
 eeooff
 

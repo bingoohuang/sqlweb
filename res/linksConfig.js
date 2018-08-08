@@ -1,5 +1,6 @@
 (function () {
     $.linksConfig = []
+
     function toogleLinksConfigDiv() {
         $('#linksConfigDiv').toggle()
         $('#sqlwebDiv').toggle()
@@ -49,7 +50,8 @@
                 if (content.OK === "OK") {
                     toogleLinksConfigDiv()
 
-                    createLinksConfig(JSON.parse(content.Json))
+                    linksConfig = JSON.parse(content.Json)
+                    createLinksConfig()
                 } else {
                     $.alertMe(content.OK)
                 }
@@ -97,7 +99,8 @@
                 } else {
                     $('#tomlEditor').val(content.LinksConfig)
                 }
-                createLinksConfig(JSON.parse(content.Json))
+                linksConfig = JSON.parse(content.Json)
+                createLinksConfig()
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
@@ -116,8 +119,17 @@
         }
     }
 
-    function createLinksConfig(linksConfig) {
+    var linksConfig = null
+
+    function createLinksConfig() {
+        if (linksConfig == null) {
+            ReloadConfig()
+            return
+        }
+
         $.createFastEntries(linksConfig.entries)
+
+        $.linksConfig = []
 
         $.each(linksConfig.links, function (key, entry) {
             if (entry.classifiers && entry.classifiers.indexOf(activeClassifier) < 0) return true
@@ -147,4 +159,6 @@
             $.SingleTableQueryAppends[tableName.toUpperCase()] = value.appendSql
         })
     }
+
+    $.refreshLinksConfig = createLinksConfig
 })()

@@ -92,7 +92,8 @@
 
         $('.executeQuery').prop("disabled", false)
         tableApp.initTable()
-        // $.showTablesAjax(activeMerchantId)
+
+        $.refreshLinksConfig()
 
         $('#fastEntriesDiv').show()
     }
