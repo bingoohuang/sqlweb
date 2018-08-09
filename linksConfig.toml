@@ -31,6 +31,14 @@
 
 
 [entries]
+    [entries.runTask]
+    type = "input:promotion|et|yoga#input"
+    autoHide  = true
+    label = "任务"
+    placeholder = "#任务ID"
+    separator = "#"
+    action = "action=CacheAction#op=ZAdd#key=EasyhiTaskQueue:{input1}#value={input2}#score=0"
+    
     [entries.member]
     type = "input"
     placeholder = "手机号码/姓名"

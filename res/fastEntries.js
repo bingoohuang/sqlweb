@@ -23,6 +23,14 @@
         }
     }
 
+    function createOptionsHtml(selectOptions) {
+        var optionsHtml = ''
+        for (var k = 0; k < selectOptions.length; ++k) {
+            optionsHtml += '<option value="' + selectOptions[k] + '">' + selectOptions[k] + '</option>'
+        }
+        return optionsHtml;
+    }
+
     $.createFastEntries = function (fastEntriesConfig) {
         var fastEntriesHtml = ''
 
@@ -43,7 +51,7 @@
 
             for (var i = 0; i < size; ++i) {
                 var entryType = entryTypes[i]
-                if (entryType === 'input') {
+                if (entryType.indexOf('input') === 0) {
                     if (i === 0) {
                         fastEntriesHtml += '<span><span class="' +
                             (entry.autoHide ? "authHidable underline" : "") + '" >' + entry.label + '</span>' +
@@ -51,17 +59,39 @@
                     }
 
                     var width = inputWidth && (inputWidth[i] || inputWidth[0])
+                    var isInput = entryType === 'input'
+                    var isSelect = entryType.indexOf('input:') === 0
+                    var selectOptions = []
+                    if (isSelect) {
+                        selectOptions = entryType.substr('input:'.length).split(/\|/)
+                        if (selectOptions.length == 0) {
+                            isInput = true
+                            isSelect = false
+                        }
+                    }
 
                     if (i === size - 1) {
-                        fastEntriesHtml += '<input inputsize="' + size + '" ' +
-                            (width ? 'style="width:' + width + '" ' : '') +
-                            'placeholder="' + (placeholders[i] || '') + '" value="' + (defaultValues[i] || '') + '" ' +
-                            'entryKey="' + key + '"></span></span>'
+                        if (isInput) {
+                            fastEntriesHtml += '<input inputsize="' + size + '" ' +
+                                (width ? 'style="width:' + width + '" ' : '') +
+                                'placeholder="' + (placeholders[i] || '') + '" value="' + (defaultValues[i] || '') + '" ' +
+                                'entryKey="' + key + '"></span></span>'
+                        } else if (isSelect) {
+                            fastEntriesHtml += '<select inputsize="' + size + '" ' +
+                                (width ? 'style="width:' + width + '" ' : '') +
+                                'entryKey="' + key + '">' + createOptionsHtml(selectOptions) + '</select></span></span>'
+                        }
                     } else {
-                        fastEntriesHtml += '<input ' +
-                            (width ? 'style="width:' + width + '" ' : '') +
-                            'placeholder="' + (placeholders[i] || '') + '" value="' + (defaultValues[i] || '') + '" ' +
-                            '>'
+                        if (isInput) {
+                            fastEntriesHtml += '<input ' +
+                                (width ? 'style="width:' + width + '" ' : '') +
+                                'placeholder="' + (placeholders[i] || '') + '" value="' + (defaultValues[i] || '') + '" ' +
+                                '>'
+                        } else if (isSelect) {
+                            fastEntriesHtml += '<select ' +
+                                (width ? 'style="width:' + width + '" ' : '') +
+                                '>' + createOptionsHtml(selectOptions) + '</select>'
+                        }
                     }
                 } else if (entryType === 'link') {
                     fastEntriesHtml += '<span class="clickable" entryKey="' + key + '">' + entry.label + '</span>'
@@ -83,7 +113,6 @@
                 var entryKey = $(this).attr('entryKey')
                 if (!entryKey) return
 
-                var fastEntry = fastEntriesConfig[entryKey]
                 var inputsize = $(this).attr('inputsize')
                 var data = {}
                 if (inputsize === "1") {
@@ -92,9 +121,11 @@
                     var $input = $(this)
                     for (var i = +inputsize; i >= 0; --i) {
                         data["input" + i] = $input.val()
-                        $input = $input.prev('input')
+                        $input = $input.prev()
                     }
                 }
+
+                var fastEntry = fastEntriesConfig[entryKey]
                 executeFastEntry(fastEntry, data)
             }
         }).focus(function () {
