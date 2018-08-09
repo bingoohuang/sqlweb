@@ -76,7 +76,7 @@
     $('.executeQuery').prop("disabled", true).click(function () {
         var sql = $.getEditorSql()
         if ($.trim(sql) === '') {
-            $.$.alertMeMe("Please input sql!")
+            $.alertMe("Please input sql!")
             return
         }
 
