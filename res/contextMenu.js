@@ -24,9 +24,7 @@
     })
 
     $.chosenRows = function (resultId) {
-        return $.isCheckboxEditable(resultId)
-            ? $('#queryResult' + resultId + ' tbody :checked').parents('tr:visible')
-            : $('#queryResult' + resultId + ' tbody tr:visible')
+        return $('#queryResult' + resultId).find('tr.highlight:visible')
     }
 
     $.isCheckboxEditable = function (resultId) {

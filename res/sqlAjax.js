@@ -166,7 +166,7 @@
         $('.tablesWrapper').hide()
     }
 
-    $.executeUpdate = function (tid, sqlRowIndices, sqls, $rows, isDDl) {
+    $.executeUpdate = function (tid, sqlRowIndices, sqls, $rows, isDDl, okCallback) {
         $.ajax({
             type: 'POST',
             url: contextPath + "/update",
@@ -175,6 +175,10 @@
                 if (!content.Ok) {
                     $.alertMe(content.Message)
                     return
+                }
+
+                if (okCallback) {
+                    okCallback()
                 }
 
                 for (var i = 0; i < content.RowsResult.length; ++i) {
@@ -189,7 +193,6 @@
                         $row.find('td.dataCell').each(function (jndex, cell) {
                             $(this).removeAttr('old').removeClass('changedCell')
                         })
-                        $row.find('input[type=checkbox]').prop('checked', false)
                         $row.remove('.deletedRow').removeClass('clonedRow').find('td').attr('contenteditable', false)
                     }
                 }

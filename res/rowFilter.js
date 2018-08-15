@@ -129,7 +129,6 @@
                 $(tr).find('td').eq(1).text(index + 1)
             }).removeAttr('rowOdd').removeClass('rowOdd').filter(':odd').addClass('rowOdd').attr('rowOdd', 'true')
 
-            $.changeCheckAllState(resultId)
         }).focus(function () {
             $(this).select()
         })

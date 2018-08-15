@@ -20,7 +20,7 @@
         table += '</tr></thead><tbody>'
 
         for (var rowSeq = 1; rowSeq <= 5; ++rowSeq) {
-            table += '<tr><td><input type="checkbox"></td><td>' + rowSeq + '</td>'
+            table += '<tr><td></td><td>' + rowSeq + '</td>'
             for (var i = 0; i < templateVars.length; ++i) {
                 table += '<td contenteditable="true"></td>'
             }

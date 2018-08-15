@@ -5,9 +5,6 @@
             $tr.find(':checked').prop("checked", false)
             var $clone = $tr.clone().addClass('clonedRow')
             $clone.insertAfter($tr)
-            $clone.find('input[type=checkbox]').click(function () {
-                $.toggleRowEditable($(this))
-            }).click()
         })
     }
 
