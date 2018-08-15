@@ -177,14 +177,12 @@
                     return
                 }
 
-                if (okCallback) {
-                    okCallback()
-                }
-
+                var hasError = 0
                 for (var i = 0; i < content.RowsResult.length; ++i) {
                     var rowResult = content.RowsResult[i]
                     if (rowResult.Message.indexOf("Error") >= 0 || !isDDl && !rowResult.Ok) {
-                        $.copiedTips(rowResult.Message)
+                        $.alertMe(rowResult.Message)
+                        ++hasError
                     } else {
                         $.copiedTips(sqls)
                         var rowIndex = sqlRowIndices[i]
@@ -196,6 +194,8 @@
                         $row.remove('.deletedRow').removeClass('clonedRow').find('td').attr('contenteditable', false)
                     }
                 }
+
+                if (hasError === 0 && okCallback) okCallback()
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)

@@ -2,7 +2,6 @@
     function copyRows($checkedRows) {
         $checkedRows.each(function (index, tr) {
             var $tr = $(tr)
-            $tr.find(':checked').prop("checked", false)
             var $clone = $tr.clone().addClass('clonedRow')
             $clone.insertAfter($tr)
         })

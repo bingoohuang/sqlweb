@@ -190,9 +190,10 @@
         html += '<span class="opsSpan"><input type="checkbox" checked id="escapleSqlValues' + resultId + '"><label for="escapleSqlValues' + resultId + '">Escape SQL values</label></span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="moreRows' + resultId + '">More Rows</span>&nbsp;&nbsp;'
         html += '<span class="opsSpan reRunSql" id="evalSql' + resultId + '">Eval</span>&nbsp;&nbsp;'
+        html += '<button title="Mark Rows or Cells" id="markRowsOrCells' + resultId + '"><span class="context-menu-icons context-menu-icon-mark"></span></button>'
         html += '<button title="Expand/Collapse Rows"  id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
         html += '<button title="Clone Rows" id="copyRow' + resultId + '" class="copyRow"><span class="context-menu-icons context-menu-icon-cloneRows"></span></button>'
-        html += '<button title="Tag Rows As Deleted" id="deleteRows' + resultId + '"><span class="context-menu-icons context-menu-icon-deleteRows"></span></button>'
+        html += '<button title="Delete Rows" id="deleteRows' + resultId + '"><span class="context-menu-icons context-menu-icon-deleteRows"></span></button>'
         html += '<span class="opsSpan reRunSql" id="reTemplateSql' + resultId + '">Re Run</span>:'
         html += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         html += '</div>'
@@ -217,9 +218,10 @@
         attachMoreRowsEvent(resultId)
         bindReExecuteSql('#reTemplateSql' + resultId, resultId)
         attachHighlightColumnEvent(resultId)
+        $.attachMarkRowsOrCellsEvent(resultId)
         attachSpreadPasteEvent(resultId)
-        attachDeleteRowsPasteEvent(resultId)
-        attachCopyRowsPasteEvent(resultId)
+        attachDeleteRowsEvent(resultId)
+        attachCopyRowsEvent(resultId)
     }
 
     var attachSpreadPasteEvent = function (resultId) {
@@ -229,16 +231,15 @@
         })
     }
 
-    var attachCopyRowsPasteEvent = function (resultId) {
+    var attachCopyRowsEvent = function (resultId) {
         var qr = '#queryResult' + resultId;
 
         $('#copyRow' + resultId).click(function () {
             var $resultTable = $(qr)
 
-            $resultTable.find('input:checked').each(function (index, chk) {
-                var $tr = $(chk).parents('tr')
-                $tr.clone().addClass('clonedRow').insertAfter($tr)
-                $(chk).prop("checked", false)
+            $resultTable.find('tr.highlight').each(function (index, tr) {
+                var $tr = $(tr)
+                $tr.clone().insertAfter($tr)
             })
             $resultTable.find('tbody tr').each(function (index, tr) {
                 $(tr).find('td').eq(1).text(index + 1)
@@ -246,14 +247,14 @@
         })
     }
 
-    var attachDeleteRowsPasteEvent = function (resultId) {
+    var attachDeleteRowsEvent = function (resultId) {
         var qr = '#queryResult' + resultId;
 
         $('#deleteRows' + resultId).click(function () {
             var $resultTable = $(qr)
 
-            $resultTable.find('input:checked').each(function (index, chk) {
-                $(chk).parents('tr').remove()
+            $resultTable.find('tr.highlight').each(function (index, tr) {
+                $(tr).remove()
             })
             $resultTable.find('tbody tr').each(function (index, tr) {
                 $(tr).find('td').eq(1).text(index + 1)
