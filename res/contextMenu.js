@@ -41,7 +41,7 @@
 
     var createColumnsValue = function (resultId, columnName) {
         var inPart = ''
-        var chosenRows = $.chosenRows(resultId)
+        var chosenRows = $.chosenRowsHighlightedOrAll(resultId)
         var duplicate = {}
         var cssName = $.escapeContextMenuCssName(columnName)
         chosenRows.find('td.' + cssName).each(
@@ -63,7 +63,7 @@
 
     var createInPart = function (resultId, columnName) {
         var inPart = ''
-        var $chosenRows = $.chosenRows(resultId)
+        var $chosenRows = $.chosenRowsHighlightedOrAll(resultId)
 
         var duplicate = {}
         var cssName = $.escapeContextMenuCssName(columnName)
