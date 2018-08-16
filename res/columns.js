@@ -65,8 +65,7 @@
             })
             csv.push(csvLine.join('\t'))
         })
-        $.copyTextToClipboard(csv.join('\n'))
-        $.copiedTips('TSV copied.')
+        $.copiedTips(csv.join('\n'))
     }
 
     function CopyAsTsv($resultTable) {
