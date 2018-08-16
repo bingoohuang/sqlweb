@@ -63,15 +63,17 @@
             $.screenShot(rid)
         })
 
-        var reExecuteSql = '#reExecuteSql' + resultId;
+        var reExecuteSql = '#reExecuteSql' + resultId
+        var maxRowsId = '#maxRows' + resultId
         $(reExecuteSql).click(function () {
             var $this = $(this);
             var classifier = $this.attr('classifier')
             var tid = $this.attr('tid')
             var tcode = $this.attr('tcode')
             var tname = $this.attr('tname')
+            var maxRows = parseInt($(maxRowsId).text())
             var sql = $(divId).find('.sqlTd').text()
-            $.executeQueryAjax(classifier, tid, tcode, tname, sql, resultId)
+            $.executeQueryAjax(classifier, tid, tcode, tname, sql, resultId, null, null, null, null, maxRows)
         })
 
         $('#sqlDiv' + resultId).keydown(function (event) {

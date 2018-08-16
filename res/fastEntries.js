@@ -142,7 +142,7 @@
 
     function executeFastEntry(fastEntry, data) {
         if (fastEntry.sql) {
-            $.executeMultiSqlsAjax(parseTemplate(fastEntry.sql, fastEntry, data), true)
+            $.executeMultiSqlsAjax(parseTemplate(fastEntry.sql, fastEntry, data), false)
         }
         if (fastEntry.action) {
             executeFastAction(parseTemplate(fastEntry.action, fastEntry, data), fastEntry.separator || ',')

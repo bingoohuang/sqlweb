@@ -97,7 +97,7 @@
 
     var originalTid = null
     var lastTenant = null
-    $.executeQueryAjax = function (classifier, tid, tcode, tname, sql, resultId, sqls, nextIndex, executeResultContext, forceTenant) {
+    $.executeQueryAjax = function (classifier, tid, tcode, tname, sql, resultId, sqls, nextIndex, executeResultContext, forceTenant, maxRows) {
         if (sqls && nextIndex > 0) {
             sql = translateSqlWithLastResults(sql, executeResultContext, nextIndex)
         }
@@ -133,7 +133,7 @@
         $.ajax({
             type: 'POST',
             url: contextPath + "/query",
-            data: {tid: tid, sql: sql},
+            data: {tid: tid, sql: sql, maxRows : maxRows || 0},
             success: function (content, textStatus, request) {
                 if (content && content.Error) {
                     $.alertMe(content.Error)

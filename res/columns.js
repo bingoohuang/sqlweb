@@ -83,8 +83,7 @@
             })
             csv.push(csvLine.join('\t'))
         })
-        $.copyTextToClipboard(csv.join('\n'))
-        $.copiedTips('TSV copied.')
+        $.copiedTips(csv.join('\n'))
     }
 
     $.findFirstHighlightedColumnIndex = function ($resultTable) {
@@ -180,7 +179,7 @@
                 OnlyShowHighlightedColumns: {name: "Only Show Highlighted Columns", icon: "columns"},
                 ShowAllColumns: {name: "Show All Columns", icon: "columns"},
                 CopyHighlightedColumnsAsTsv: {name: "Copy Highlighted Columns As TSV To Clipboard", icon: "columns"},
-                CopyAsTsv: {name: "Copy As TSV To Clipboard", icon: "columns"},
+                CopyAsTsv: {name: "Copy As TSV", icon: "columns"},
                 MakeDraggable: {name: "Make Draggable", icon: "columns"},
                 FilterAndOrderHighlightedColumn: {
                     name: "Filter And Order Highlighted Column By Specified Values",
