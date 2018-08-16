@@ -239,7 +239,7 @@
 
             $resultTable.find('tr.highlight').each(function (index, tr) {
                 var $tr = $(tr)
-                $tr.clone().insertAfter($tr)
+                $tr.clone().removeClass('highlight').insertAfter($tr)
             })
             $resultTable.find('tbody tr').each(function (index, tr) {
                 $(tr).find('td').eq(1).text(index + 1)

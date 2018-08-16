@@ -64,6 +64,7 @@
     $.attachEditableEvent = function (resultId) {
         var rid = resultId
         var checkboxEditable = $('#checkboxEditable' + rid)
+        checkboxEditableChange(rid, checkboxEditable)
         checkboxEditable.click(function () {
             checkboxEditableChange(rid, checkboxEditable)
         })

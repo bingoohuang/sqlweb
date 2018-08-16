@@ -2,7 +2,7 @@
     function copyRows($checkedRows) {
         $checkedRows.each(function (index, tr) {
             var $tr = $(tr)
-            var $clone = $tr.clone().addClass('clonedRow')
+            var $clone = $tr.clone().removeClass('highlight').addClass('clonedRow')
             $clone.insertAfter($tr)
         })
     }
