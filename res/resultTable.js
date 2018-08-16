@@ -135,7 +135,7 @@
                 + '</span>'
         }
 
-        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run</span>:'
+        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
         table += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 

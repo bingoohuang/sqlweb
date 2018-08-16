@@ -77,7 +77,13 @@
         })
 
         $('#sqlDiv' + resultId).keydown(function (event) {
-            if ((event.metaKey || event.ctrlKey) && event.keyCode == 13) {
+            if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
+                $(reExecuteSql).click()
+            }
+        })
+
+        $(maxRowsId).keydown(function (event) {
+            if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
                 $(reExecuteSql).click()
             }
         })
