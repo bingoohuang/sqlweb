@@ -24,7 +24,15 @@
     })
 
     $.chosenRows = function (resultId) {
-        return $('#queryResult' + resultId).find('tr.highlight:visible')
+        return $('#queryResult' + resultId).find('tbody tr.highlight:visible')
+    }
+
+    $.chosenRowsHighlightedOrAll = function (resultId) {
+        var $table = $('#queryResult' + resultId);
+        var rows = $table.find('tbody tr.highlight:visible')
+        if (rows.length > 0) return rows
+
+        return  $table.find('tbody tr:visible')
     }
 
     $.isCheckboxEditable = function (resultId) {
