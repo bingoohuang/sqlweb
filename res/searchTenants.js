@@ -87,6 +87,7 @@
 
 
         $('#tidtcodeSpan').html('　<span title="tid" class="context-menu-icons context-menu-icon-id" onclick="prompt(\'tid:\', \'' + activeMerchantId + '\')"></span>' +
+            '　<span>' + activeClassifier + '</span>' +
             '　<span title="tcode" class="context-menu-icons context-menu-icon-code">' + activeMerchantCode + '</span>' +
             '　<span title="home area" class="context-menu-icons context-menu-icon-earth">' + activeHomeArea + '</span>')
 
