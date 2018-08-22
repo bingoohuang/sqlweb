@@ -177,7 +177,7 @@
                 HideHighlightedColumns: {name: "Hide Highlighted Columns", icon: "columns"},
                 OnlyShowHighlightedColumns: {name: "Only Show Highlighted Columns", icon: "columns"},
                 ShowAllColumns: {name: "Show All Columns", icon: "columns"},
-                CopyHighlightedColumnsAsTsv: {name: "Copy Highlighted Columns As TSV To Clipboard", icon: "columns"},
+                CopyHighlightedColumnsAsTsv: {name: "Copy Highlighted Columns As TSV", icon: "columns"},
                 CopyAsTsv: {name: "Copy As TSV", icon: "columns"},
                 MakeDraggable: {name: "Make Draggable", icon: "columns"},
                 FilterAndOrderHighlightedColumn: {

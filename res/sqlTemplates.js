@@ -57,7 +57,7 @@
             var templateEval = template.compile(sqlTemplate, {escape: false})
 
             $table.find('tbody tr').each(function (i, tr) {
-                var varValues = {}
+                var varValues = {index : i}
                 var usable = false
                 $(tr).find('td').each(function (index, td) {
                     if (index > 1) {
