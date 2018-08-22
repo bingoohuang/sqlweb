@@ -12,7 +12,7 @@
 
     function createTable(resultId, templateVars) {
         var table = '<table id="queryResult' + resultId + `" class="queryResult">`
-        table += '<thead><tr><td></td><td>#</td>'
+        table += '<thead><tr><td></td><td>seq</td>'
         for (var i = 0; i < templateVars.length; ++i) {
             table += '<td contenteditable="true">' + templateVars[i] + '</td>'
         }
@@ -54,7 +54,7 @@
             var $table = $('#queryResult' + resultId)
             var templateVars = {}
             $table.find('thead td').each(function (index, td) {
-                if (index > 1) templateVars[index] = $(td).text()
+                if (index >= 1) templateVars[index] = $(td).text()
             })
 
             var evalResult = []
@@ -102,24 +102,58 @@
         })
     }
 
-    function MapHighlightedColumns($resultTable) {
+    function MapHighlightedColumns($resultTable, resultId) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
-        if (highlightedColumnIndexes.length == 0) {
-            $.alertMe("There is no columns highlighted!")
+        if (highlightedColumnIndexes.length != 1) {
+            $.alertMe("One and only one column required highlighted for mapping!")
             return
         }
 
-        $.promptMe('Please input mapper funcion with input argument name x', function (mapper) {
-            var fn = new Function("x", mapper)
+        var templateVars = {}
+        $resultTable.find('thead td').each(function (index, td) {
+            if (index >= 1) templateVars[index] = $(td).text()
+        })
+
+        var keys = []
+        keys.push("index")
+        for (var key in templateVars) {
+            keys.push(templateVars[key])
+        }
+        var arguments = keys.join(', ')
+
+        $.promptMe('Please input mapper function with input argument name <br/>' + arguments, function (mapper) {
+            keys.push(mapper)
+            try {
+                var fn = Function.apply(this, keys)
+            } catch (e) {
+                $.alertMe(JSON.stringify(e))
+            }
 
             $resultTable.find('tbody tr').each(function (rowIndex, tr) {
                 var tds = $(tr).find('td')
+
+                var varValues = {}
+                tds.each(function (index, td) {
+                    if (index >= 1) {
+                        var text = $.cellValue($(td))
+                        var val = $('#escapleSqlValues' + resultId).prop("checked") ? $.escapeSqlValue(text) : text;
+                        varValues[templateVars[index]] = val
+                    }
+                })
+
+                var args = []
+                args.push(rowIndex)
+                for (var key in templateVars) {
+                    args.push(varValues[templateVars[key]])
+                }
+
                 for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
                     var index = highlightedColumnIndexes[i]
                     var td = tds.eq(index);
-                    var from = td.text()
-                    td.text(fn(from))
+
+                    td.text(fn.apply(this, args))
                 }
+
             })
         }, "var d = new Date(x)\n" +
             "d.setDate(d.getDate()-1)\n" +
@@ -188,6 +222,7 @@
 
         $resultTable.show()
     }
+
     function CloneHighlightedColumns($resultTable) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
         if (highlightedColumnIndexes.length == 0) {
@@ -458,7 +493,7 @@
                 } else if (key === 'NewBeforeHighlightedColumns') {
                     NewBeforeHighlightedColumns($resultTable, 'left')
                 } else if (key === 'MapHighlightedColumns') {
-                    MapHighlightedColumns($resultTable)
+                    MapHighlightedColumns($resultTable, resultId)
                 } else if (key === 'CloneHighlightedColumns') {
                     CloneHighlightedColumns($resultTable)
                 } else if (key === 'DuplicateHighlightedColumnValues') {
