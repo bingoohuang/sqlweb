@@ -14,7 +14,7 @@
         var table = '<table id="queryResult' + resultId + `" class="queryResult">`
         table += '<thead><tr><td></td><td>#</td>'
         for (var i = 0; i < templateVars.length; ++i) {
-            table += '<td>' + templateVars[i] + '</td>'
+            table += '<td contenteditable="true">' + templateVars[i] + '</td>'
         }
 
         table += '</tr></thead><tbody>'
@@ -36,11 +36,17 @@
             $.templateSql(sql, resultId)
         })
 
-        $('#sqlDiv' + resultId).keydown(function (event) {
-            if ((event.metaKey || event.ctrlKey) && event.keyCode == 13) {
-                $(reExecuteId).click()
-            }
-        })
+        $('#sqlDiv' + resultId)
+            .keydown(function (event) {
+                if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
+                    $(reExecuteId).click()
+                }
+            })
+            .blur(function () {
+                if ($.trim($(this).text()) == '') {
+                    $(this).text('xxx')
+                }
+            })
     }
 
     function attachEvalEvent(resultId) {
@@ -54,25 +60,29 @@
             var evalResult = []
             var sqlTemplate = $('#executionResultDiv' + resultId).find('.sqlTd').text()
 
-            var templateEval = template.compile(sqlTemplate, {escape: false})
+            try {
+                var templateEval = template.compile(sqlTemplate, {escape: false})
 
-            $table.find('tbody tr').each(function (i, tr) {
-                var varValues = {index : i}
-                var usable = false
-                $(tr).find('td').each(function (index, td) {
-                    if (index > 1) {
-                        var text = $.cellValue($(td))
-                        if (text !== "") usable = true
+                $table.find('tbody tr').each(function (i, tr) {
+                    var varValues = {index: i}
+                    var usable = false
+                    $(tr).find('td').each(function (index, td) {
+                        if (index > 1) {
+                            var text = $.cellValue($(td))
+                            if (text !== "") usable = true
 
-                        var val = $('#escapleSqlValues' + resultId).prop("checked") ? $.escapeSqlValue(text) : text;
-                        varValues[templateVars[index]] = val
+                            var val = $('#escapleSqlValues' + resultId).prop("checked") ? $.escapeSqlValue(text) : text;
+                            varValues[templateVars[index]] = val
+                        }
+                    })
+
+                    if (usable) {
+                        evalResult.push(templateEval(varValues))
                     }
                 })
-
-                if (usable) {
-                    evalResult.push(templateEval(varValues))
-                }
-            })
+            } catch (e) {
+                $.alertMe(JSON.stringify(e))
+            }
 
             var evalFinal = evalResult.join('\n')
             $.appendSqlToSqlEditor(evalFinal, true, true)
@@ -90,6 +100,130 @@
                 $clone.insertAfter($tr)
             }
         })
+    }
+
+    function MapHighlightedColumns($resultTable) {
+        var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
+        if (highlightedColumnIndexes.length == 0) {
+            $.alertMe("There is no columns highlighted!")
+            return
+        }
+
+        $.promptMe('Please input mapper funcion with input argument name x', function (mapper) {
+            var fn = new Function("x", mapper)
+
+            $resultTable.find('tbody tr').each(function (rowIndex, tr) {
+                var tds = $(tr).find('td')
+                for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
+                    var index = highlightedColumnIndexes[i]
+                    var td = tds.eq(index);
+                    var from = td.text()
+                    td.text(fn(from))
+                }
+            })
+        }, "var d = new Date(x)\n" +
+            "d.setDate(d.getDate()-1)\n" +
+            "return d.toISOString().substring(0, 10) + ' 20:00:00'")
+    }
+
+    function DeleteHighlightedColumns($resultTable) {
+        var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
+        if (highlightedColumnIndexes.length == 0) {
+            $.alertMe("There is no columns highlighted!")
+            return
+        }
+
+        $resultTable.find('tr').each(function (rowIndex, tr) {
+            var tds = $(tr).find('td')
+            var highlightedTds = []
+            for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
+                highlightedTds.push(tds.eq(highlightedColumnIndexes[i]))
+            }
+
+            for (var i = 0; i < highlightedTds.length; ++i) {
+                highlightedTds[i].remove()
+            }
+        })
+    }
+
+    function NewBeforeHighlightedColumns($resultTable, direction) {
+        var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
+        if (highlightedColumnIndexes.length == 0) {
+            $.alertMe("There is no columns highlighted!")
+            return
+        }
+
+        var headClones = []
+
+        $resultTable.hide()
+
+        $resultTable.find('tr').each(function (rowIndex, tr) {
+            var tds = $(tr).find('td')
+            var highlightedTds = []
+            for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
+                var index = highlightedColumnIndexes[i]
+                highlightedTds.push(tds.eq(index))
+            }
+
+
+            for (var i = 0; i < highlightedTds.length; ++i) {
+                var highlightedTd = highlightedTds[i];
+                var clone = highlightedTd.clone()
+                $(clone).text(rowIndex == 0 ? 'new' : '').removeClass('highlight')
+                if (rowIndex == 0) {
+                    headClones.push(clone)
+                }
+
+                if (direction === 'right') {
+                    clone.insertAfter(highlightedTd)
+                } else {
+                    clone.insertBefore(highlightedTd)
+                }
+            }
+        })
+
+        for (var i = 0; i < headClones.length; ++i) {
+            highlightColumn($resultTable, $(headClones[i]))
+        }
+
+        $resultTable.show()
+    }
+    function CloneHighlightedColumns($resultTable) {
+        var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
+        if (highlightedColumnIndexes.length == 0) {
+            $.alertMe("There is no columns highlighted!")
+            return
+        }
+
+        var headClones = []
+
+        $resultTable.hide()
+
+        $resultTable.find('tr').each(function (rowIndex, tr) {
+            var tds = $(tr).find('td')
+            var highlightedTds = []
+            for (var i = 0; i < highlightedColumnIndexes.length; ++i) {
+                var index = highlightedColumnIndexes[i]
+                highlightedTds.push(tds.eq(index))
+            }
+
+
+            for (var i = 0; i < highlightedTds.length; ++i) {
+                var highlightedTd = highlightedTds[i];
+                var clone = highlightedTd.clone()
+                if (rowIndex == 0) {
+                    headClones.push(clone)
+                }
+
+                clone.insertAfter(highlightedTd)
+            }
+        })
+
+        for (var i = 0; i < headClones.length; ++i) {
+            highlightColumn($resultTable, $(headClones[i]))
+        }
+
+        $resultTable.show()
     }
 
     function AutoIncrementHighlightedColumns($resultTable, autoIncr) {
@@ -172,6 +306,7 @@
 
         populateDataToTable(data, $resultTable)
     }
+
 
     function attachCloseEvent(resultId) {
         $('#closeResult' + resultId).click(function () {
@@ -267,16 +402,21 @@
         })
     }
 
+    function highlightColumn($resultTable, $headTd) {
+        $headTd.click(function () {
+            var currentIndex = $headTd.parent('tr').find('td').index($headTd)
+            $resultTable.find('tr').each(function () {
+                $(this).find('td').eq(currentIndex).toggleClass('highlight')
+            })
+        })
+    }
+
     var attachHighlightColumnEvent = function (resultId) {
         var $resultTable = $('#queryResult' + resultId)
         $resultTable.find('thead tr').each(function () {
-            $(this).find('td:gt(1)').click(function () {
-                var $td = $(this)
-                var currentIndex = $td.parent('tr').find('td').index($td)
-
-                $resultTable.find('tr').each(function () {
-                    $(this).find('td').eq(currentIndex).toggleClass('highlight')
-                })
+            var $headTds = $(this).find('td:gt(1)')
+            $headTds.each(function (index, headTd) {
+                highlightColumn($resultTable, $(headTd))
             })
         })
 
@@ -311,7 +451,17 @@
                     PopulateByEditorData($resultTable)
                 } else if (key === 'AutoIncrementHighlightedColumns') {
                     AutoIncrementHighlightedColumns($resultTable, true)
-                } else if (key === 'DuplicateHighlightedColumns') {
+                } else if (key === 'DeleteHighlightedColumns') {
+                    DeleteHighlightedColumns($resultTable)
+                } else if (key === 'NewAfterHighlightedColumns') {
+                    NewBeforeHighlightedColumns($resultTable, 'right')
+                } else if (key === 'NewBeforeHighlightedColumns') {
+                    NewBeforeHighlightedColumns($resultTable, 'left')
+                } else if (key === 'MapHighlightedColumns') {
+                    MapHighlightedColumns($resultTable)
+                } else if (key === 'CloneHighlightedColumns') {
+                    CloneHighlightedColumns($resultTable)
+                } else if (key === 'DuplicateHighlightedColumnValues') {
                     AutoIncrementHighlightedColumns($resultTable, false)
                 }
             },
@@ -319,7 +469,12 @@
                 ExportAsTsv: {name: "Export As TSV To Clipboard", icon: "columns"},
                 PopulateByEditorData: {name: "Populate By Editor Data", icon: "columns"},
                 AutoIncrementHighlightedColumns: {name: "Auto Increment Highlighted Columns", icon: "columns"},
-                DuplicateHighlightedColumns: {name: "Duplicate Highlighted Columns", icon: "columns"},
+                CloneHighlightedColumns: {name: "Clone Highlighted Columns", icon: "columns"},
+                NewBeforeHighlightedColumns: {name: "New Column Before Highlighted", icon: "columns"},
+                NewAfterHighlightedColumns: {name: "New Column After Highlighted", icon: "columns"},
+                DeleteHighlightedColumns: {name: "Delete Highlighted Columns", icon: "columns"},
+                MapHighlightedColumns: {name: "Map Highlighted Columns", icon: "columns"},
+                DuplicateHighlightedColumnValues: {name: "Duplicate Highlighted Columns Values", icon: "columns"},
             }
         })
     }

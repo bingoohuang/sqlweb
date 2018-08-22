@@ -76,11 +76,17 @@
             $.executeQueryAjax(classifier, tid, tcode, tname, sql, resultId, null, null, null, null, maxRows)
         })
 
-        $('#sqlDiv' + resultId).keydown(function (event) {
-            if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
-                $(reExecuteSql).click()
-            }
-        })
+        $('#sqlDiv' + resultId)
+            .keydown(function (event) {
+                if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
+                    $(reExecuteSql).click()
+                }
+            })
+            .blur(function () {
+                if ($.trim($(this).text()) == '') {
+                    $(this).text('xxx')
+                }
+            })
 
         $(maxRowsId).keydown(function (event) {
             if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {

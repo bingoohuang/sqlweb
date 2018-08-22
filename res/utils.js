@@ -268,6 +268,37 @@
         })
     }
 
+    $.promptMe = function (title, callback, demo) {
+        $.confirm({
+            title: title || 'Prompt!',
+            content: '' +
+                '<div>' +
+                '<textarea class="input" rows="30" cols="100" >' + (demo || '') + '</textarea>' +
+                '</div>',
+            buttons: {
+                formSubmit: {
+                    text: 'Submit',
+                    btnClass: 'btn-blue',
+                    action: function () {
+                        var input = this.$content.find('.input').val()
+                        callback(input)
+                    }
+                },
+                cancel: function () {
+                    //close
+                },
+            },
+            onContentReady: function () {
+                // bind to events
+                var jc = this
+                this.$content.find('form').on('submit', function (e) {
+                    // if the user submits the form by pressing enter in the field.
+                    e.preventDefault()
+                    jc.$$formSubmit.trigger('click'); // reference the button and click it
+                });
+            }
+        });
+    }
 
     $.confirmMe = function (title, content, okFunc) {
         // https://github.com/craftpip/jquery-confirm
