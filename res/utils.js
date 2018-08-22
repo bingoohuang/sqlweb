@@ -288,15 +288,4 @@
             }
         })
     }
-
-    $(document).on('paste', '[contenteditable]', function (e) {
-        e.preventDefault()
-        var text = $.clipboardText(e)
-
-        if (document.queryCommandSupported('insertText')) {
-            document.execCommand('insertText', false, text)
-        } else {
-            document.execCommand('paste', false, text)
-        }
-    })
 })()

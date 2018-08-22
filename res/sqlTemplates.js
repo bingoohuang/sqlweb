@@ -126,14 +126,14 @@
     function splitRowsAndColumns(text) {
         var clipRows = text.split(/[\r\n]+/)
         for (var i = 0; i < clipRows.length; i++) {
-            clipRows[i] = clipRows[i].split(/\s+/)
+            clipRows[i] = clipRows[i].split(/\t+/)
         }
-        // result clipRows[i][j]
         return clipRows
     }
 
     function populateDataToTable(text, $resultTable, $td) {
         var $tbody = $resultTable.find('tbody')
+        $tbody.hide()
         var $rows = $tbody.find('tr')
 
         var colOffset = $td ? $td.parent().find('td').index($td) : 2
@@ -152,6 +152,8 @@
             populateRow($clone.find('td'), x, i, rowOffset, colOffset)
             $tbody.append($clone)
         }
+
+        $tbody.show()
     }
 
     function populateRow($tds, x, i, rowOffset, colOffset) {
@@ -227,7 +229,10 @@
     var attachSpreadPasteEvent = function (resultId) {
         var queryResultId = '#queryResult' + resultId
         $(document).on('paste', queryResultId + ' td[contenteditable]', function (e) {
-            populateDataToTable($.clipboardText(e), $(queryResultId), $(this))
+            e.preventDefault()
+
+            var clipboardText = $.clipboardText(e);
+            populateDataToTable(clipboardText, $(queryResultId), $(this))
         })
     }
 
