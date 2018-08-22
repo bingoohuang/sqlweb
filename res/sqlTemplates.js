@@ -84,7 +84,7 @@
                 $.alertMe(JSON.stringify(e))
             }
 
-            var evalFinal = evalResult.join('\n')
+            var evalFinal = evalResult.join('')
             $.appendSqlToSqlEditor(evalFinal, true, true)
         })
     }
