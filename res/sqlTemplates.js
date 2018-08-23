@@ -67,7 +67,7 @@
                     var varValues = {index: i}
                     var usable = false
                     $(tr).find('td').each(function (index, td) {
-                        if (index > 1) {
+                        if (index >= 1) {
                             var text = $.cellValue($(td))
                             if (text !== "") usable = true
 
