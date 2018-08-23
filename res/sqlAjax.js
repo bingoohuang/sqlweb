@@ -97,7 +97,7 @@
 
     var originalTid = null
     var lastTenant = null
-    $.executeQueryAjax = function (classifier, tid, tcode, tname, sql, resultId, sqls, nextIndex, executeResultContext, forceTenant) {
+    $.executeQueryAjax = function (classifier, tid, tcode, tname, sql, resultId, sqls, nextIndex, executeResultContext, forceTenant, maxRows) {
         if (sqls && nextIndex > 0) {
             sql = translateSqlWithLastResults(sql, executeResultContext, nextIndex)
         }
@@ -133,7 +133,7 @@
         $.ajax({
             type: 'POST',
             url: contextPath + "/query",
-            data: {tid: tid, sql: sql},
+            data: {tid: tid, sql: sql, maxRows : maxRows || 0},
             success: function (content, textStatus, request) {
                 if (content && content.Error) {
                     $.alertMe(content.Error)
@@ -166,7 +166,7 @@
         $('.tablesWrapper').hide()
     }
 
-    $.executeUpdate = function (tid, sqlRowIndices, sqls, $rows, isDDl) {
+    $.executeUpdate = function (tid, sqlRowIndices, sqls, $rows, isDDl, okCallback) {
         $.ajax({
             type: 'POST',
             url: contextPath + "/update",
@@ -177,10 +177,12 @@
                     return
                 }
 
+                var hasError = 0
                 for (var i = 0; i < content.RowsResult.length; ++i) {
                     var rowResult = content.RowsResult[i]
                     if (rowResult.Message.indexOf("Error") >= 0 || !isDDl && !rowResult.Ok) {
-                        $.copiedTips(rowResult.Message)
+                        $.alertMe(rowResult.Message)
+                        ++hasError
                     } else {
                         $.copiedTips(sqls)
                         var rowIndex = sqlRowIndices[i]
@@ -189,10 +191,11 @@
                         $row.find('td.dataCell').each(function (jndex, cell) {
                             $(this).removeAttr('old').removeClass('changedCell')
                         })
-                        $row.find('input[type=checkbox]').prop('checked', false)
                         $row.remove('.deletedRow').removeClass('clonedRow').find('td').attr('contenteditable', false)
                     }
                 }
+
+                if (hasError === 0 && okCallback) okCallback()
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)

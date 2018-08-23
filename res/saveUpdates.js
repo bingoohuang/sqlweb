@@ -35,7 +35,9 @@
 
             var joinedSqls = sqls.join(';\n')
             $.confirmMe('Are you sure to save ?', joinedSqls, function () {
-                $.executeUpdate(tid, sqlRowIndices, joinedSqls, $rows)
+                $.executeUpdate(tid, sqlRowIndices, joinedSqls, $rows, false, function () {
+                    $('#checkboxEditable' + resultId).click()
+                })
             })
         })
     }

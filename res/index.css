@@ -196,7 +196,7 @@ table.executionSummary tr:first-child {
 }
 
 .clonedRow {
-    background-color: gold !important;
+    color: darkred;
 }
 
 .rowOdd {

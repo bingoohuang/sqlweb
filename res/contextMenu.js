@@ -24,9 +24,15 @@
     })
 
     $.chosenRows = function (resultId) {
-        return $.isCheckboxEditable(resultId)
-            ? $('#queryResult' + resultId + ' tbody :checked').parents('tr:visible')
-            : $('#queryResult' + resultId + ' tbody tr:visible')
+        return $('#queryResult' + resultId).find('tbody tr.highlight:visible')
+    }
+
+    $.chosenRowsHighlightedOrAll = function (resultId) {
+        var $table = $('#queryResult' + resultId);
+        var rows = $table.find('tbody tr.highlight:visible')
+        if (rows.length > 0) return rows
+
+        return  $table.find('tbody tr:visible')
     }
 
     $.isCheckboxEditable = function (resultId) {
@@ -35,7 +41,7 @@
 
     var createColumnsValue = function (resultId, columnName) {
         var inPart = ''
-        var chosenRows = $.chosenRows(resultId)
+        var chosenRows = $.chosenRowsHighlightedOrAll(resultId)
         var duplicate = {}
         var cssName = $.escapeContextMenuCssName(columnName)
         chosenRows.find('td.' + cssName).each(
@@ -57,7 +63,7 @@
 
     var createInPart = function (resultId, columnName) {
         var inPart = ''
-        var $chosenRows = $.chosenRows(resultId)
+        var $chosenRows = $.chosenRowsHighlightedOrAll(resultId)
 
         var duplicate = {}
         var cssName = $.escapeContextMenuCssName(columnName)

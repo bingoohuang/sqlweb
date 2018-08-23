@@ -156,8 +156,7 @@
 
 
     $.findTenants = function (resultId, merchantIdIndex, merchantNameIndex, merchantCodeIndex) {
-        var checkboxEditable = $('#checkboxEditable' + resultId).prop('checked')
-        var chosenRows = $.chosenRows(resultId)
+        var chosenRows = $.chosenRowsHighlightedOrAll(resultId)
 
         var offset = 2
         var tenants = []
@@ -168,11 +167,8 @@
                 merchantName: tds.eq(merchantNameIndex + offset).text(),
                 merchantCode: tds.eq(merchantCodeIndex + offset).text()
             }
-            if (checkboxEditable) {
-                tenants.unshift(item)
-            } else {
-                tenants.push(item)
-            }
+
+            tenants.push(item)
         })
 
         return tenants

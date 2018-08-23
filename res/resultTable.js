@@ -1,7 +1,7 @@
 (function () {
     function createHead(resultId, result, isTableInLinked, contextMenuHolder) {
         var head = '<thead><tr class="headRow">'
-        head += '<td><div class="chk checkAll"><input type="checkbox"></div></td>'
+        head += '<td></td>'
         head += '<td class="headCell">#</td>'
 
         contextMenuHolder.columnNames = contextMenuHolder.columnNames || {}
@@ -27,7 +27,7 @@
         var rowHtml = ''
         for (var i = 0; i < result.Rows.length; i++) {
             rowHtml += '<tr class="dataRow">'
-            rowHtml += '<td><div class="chk checkMe"><input type="checkbox"></div></td>'
+            rowHtml += '<td></td>'
 
             for (var j = 0; j < result.Rows[i].length; ++j) {
                 var cellValue = result.Rows[i][j]
@@ -103,7 +103,7 @@
             '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '</td>' +
             (multiTenants === 'true' ? '<td>Tenant:&nbsp;' + tname + '&nbsp;' + tcode + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' : '') +
             (result.TableName !== '' ? '<td>Table:&nbsp;<span>' + result.TableName + '</span><span class="tableTools" id="tableTools' + resultId + '">...</span></td>' : '') +
-            '<td>Rows:&nbsp;' + (hasRows ? result.Rows.length : '0') + '</td>' +
+            '<td>Rows:<span contenteditable="true" id="maxRows' + resultId + '">' + (hasRows ? result.Rows.length : '0') + '</span></td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
             '<td><span class="opsSpan" id="screenShot' + resultId + '">截图</span></td>' +
@@ -127,7 +127,7 @@
         table += '<button title="Mark Rows or Cells" id="markRowsOrCells' + resultId + '"><span class="context-menu-icons context-menu-icon-mark"></span></button>'
         table += '<button id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
         if (rowUpdateReady) {
-            table += '<input type="checkbox" id="checkboxEditable' + resultId + '" class="checkboxEditable">'
+            table += '<input title="toggle changeable" type="checkbox" id="checkboxEditable' + resultId + '" class="checkboxEditable">'
                 + '<label for="checkboxEditable' + resultId + '"><span class="context-menu-icons context-menu-icon-edit"></span></label>'
                 + '<span class="editButtons"><button title="Clone Rows" id="copyRow' + resultId + '" class="copyRow"><span class="context-menu-icons context-menu-icon-cloneRows"></span></button>'
                 + '<button title="Tag Rows As Deleted" id="deleteRows' + resultId + '"><span class="context-menu-icons context-menu-icon-deleteRows"></span></button>'
@@ -135,7 +135,7 @@
                 + '</span>'
         }
 
-        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run</span>:'
+        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
         table += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 
@@ -155,7 +155,7 @@
             table += createRows(result)
         } else if (result.Rows && result.Rows.length == 0) {
             table += '<tr class="dataRow clonedRow">'
-            table += '<td><div class="chk checkMe"><input type="checkbox"></div></td>'
+            table += '<td></td>'
             table += '<td class="dataCell">' + new Array((result.Headers ? result.Headers.length : 0) + 1).join('</td><td class="dataCell">') + '</td></tr>'
         }
         table += '</tbody></table></div>'

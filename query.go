@@ -201,6 +201,15 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 
 	tid := strings.TrimSpace(req.FormValue("tid"))
 	withColumns := strings.TrimSpace(req.FormValue("withColumns"))
+	maxRowsStr := strings.TrimSpace(req.FormValue("maxRows"))
+	maxRows := 0
+	if maxRowsStr != "" {
+		maxRows, _ = strconv.Atoi(maxRowsStr)
+	}
+
+	if maxRows <= 0 {
+		maxRows = appConfig.MaxQueryRows
+	}
 
 	ds, dbName, err := selectDb(tid)
 	if err != nil {
@@ -213,7 +222,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	headers, rows, execTime, costTime, err, msg := processSql(tid, querySql, ds, appConfig.MaxQueryRows)
+	headers, rows, execTime, costTime, err, msg := processSql(tid, querySql, ds, maxRows)
 	primaryKeysIndex := findPrimaryKeysIndex(tableName, primaryKeys, headers)
 
 	queryResult := QueryResult{

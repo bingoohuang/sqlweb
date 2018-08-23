@@ -2,12 +2,8 @@
     function copyRows($checkedRows) {
         $checkedRows.each(function (index, tr) {
             var $tr = $(tr)
-            $tr.find(':checked').prop("checked", false)
-            var $clone = $tr.clone().addClass('clonedRow')
+            var $clone = $tr.clone().removeClass('highlight').addClass('clonedRow')
             $clone.insertAfter($tr)
-            $clone.find('input[type=checkbox]').click(function () {
-                $.toggleRowEditable($(this))
-            }).click()
         })
     }
 
@@ -67,19 +63,33 @@
             $.screenShot(rid)
         })
 
-        var reExecuteSql = '#reExecuteSql' + resultId;
+        var reExecuteSql = '#reExecuteSql' + resultId
+        var maxRowsId = '#maxRows' + resultId
         $(reExecuteSql).click(function () {
             var $this = $(this);
             var classifier = $this.attr('classifier')
             var tid = $this.attr('tid')
             var tcode = $this.attr('tcode')
             var tname = $this.attr('tname')
+            var maxRows = parseInt($(maxRowsId).text())
             var sql = $(divId).find('.sqlTd').text()
-            $.executeQueryAjax(classifier, tid, tcode, tname, sql, resultId)
+            $.executeQueryAjax(classifier, tid, tcode, tname, sql, resultId, null, null, null, null, maxRows)
         })
 
-        $('#sqlDiv' + resultId).keydown(function (event) {
-            if ((event.metaKey || event.ctrlKey) && event.keyCode == 13) {
+        $('#sqlDiv' + resultId)
+            .keydown(function (event) {
+                if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
+                    $(reExecuteSql).click()
+                }
+            })
+            .blur(function () {
+                if ($.trim($(this).text()) == '') {
+                    $(this).text('xxx')
+                }
+            })
+
+        $(maxRowsId).keydown(function (event) {
+            if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
                 $(reExecuteSql).click()
             }
         })

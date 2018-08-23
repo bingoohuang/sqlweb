@@ -47,7 +47,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 			"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
 			"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
 	}
-	_, data, _, _, err, _ := executeQuery(searchSql, appConfig.DataSource, appConfig.MaxQueryRows)
+	_, data, _, _, err, _ := executeQuery(searchSql, appConfig.DataSource, 0)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -75,7 +75,7 @@ func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 	sql := "SELECT MERCHANT_ID, DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
 		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "'"
 
-	_, data, _, _, err, _ := executeQuery(sql, ds, appConfig.MaxQueryRows)
+	_, data, _, _, err, _ := executeQuery(sql, ds, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -96,18 +96,18 @@ func searchMerchant(tid string) (*Merchant, error) {
 	sql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + tid + "'"
 
-	return searchMerchantBySql(sql)
+	return searchMerchantBySql(sql, 1)
 }
 
 func searchMerchantByTcode(tcode string) (*Merchant, error) {
 	sql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM TR_F_MERCHANT WHERE MERCHANT_CODE = '" + tcode + "'"
 
-	return searchMerchantBySql(sql)
+	return searchMerchantBySql(sql, 1)
 }
 
-func searchMerchantBySql(searchSql string) (*Merchant, error) {
-	_, data, _, _, err, _ := executeQuery(searchSql, appConfig.DataSource, appConfig.MaxQueryRows)
+func searchMerchantBySql(searchSql string, maxRows int) (*Merchant, error) {
+	_, data, _, _, err, _ := executeQuery(searchSql, appConfig.DataSource, maxRows)
 	if err != nil {
 		return nil, err
 	}

@@ -1,10 +1,4 @@
 (function () {
-    $.toggleRowEditable = function ($this) {
-        var rowChecked = $this.prop('checked')
-        var $tr = $this.parents('tr')
-        switchRowEditable(rowChecked, $tr)
-    }
-
     function switchRowEditable(rowChecked, $tr) {
         var dataCells = $tr.find('td.dataCell:not(.textAreaTd)')
         var textareas = $tr.find('textarea')
@@ -62,49 +56,17 @@
     function checkboxEditableChange(resultId, checkboxEditable) {
         var edittable = checkboxEditable.prop('checked')
         checkboxEditable.parent().find('span.editButtons').toggle(edittable)
-        var dataTable = checkboxEditable.parents('div.divResult').find('table.queryResult')
-        dataTable.find('.chk').toggle(edittable)
-        var rowCheckboxes = dataTable.find('.dataRow').find('input[type=checkbox]')
-        rowCheckboxes.unbind('click')
-        if (edittable) {
-            rowCheckboxes.click(function (event) {
-                event.stopPropagation()
-                $.changeCheckAllState(resultId)
-                $.toggleRowEditable($(this))
-            })
-        }
-    }
-
-    function bindCheckAllEvent(resultId) {
-        var queryResultId = '#queryResult' + resultId
-        var $checkAll = $(queryResultId + ' thead').find('input[type=checkbox]')
-
-        $checkAll.click(function () {
-            var $trs = $(queryResultId + ' tbody').find('tr:visible');
-            var $visibleCheckboxes = $trs.find('input[type=checkbox]')
-            var $this = $(this);
-            var checkedOn = $this.prop('checked');
-            $visibleCheckboxes.prop('checked', checkedOn)
-            $trs.each(function () {
-                switchRowEditable(checkedOn, $(this))
-            })
+        $('#queryResult' + resultId).find('tbody tr').each(function (i, tr) {
+            switchRowEditable(edittable, $(tr))
         })
-    }
-
-    $.changeCheckAllState = function (resultId) {
-        var queryResultId = '#queryResult' + resultId
-        var $visibleCheckboxes = $(queryResultId + ' tbody').find('tr:visible').find('input[type=checkbox]')
-        var $checkAll = $(queryResultId + ' thead').find('input[type=checkbox]')
-        $checkAll.prop('checked', $visibleCheckboxes.length === $visibleCheckboxes.filter(':checked').length)
     }
 
     $.attachEditableEvent = function (resultId) {
-        var checkboxEditable = $('#checkboxEditable' + resultId)
-        checkboxEditableChange(resultId, checkboxEditable)
+        var rid = resultId
+        var checkboxEditable = $('#checkboxEditable' + rid)
+        checkboxEditableChange(rid, checkboxEditable)
         checkboxEditable.click(function () {
-            checkboxEditableChange(resultId, checkboxEditable)
+            checkboxEditableChange(rid, checkboxEditable)
         })
-
-        bindCheckAllEvent(resultId)
     }
 })()
