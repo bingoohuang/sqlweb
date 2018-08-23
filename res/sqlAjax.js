@@ -153,7 +153,7 @@
                     $.executeQueryAjax(classifier, tid, tcode, tname, sqls[nextIndex + 1], resultId, sqls, nextIndex + 1, executeResultContext)
                 } else {
                     if (originalTid) {
-                        $.searchTenants(originalTid, null, true)
+                        $.searchTenants('%', null, false)
                     }
                     originalTid = null
                     lastTenant = null
