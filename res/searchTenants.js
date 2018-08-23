@@ -27,6 +27,7 @@
                 var searchHtml = ''
                 var hasContent = content && content.length
                 if (hasContent) {
+                    searchHtml += `<option value="trr|trr|south-center|trr|trr|trr|trr">trr</option>`
                     for (var j = 0; j < content.length; j++) {
                         const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[j]
                         // activeMerchantId|activeMerchantCode|activeHomeArea|activeClassifier|activeMerchantName|activeMerchantNamePinyin|activeMerchantNameSimplePinyin
@@ -38,7 +39,6 @@
                         + '|' + $.toPinyin(MerchantName)
                         + '|' + $.simplePinyin(MerchantName)}">${MerchantName}</option>`
                     }
-                    searchHtml += `<option value="trr|trr|south-center|trr|trr|trr|trr">trr</option>`
                     $('.searchResult').select2({matcher: matcherCustom});
                     $('.searchResult').on('select2:select', function (e) {
                         selectDB(e.params.data.id)
