@@ -207,7 +207,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		maxRows, _ = strconv.Atoi(maxRowsStr)
 	}
 
-	if maxRows <= 0 {
+	if maxRows < appConfig.MaxQueryRows {
 		maxRows = appConfig.MaxQueryRows
 	}
 
