@@ -27,7 +27,7 @@
                 var searchHtml = ''
                 var hasContent = content && content.length
                 if (hasContent) {
-                    searchHtml += `<option value="trr|trr|south-center|trr|trr|trr|trr">trr</option>`
+                    searchHtml += `<option value="trr|trr|south-center|trr|trr|trr|trr" selected="selected">trr</option>`
                     for (var j = 0; j < content.length; j++) {
                         const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[j]
                         // activeMerchantId|activeMerchantCode|activeHomeArea|activeClassifier|activeMerchantName|activeMerchantNamePinyin|activeMerchantNameSimplePinyin
@@ -54,8 +54,9 @@
                 }
                 searchResult.html(searchHtml)
                 if (content.length > 0) {
-                    const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[0]
-                    selectDB(`${MerchantId + '|' + MerchantCode + '|' + HomeArea + '|' + Classifier + '|' + MerchantName}`)
+                    selectDB($('.searchResult').select2('data')[0].id)
+                    // const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[0]
+                    // selectDB(`${MerchantId + '|' + MerchantCode + '|' + HomeArea + '|' + Classifier + '|' + MerchantName}`)
                 }
                 callbackFn && callbackFn()
             },
@@ -78,6 +79,7 @@
 
     function selectDB(data) {
         if (!data) return
+
         const arr = data.split('|')
         activeMerchantId = arr[0]
         activeMerchantCode = arr[1]
