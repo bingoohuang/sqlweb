@@ -27,7 +27,7 @@
                 var searchHtml = ''
                 var hasContent = content && content.length
                 if (hasContent) {
-                    searchHtml += `<option value="trr|trr|south-center|trr|trr|trr|trr" selected="selected">trr</option>`
+                    searchHtml += `<option value="trr|trr|south-center|trr|trr|trr|trr">trr</option>`
                     for (var j = 0; j < content.length; j++) {
                         const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[j]
                         // activeMerchantId|activeMerchantCode|activeHomeArea|activeClassifier|activeMerchantName|activeMerchantNamePinyin|activeMerchantNameSimplePinyin
@@ -37,9 +37,10 @@
                         + '|' + Classifier
                         + '|' + MerchantName
                         + '|' + $.toPinyin(MerchantName)
-                        + '|' + $.simplePinyin(MerchantName)}">${MerchantName}</option>`
+                        + '|' + $.simplePinyin(MerchantName)}" ${defaultTenant === MerchantCode ? 'selected="selected"' : ''}>${MerchantName}</option>`
                     }
-                    $('.searchResult').select2({matcher: matcherCustom});
+
+                    $('.searchResult').select2({matcher: matcherCustom, tags: true});
                     $('.searchResult').on('select2:select', function (e) {
                         selectDB(e.params.data.id)
                     });
@@ -71,7 +72,7 @@
     } else {
         $('#multiTenantsDiv').show()
         if (defaultTenant) {
-            $.searchTenants(defaultTenant, function () {
+            $.searchTenants('%', function () {
                 tableApp.initTable()
             })
         }
