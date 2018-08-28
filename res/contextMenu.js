@@ -46,7 +46,7 @@
         chosenRows.find('td.' + cssName).each(
             function (index, td) {
                 var val = $(td).text()
-                if (val !== '(null)') {
+                if (val === '(null)') {
                     val = ''
                 }
 
@@ -151,8 +151,8 @@
 
         var selector = '#queryResult' + queryResultId + ' td.' + $.escapeContextMenuCssName(columnName)
 
-        itemsHead['sqlInPart'] = {name: 'Copy Columns As In Clause To Clipboard', icon: 'link'}
-        itemsHead['copyColumns'] = {name: 'Copy Columns Values To Clipboard', icon: 'link'}
+        itemsHead['sqlInPart'] = {name: 'Copy Column As In Clause', icon: 'link'}
+        itemsHead['copyColumns'] = {name: 'Copy Column Values', icon: 'link'}
         itemsHead['orderByAsc'] = {name: 'Order By Asc Local', icon: 'link'}
         itemsHead['orderByDesc'] = {name: 'Order By Desc Local', icon: 'link'}
         itemsHead['RerunOrderByAsc'] = {name: 'Rerun Order By Asc', icon: 'link'}
@@ -200,11 +200,9 @@
                 } else if (key === 'sqlInPart') {
                     var inPart = columnName + " in (" + createInPart(queryResultId, columnName) + ")"
                     $.copyTextToClipboard(inPart)
-                    $.copiedTips('In clause copied.')
                 } else if (key === 'copyColumns') {
                     var columnsValue = createColumnsValue(queryResultId, columnName)
                     $.copyTextToClipboard(columnsValue)
-                    $.copiedTips('Column values copied.')
                 } else if (key === 'orderByAsc' || key === 'orderByDesc') {
                     $.sortingTable('queryResult' + queryResultId, columnIndex, key === 'orderByAsc', 1)
                 } else if (key === 'RerunOrderByAsc' || key === 'RerunOrderByDesc') {

@@ -65,7 +65,7 @@
             })
             csv.push(csvLine.join('\t'))
         })
-        $.copiedTips(csv.join('\n'))
+        $.copyTextToClipboard(csv.join('\n'))
     }
 
     function CopyAsTsv($resultTable) {
@@ -82,7 +82,7 @@
             })
             csv.push(csvLine.join('\t'))
         })
-        $.copiedTips(csv.join('\n'))
+        $.copyTextToClipboard(csv.join('\n'))
     }
 
     $.findFirstHighlightedColumnIndex = function ($resultTable) {
