@@ -42,20 +42,19 @@
     var createColumnsValue = function (resultId, columnName) {
         var inPart = ''
         var chosenRows = $.chosenRowsHighlightedOrAll(resultId)
-        var duplicate = {}
         var cssName = $.escapeContextMenuCssName(columnName)
         chosenRows.find('td.' + cssName).each(
             function (index, td) {
                 var val = $(td).text()
-
-                if (val !== '(null)' && !duplicate[val]) {
-                    if (inPart != '') {
-                        inPart += '\n'
-                    }
-
-                    inPart += val
-                    duplicate[val] = true
+                if (val !== '(null)') {
+                    val = ''
                 }
+
+                if (inPart != '') {
+                    inPart += '\n'
+                }
+
+                inPart += val
             })
 
         return inPart
