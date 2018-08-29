@@ -40,7 +40,7 @@
                         + '|' + $.simplePinyin(MerchantName)}" ${defaultTenant === MerchantCode ? 'selected="selected"' : ''}>${MerchantName}</option>`
                     }
 
-                    $('.searchResult').select2({matcher: matcherCustom, tags: true});
+                    $('.searchResult').select2({matcher: matcherCustom});
                     $('.searchResult').on('select2:select', function (e) {
                         selectDB(e.params.data.id)
                     });
