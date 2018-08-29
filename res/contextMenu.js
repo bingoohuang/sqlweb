@@ -289,8 +289,6 @@
     }
 
     $.createTableToolsContextMenu = function (classifier, tid, tcode, tname, result, resultId) {
-        if (result.TableName === '') return
-
         var selectSql = $.createSelectSql(result)
         var insertSqlPrefix = $.createInsertSqlPrefix(result)
         $.contextMenu({
@@ -321,7 +319,7 @@
                 } else if (key === 'ShowFullColumns') {
                     $.executeQueryAjax(classifier, tid, tcode, tname, 'show full columns from ' + result.TableName)
                 } else if (key === 'ShowCreateTable') {
-                    $.showSqlAjax('show create table ' + result.TableName)
+                    $.showSqlAjax('show create table ' + result.TableName || 'xxx')
                 } else if (key === 'ShowEqlTemplates') {
                     var insertEqlTemplate = $.createInsertEqlTemplate(result)
                     var deleteEqlTemplate = $.createDeleteEqlTemplate(result)

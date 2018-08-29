@@ -55,24 +55,24 @@
     }
 
     $.createInsertSqlPrefix = function (result) {
-        return 'insert into ' + wrapFieldName(result.TableName || '') + '(' + createFieldNamesList(result) + ') values'
+        return 'insert into ' + wrapFieldName(result.TableName || 'xxx') + '(' + createFieldNamesList(result) + ') values'
     }
 
     $.createSelectEqlTemplate = function (result) {
-        return 'select ' + createFieldNamesList(result) + '\nfrom ' + wrapFieldName(result.TableName) + '\nwhere ' + createWhereItems(result)
+        return 'select ' + createFieldNamesList(result) + '\nfrom ' + wrapFieldName(result.TableName || 'xxx') + '\nwhere ' + createWhereItems(result)
     }
     $.createUpdateEqlTemplate = function (result) {
-        return 'update ' + wrapFieldName(result.TableName) + '\nset ' + createSetItems(result) + '\nwhere ' + createWhereItems(result)
+        return 'update ' + wrapFieldName(result.TableName || 'xxx') + '\nset ' + createSetItems(result) + '\nwhere ' + createWhereItems(result)
     }
     $.createDeleteEqlTemplate = function (result) {
-        return 'delete from ' + wrapFieldName(result.TableName) + '\nwhere ' + createWhereItems(result)
+        return 'delete from ' + wrapFieldName(result.TableName || 'xxx') + '\nwhere ' + createWhereItems(result)
     }
 
     $.createJavaBean = function (result) {
         var bean = 'import lombok.*;\n' +
             '\n' +
             '@Data @AllArgsConstructor @NoArgsConstructor @Builder\n' +
-            'public class ' + CamelCased(result.TableName) + ' {\n'
+            'public class ' + CamelCased(result.TableName || 'xxx') + ' {\n'
         bean += createJavaBeanFieldNamesList(result)
         bean += '}'
 
@@ -164,7 +164,7 @@
     }
 
     $.createInsertEqlTemplate = function (result) {
-        var values = 'insert into ' + wrapFieldName(result.TableName) + '(' + createFieldNamesList(result) + ')\nvalues('
+        var values = 'insert into ' + wrapFieldName(result.TableName || 'xxx') + '(' + createFieldNamesList(result) + ')\nvalues('
         var headers = result.Headers
         for (var i = 0; i < headers.length; ++i) {
             values += i > 0 ? ', ' : ''
@@ -182,7 +182,7 @@
             sql += wrapFieldName(headers[i])
         }
 
-        return sql + ' from ' + wrapFieldName(result.TableName)
+        return sql + ' from ' + wrapFieldName(result.TableName || 'xxx')
     }
 
     $.createSelectSqls = function (selectSql, result, resultId) {
@@ -218,7 +218,7 @@
 
 
     var createDeleteForRow = function (result, cells) {
-        var sql = 'delete from ' + wrapFieldName(result.TableName) + ' where '
+        var sql = 'delete from ' + wrapFieldName(result.TableName || 'xxx') + ' where '
         var where = createWhereClause(result, cells)
         return sql + where
     }
@@ -254,7 +254,7 @@
             var changedCell = $(this).hasClass('changedCell')
             if (changedCell) {
                 if (updateSql == null) {
-                    updateSql = 'update ' + wrapFieldName(result.TableName) + ' set '
+                    updateSql = 'update ' + wrapFieldName(result.TableName || 'xxx') + ' set '
                 } else {
                     updateSql += ', '
                 }

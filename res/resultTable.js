@@ -102,7 +102,7 @@
             '<table class="executionSummary"><tr>' +
             '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '</td>' +
             (multiTenants === 'true' ? '<td>Tenant:&nbsp;' + tname + '&nbsp;' + tcode + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' : '') +
-            (result.TableName !== '' ? '<td>Table:&nbsp;<span>' + result.TableName + '</span><span class="tableTools" id="tableTools' + resultId + '">...</span></td>' : '') +
+            '<td>Table:&nbsp;<span>' + (result.TableName || 'xxx') + '</span><span class="tableTools" id="tableTools' + resultId + '">...</span></td>' +
             '<td>Rows:<span contenteditable="true" id="maxRows' + resultId + '">' + (hasRows ? result.Rows.length : '0') + '</span></td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
