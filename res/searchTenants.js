@@ -27,7 +27,7 @@
                 var searchHtml = ''
                 var hasContent = content && content.length
                 if (hasContent) {
-                    searchHtml += `<option value="trr|trr|south-center|trr|trr|trr|trr">trr</option>`
+                    searchHtml += !byTenant ? `<option value="trr|trr|south-center|trr|trr|trr|trr">trr</option>` : ``
                     for (var j = 0; j < content.length; j++) {
                         const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[j]
                         // activeMerchantId|activeMerchantCode|activeHomeArea|activeClassifier|activeMerchantName|activeMerchantNamePinyin|activeMerchantNameSimplePinyin

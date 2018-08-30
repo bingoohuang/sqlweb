@@ -120,7 +120,7 @@
                 $.searchTenants(tenant, function () {
                     $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName,
                         sql, resultId, sqls, nextIndex, executeResultContext, true)
-                })
+                }, true)
                 return
             }
         } else if (!forceTenant && originalTid != null) {
@@ -153,6 +153,7 @@
                     $.executeQueryAjax(classifier, tid, tcode, tname, sqls[nextIndex + 1], resultId, sqls, nextIndex + 1, executeResultContext)
                 } else {
                     if (originalTid) {
+                        defaultTenant = originalTid
                         $.searchTenants('%', null, false)
                     }
                     originalTid = null

@@ -293,7 +293,7 @@
     }
 
     function splitRowsAndColumns(text) {
-        var clipRows = text.split(/[\r\n]+/)
+        var clipRows = text.split(/\r?\n/)
         for (var i = 0; i < clipRows.length; i++) {
             clipRows[i] = clipRows[i].split(/\t+/)
         }
