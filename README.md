@@ -90,3 +90,55 @@ Copy Columns As TSV(Tab separated values, can be pasted in Excel very well):
 
 ## UPX
 [Citing: ](https://grahamenos.com/rust-osx-linux-musl.html)If you’re concerned about the binary size of your new executable, check out UPX. After installing it on my laptop via brew install upx, I ran upx -9 on an executable created with the above instructions. While the executable was an overly simplistic example, upx compressed it down to 34% of the original size. Even if you don’t care about the size of the binary once it’s on the server, it at least made the scp go faster.
+
+
+# Some useful javascript snippet
+
+## date and time [datajs](http://www.datejs.com/)
+```javascript
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = 'https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/datejs/date.js';
+document.head.appendChild(script);
+
+var jan312009 = new Date(2009, 1-1, 31);
+var oneMonthFromJan312009 = new Date(jan312009).add(1).month();
+
+// What date is next thursday?
+Date.today().next().thursday();
+ 
+// Add 3 days to Today
+Date.today().add(3).days();
+ 
+// Is today Friday?
+Date.today().is().friday();
+ 
+// Number fun
+(3).days().ago();
+ 
+// 6 months from now
+var n = 6;
+n.months().fromNow();
+ 
+// Set to 8:30 AM on the 15th day of the month
+Date.today().set({ day: 15, hour: 8, minute: 30 });
+
+function yyyy_mm_dd (date) {
+    var now = new Date(date)
+    year = "" + now.getFullYear();
+    month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+    day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+    return year + "-" + month + "-" + day;
+}
+
+function yyyy_mm_dd_hh_mm_ss (date) {
+    var now = new Date(date)
+    hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+    minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
+    second = "" + now.getSeconds(); if (second.length == 1) { second = "0" + second; }
+    return yyyy_mm_dd(date) + " " + hour + ":" + minute + ":" + second;
+}
+
+yyyy_mm_dd_hh_mm_ss(new Date('2018-08-30 16:53:14').add(1).month())
+```
+
