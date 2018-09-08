@@ -203,7 +203,7 @@
             for (var i = 0; i < highlightedTds.length; ++i) {
                 var highlightedTd = highlightedTds[i];
                 var clone = highlightedTd.clone()
-                $(clone).text(rowIndex == 0 ? 'new' : '').removeClass('highlight')
+                $(clone).text(rowIndex == 0 ? 'xyz' : '').removeClass('highlight')
                 if (rowIndex == 0) {
                     headClones.push(clone)
                 }
