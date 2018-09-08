@@ -83,10 +83,5 @@ func findSingleTableName(sqlParseResult sqlparser.Statement) string {
 		return ""
 	}
 
-	simpleTableExpr, ok := aliasTableExpr.Expr.(*sqlparser.TableName)
-	if !ok {
-		return ""
-	}
-
-	return string(simpleTableExpr.Name)
+	return sqlparser.GetTableName(aliasTableExpr.Expr).String();
 }
