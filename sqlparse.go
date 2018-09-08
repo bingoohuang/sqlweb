@@ -83,5 +83,5 @@ func findSingleTableName(sqlParseResult sqlparser.Statement) string {
 		return ""
 	}
 
-	return sqlparser.GetTableName(aliasTableExpr.Expr).String();
+	return sqlparser.GetTableName(aliasTableExpr.Expr).String()
 }
