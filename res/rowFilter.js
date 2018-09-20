@@ -24,15 +24,17 @@
         var isNot = filter.startsWith("!")
 
         var orFilters = (isNot ? filter.substr(1) : filter).split(/\|/)
+        var valueFilters = []
         for (var i = 0; i < orFilters.length; ++i) {
-            orFilters[i] = $.trim(orFilters[i])
+            var f = $.trim(orFilters[i])
+            if (f !== '') valueFilters.push(f)
         }
 
         $('tr:gt(0)', dataTable).filter(function () {
             var found = false
             $('td.dataCell', $(this)).each(function (index, cell) {
                 var text = $.trim($(cell).text()).toUpperCase()
-                if (containsAnyOf(text, orFilters)) {
+                if (containsAnyOf(text, valueFilters)) {
                     found = true
                     return false
                 }
