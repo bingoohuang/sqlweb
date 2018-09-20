@@ -31,6 +31,15 @@
 
 
 [entries]
+    [entries.findTenant]
+    classifiers = ["trr"]
+    type = "input"
+    autoHide  = true
+    placeholder = "逗号分隔的classifier"
+    label = "找库"
+    userTemplate = true
+    sql = "select * from tr_f_merchant where classifier in ({{input|splitToInClause}})"
+    
     [entries.runTask]
     type = "input:promotion|et|yoga#input"
     autoHide  = true

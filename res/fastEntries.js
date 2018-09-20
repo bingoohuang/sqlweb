@@ -7,7 +7,7 @@
             data.merchantName = activeMerchantName
             data.homeArea = activeHomeArea
 
-            return template.render(val, data)
+            return template.render(val, data, {escape: false})
         } else {
             for (var k in data) {
                 val = val.split('{' + k + '}').join(data[k])
