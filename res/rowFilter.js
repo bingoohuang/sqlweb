@@ -21,7 +21,9 @@
     }
 
     function rowFilter(dataTable, filter) {
-        var orFilters = filter.split(/\|/)
+        var isNot = filter.startsWith("!")
+
+        var orFilters = (isNot ? filter.substr(1) : filter).split(/\|/)
         for (var i = 0; i < orFilters.length; ++i) {
             orFilters[i] = $.trim(orFilters[i])
         }
@@ -35,7 +37,7 @@
                     return false
                 }
             })
-            $(this).toggle(found)
+            $(this).toggle(found ? !isNot : isNot)
         })
     }
 
