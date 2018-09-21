@@ -1,19 +1,19 @@
 (function () {
 
     function matchCellValue(cellValue, operator, operatorValue, orOperatorValues) {
-        if (operator == '>=') {
+        if (operator === '>=') {
             return +cellValue >= +operatorValue
-        } else if (operator == '<=') {
+        } else if (operator === '<=') {
             return +cellValue <= +operatorValue
-        } else if (operator == '<>' || operator == '!=') {
+        } else if (operator === '<>' || operator === '!=') {
             return !equalsAnyOf(cellValue, orOperatorValues)
-        } else if (operator == '>') {
+        } else if (operator === '>') {
             return +cellValue > +operatorValue
-        } else if (operator == '<') {
+        } else if (operator === '<') {
             return +cellValue < +operatorValue
-        } else if (operator == '=') {
+        } else if (operator === '=') {
             return equalsAnyOf(cellValue, orOperatorValues)
-        } else if (operator == 'contains') {
+        } else if (operator === 'contains') {
             return containsAnyOf(cellValue, orOperatorValues)
         }
 
@@ -28,6 +28,11 @@
         for (var i = 0; i < orFilters.length; ++i) {
             var f = $.trim(orFilters[i])
             if (f !== '') valueFilters.push(f)
+        }
+
+        if (valueFilters.length === 0) {
+            $('tr:gt(0)', dataTable).toggle(true)
+            return
         }
 
         $('tr:gt(0)', dataTable).filter(function () {
@@ -48,8 +53,10 @@
     }
 
     function containsAnyOf(text, filters) {
+        if (filters.length === 0) return true
+
         for (var i = 0; i < filters.length; ++i) {
-            if (text.indexOf(filters[i]) > -1) return true;
+            if (text.indexOf(filters[i]) > -1) return true
         }
 
         return false;
@@ -70,17 +77,17 @@
     }
 
     function parseOperatorValue(operatorValue) {
-        if (operatorValue.indexOf('>=') == 0) {
+        if (operatorValue.indexOf('>=') === 0) {
             return {operator: '>=', operatorValue: $.trim(operatorValue.substring(2))}
-        } else if (operatorValue.indexOf('<=') == 0) {
+        } else if (operatorValue.indexOf('<=') === 0) {
             return {operator: '<=', operatorValue: $.trim(operatorValue.substring(2))}
-        } else if (operatorValue.indexOf('!=') == 0 || operatorValue.indexOf('<>') == 0) {
+        } else if (operatorValue.indexOf('!=') === 0 || operatorValue.indexOf('<>') == 0) {
             return {operator: '!=', operatorValue: $.trim(operatorValue.substring(2))}
-        } else if (operatorValue.indexOf('>') == 0) {
+        } else if (operatorValue.indexOf('>') === 0) {
             return {operator: '>', operatorValue: $.trim(operatorValue.substring(1))}
-        } else if (operatorValue.indexOf('<') == 0) {
+        } else if (operatorValue.indexOf('<') === 0) {
             return {operator: '<', operatorValue: $.trim(operatorValue.substring(1))}
-        } else if (operatorValue.indexOf('=') == 0) {
+        } else if (operatorValue.indexOf('=') === 0) {
             return {operator: '=', operatorValue: $.trim(operatorValue.substring(1))}
         } else {
             return {operator: 'contains', operatorValue: operatorValue}
@@ -91,7 +98,7 @@
         var headRow = dataTable.find('tr.headRow').first().find('td')
         var foundColumnIndex = -1
         headRow.each(function (index, td) {
-            if ($(td).text().toUpperCase() == columnName) {
+            if ($(td).text().toUpperCase() === columnName) {
                 foundColumnIndex = index
                 return false
             }
@@ -105,18 +112,18 @@
 
             var filter = $.trim($(this).val()).toUpperCase()
             var seperatePos = filter.indexOf(':')
-            if (seperatePos == -1) {
+            if (seperatePos === -1) {
                 rowFilter(dataTable, filter)
             } else {
                 var columnName = $.trim(filter.substring(0, seperatePos))
-                if (seperatePos == filter.length - 1) {
+                if (seperatePos === filter.length - 1) {
                     rowFilter(dataTable, filter)
                     return
                 }
 
                 var operatorValue = $.trim(filter.substring(seperatePos + 1))
                 var result = parseOperatorValue(operatorValue)
-                if (result.operatorValue == '') {
+                if (result.operatorValue === '') {
                     rowFilter(dataTable, filter)
                     return
                 }
@@ -137,4 +144,5 @@
             $(this).select()
         })
     }
-})()
+})
+()
