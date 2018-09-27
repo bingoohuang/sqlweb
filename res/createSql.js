@@ -1,24 +1,23 @@
 (function () {
-    var regex = new RegExp(/[\0\x08\x09\x1a\n\r'\\%]/g)
-    var escaper = function (char) {
-        var m = ['\0', '\x08', '\x09', '\x1a', '\n', '\r', "'", "\\", "%"]
-        var r = ['\\0', '\\b', '\\t', '\\z', '\\n', '\\r', "''", '\\\\', '\\%']
-        return r[m.indexOf(char)]
-    }
+    const regex = new RegExp(/[\n\r']/g);
 
     $.escapeSqlValue = function (value) {
-        return value.replace(regex, escaper)
-    }
+        return value.replace(regex, function (char) {
+            const m = ['\n', '\r', "'"];
+            const r = ['\\n', '\\r', "''"];
+            return r[m.indexOf(char)]
+        })
+    };
 
     function createValuePart(cells) {
-        var valueSql = '('
+        let valueSql = '(';
         cells.each(function (index, cell) {
-            valueSql += index > 1 ? ', ' : ''
+            valueSql += index > 1 ? ', ' : '';
             if (index > 0) {
                 var newValue = $.cellValue($(cell))
-                valueSql += "(null)" == newValue ? 'null' : ('\'' + $.escapeSqlValue(newValue) + '\'')
+                valueSql += "(null)" === newValue ? 'null' : ('\'' + $.escapeSqlValue(newValue) + '\'')
             }
-        })
+        });
         return valueSql + ')'
     }
 
@@ -268,7 +267,7 @@
         return updateSql
     }
 
-    $.cellValue = function($cell) {
+    $.cellValue = function ($cell) {
         return $.trim($cell.hasClass('textAreaTd') ? $cell.find('textarea').val() : $cell.text())
     }
 
@@ -279,9 +278,9 @@
 
     $.wrapFieldName = wrapFieldName
 
-    var cellValue = function($cell) {
+    var cellValue = function ($cell) {
         var old = $cell.attr('old');
-        return old === undefined ?  $cell.text() : old
+        return old === undefined ? $cell.text() : old
     }
 
     $.createWherePart = function (result, headRow, cells) {
@@ -302,11 +301,11 @@
             cells.each(function (jndex, cell) {
                 if (jndex > 0) {
                     var whereValue = cellValue($(this))
-                    wherePart += wherePart != '' ? ' and ' : ''
+                    wherePart += wherePart !== '' ? ' and ' : ''
 
                     var fieldName = $(headRow.get(jndex + 1)).text()
                     wherePart += wrapFieldName(fieldName)
-                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + $.escapeSqlValue(whereValue) + '\''
+                    wherePart += "(null)" === whereValue ? ' is null' : ' = \'' + $.escapeSqlValue(whereValue) + '\''
                 }
             })
 
