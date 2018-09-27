@@ -18,10 +18,6 @@
         return head + '</tr></thead>'
     }
 
-    var htmlEscaper = /[<]/g
-    $.isEscapeRequired = function (unsafe) {
-        return unsafe.length >= 100 || htmlEscaper.test(unsafe)
-    }
 
     function createRows(result) {
         var rowHtml = ''

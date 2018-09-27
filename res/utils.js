@@ -245,6 +245,11 @@
         return ''
     }
 
+    var htmlEscaper = /[<]/g
+    $.isEscapeRequired = function (unsafe) {
+        return unsafe.length >= 100 || htmlEscaper.test(unsafe)
+    }
+
     $.alertMe = function (content) {
         $.dialog({
             title: "提示",
@@ -257,7 +262,7 @@
             title: title || 'Prompt!',
             content: '' +
                 '<div>' +
-                '<textarea class="input" rows="30" cols="100" >' + (demo || '') + '</textarea>' +
+                '<textarea class="input" rows="30" cols="155" >' + (demo || '') + '</textarea>' +
                 '</div>',
             buttons: {
                 formSubmit: {
@@ -279,7 +284,9 @@
         // https://github.com/craftpip/jquery-confirm
         $.confirm({
             title: title,
-            content: content,
+            content: $.isEscapeRequired(content) ? ('<div>' +
+                '<textarea class="input" rows="30" cols="155" >' + content + '</textarea>' +
+                '</div>') : content,
             type: 'blue',
             buttons: {
                 ok: {
