@@ -41,8 +41,9 @@
             } else if (key === 'ClearSql') {
                 codeMirror.setValue('')
             } else if (key === 'RunSql') {
-                if ($('.executeQuery').prop('disabled') === false) {
-                    $('.executeQuery').click()
+                const $executeQuery = $('.executeQuery');
+                if ($executeQuery.prop('disabled') === false) {
+                    $executeQuery.click()
                 }
             } else if (key === 'ShowFullColumns') {
                 var selected = codeMirror.somethingSelected()
@@ -54,7 +55,8 @@
                     var word = codeMirror.findWordAt(codeMirror.getCursor())
                     tableName = codeMirror.getRange(word.anchor, word.head)
                 }
-                $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, 'show full columns from ' + tableName)
+                $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName,
+                    'show full columns from ' + tableName)
             } else if (key === 'ParseTemplate') {
                 var sql = $.getEditorText()
                 $.templateSql(sql)

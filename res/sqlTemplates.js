@@ -12,7 +12,7 @@
 
     function createTable(resultId, templateVars) {
         var table = '<table id="queryResult' + resultId + `" class="queryResult">`
-        table += '<thead><tr><td></td><td>seq</td>'
+        table += '<thead><tr class="headRow"><td></td><td>seq</td>'
         for (var i = 0; i < templateVars.length; ++i) {
             table += '<td contenteditable="true">' + templateVars[i] + '</td>'
         }
@@ -155,14 +155,14 @@
                 }
 
             })
-        }, "var d = new Date(x)\n" +
+        }, "var d = new Date(+x)\n" +
             "d.setDate(d.getDate()-1)\n" +
             "return d.toISOString().substring(0, 10) + ' 20:00:00'")
     }
 
     function DeleteHighlightedColumns($resultTable) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
-        if (highlightedColumnIndexes.length == 0) {
+        if (highlightedColumnIndexes.length === 0) {
             $.alertMe("There is no columns highlighted!")
             return
         }
@@ -182,7 +182,7 @@
 
     function NewBeforeHighlightedColumns($resultTable, direction) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
-        if (highlightedColumnIndexes.length == 0) {
+        if (highlightedColumnIndexes.length === 0) {
             $.alertMe("There is no columns highlighted!")
             return
         }
@@ -225,7 +225,7 @@
 
     function CloneHighlightedColumns($resultTable) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
-        if (highlightedColumnIndexes.length == 0) {
+        if (highlightedColumnIndexes.length === 0) {
             $.alertMe("There is no columns highlighted!")
             return
         }
@@ -263,7 +263,7 @@
 
     function AutoIncrementHighlightedColumns($resultTable, autoIncr) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
-        if (highlightedColumnIndexes.length == 0) {
+        if (highlightedColumnIndexes.length === 0) {
             $.alertMe("There is no columns highlighted!")
             return
         }
@@ -371,15 +371,13 @@
         html += '</div>'
 
         var templateVars = $.templateParse(sql)
-        if (!templateVars || templateVars.length == 0) {
+        if (!templateVars || templateVars.length === 0) {
             $.alertMe('No template variables found')
             return
         }
         html += '<div id="collapseDiv' + resultId + `" class="collapseDiv">`
         html += createTable(resultId, templateVars)
         html += '</div>'
-
-
         html += '</div>'
 
         $.replaceOrPrependResult(resultId, oldResultId, html)
