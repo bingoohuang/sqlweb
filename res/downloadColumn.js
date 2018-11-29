@@ -25,6 +25,7 @@
 
         var fileNameMaybe = findFileName(resultId, result, cells, columnName)
         let fileName = window.prompt("please input download file name", fileNameMaybe)
+        if (fileName == null) return
 
         $.ajax({
             type: 'POST', url: contextPath + "/downloadColumn",
