@@ -260,7 +260,7 @@
                 var fieldName = $(headRow.get(jndex + 1)).text()
                 updateSql += wrapFieldName(fieldName)
 
-                var newValue = $.cellValue($(cell))
+                var newValue = $(cell).text()
                 updateSql += "(null)" == newValue ? ' = null' : ' = \'' + $.escapeSqlValue(newValue) + '\''
             }
         })
@@ -294,20 +294,17 @@
 
                 var pkName = $(headRow.get(ki + 1)).text()
                 var $cell = $(cells.get(ki))
-                var pkValue = cellValue($cell)
-                sql += wrapFieldName(pkName) + ' = \'' + $.escapeSqlValue(pkValue) + '\''
+                sql += $.wrapWhereCondition(pkName, cellValue($cell))
             }
             return sql
         } else {
             var wherePart = ''
             cells.each(function (jndex, cell) {
                 if (jndex > 0) {
-                    var whereValue = cellValue($(this))
                     wherePart += wherePart !== '' ? ' and ' : ''
 
                     var fieldName = $(headRow.get(jndex + 1)).text()
-                    wherePart += wrapFieldName(fieldName)
-                    wherePart += "(null)" === whereValue ? ' is null' : ' = \'' + $.escapeSqlValue(whereValue) + '\''
+                    wherePart += $.wrapWhereCondition(fieldName, cellValue($(this)))
                 }
             })
 
