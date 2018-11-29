@@ -148,7 +148,7 @@
         $.attachSearchTableEvent(resultId)
         $.attachExpandRowsEvent(resultId, totalRows)
         $.attachOpsResultDivEvent(resultId)
-        $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tcode, tname)
+        $.createLinkToTableContextMenu(contextMenuHolder, classifier, tid, tcode, tname, resultId, result)
         $.createTableToolsContextMenu(classifier, tid, tcode, tname, result, resultId)
         $.attachHighlightColumnEvent(resultId)
         $.attachRowTransposesEvent(resultId)

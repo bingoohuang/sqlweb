@@ -104,7 +104,7 @@
 
     function MapHighlightedColumns($resultTable, resultId) {
         var highlightedColumnIndexes = $.findHighlightedColumnIndexes($resultTable)
-        if (highlightedColumnIndexes.length != 1) {
+        if (highlightedColumnIndexes.length !== 1) {
             $.alertMe("One and only one column required highlighted for mapping!")
             return
         }

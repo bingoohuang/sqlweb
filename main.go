@@ -15,6 +15,7 @@ func main() {
 	handleFunc(r, "/", serveWelcome, false, true)
 	handleFunc(r, "/home", serveHome, true, true)
 	handleFunc(r, "/query", serveQuery, true, true)
+	handleFunc(r, "/downloadColumn", downloadColumn, true, true)
 	handleFunc(r, "/tablesByColumn", serveTablesByColumn, false, true)
 	handleFunc(r, "/loadLinksConfig", serveLoadLinksConfig, false, true)
 	handleFunc(r, "/saveLinksConfig", serveSaveLinksConfig, false, true)

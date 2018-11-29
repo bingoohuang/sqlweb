@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/bingoohuang/go-utils"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -186,6 +189,72 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 		Msg:           msg,
 		Tid:           tid,
 	}
+}
+
+func downloadColumn(w http.ResponseWriter, req *http.Request) {
+	querySql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
+		return unicode.IsSpace(r) || r == ';'
+	})
+	fileName := strings.TrimSpace(req.FormValue("fileName"))
+	tid := strings.TrimSpace(req.FormValue("tid"))
+
+	ds, _, err := selectDb(tid)
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
+	}
+
+	db, err := sql.Open("mysql", ds)
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
+	}
+	defer db.Close()
+
+	rows, err := db.Query(querySql)
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
+	}
+	columns, err := rows.Columns()
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
+	}
+
+	columnCount := len(columns)
+	if columnCount != 1 {
+		http.Error(w, "only one column supported to download", 500)
+		return
+	}
+
+	if !rows.Next() {
+		http.Error(w, "Nothing to download", 500)
+		return
+	}
+
+	// Make a slice for the values
+	values := make([]sql.RawBytes, columnCount)
+
+	// rows.Scan wants '[]interface{}' as an argument, so we must copy the
+	// references into such a slice
+	// See http://code.google.com/p/go-wiki/wiki/InterfaceSlice for details
+	scanArgs := make([]interface{}, columnCount)
+	for i := range values {
+		scanArgs[i] = &values[i]
+	}
+
+	err = rows.Scan(scanArgs...)
+	if err != nil {
+		http.Error(w, err.Error(), 405)
+		return
+	}
+
+	fmt.Println(reflect.TypeOf(values[0]))
+
+	// tell the browser the returned content should be downloaded
+	w.Header().Add("Content-Disposition", "Attachment; filename="+fileName)
+	http.ServeContent(w, req, fileName, time.Now(), bytes.NewReader([]byte(values[0])))
 }
 
 func serveQuery(w http.ResponseWriter, req *http.Request) {

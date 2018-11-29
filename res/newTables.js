@@ -111,12 +111,16 @@ tableApp = new Vue({
         ,
         selectTable(tableName) {
             if (this.selectMode) return
-            let sql = 'select * from ' + tableName
-            const appendSql = $.SingleTableQueryAppends[tableName.toUpperCase()];
-            if (appendSql) {
-                sql += ' ' + appendSql
+
+            var sql = 'select * from ' + tableName
+            var tableQuery = $.SingleTableQuery[tableName.toUpperCase()];
+
+            if (tableQuery) {
+                if (tableQuery.replaceSql) sql = tableQuery.replaceSql
+                if (tableQuery.appendSql) sql += ' ' + tableQuery.appendSql
             }
-            $.executeMultiSqlsAjax(sql, false)
+
+            $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, sql)
         },
         renameTables() {
             const selectedTableName = []

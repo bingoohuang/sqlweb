@@ -1,5 +1,11 @@
 # http://toml-online-parser.ovonick.com/
 
+[tables] # 单表查询时附加语句配置
+	[tables.hogan_pdf]
+    replaceSql = "select user_id, pdf_name, '(BLOB)' pdf_content, CREATE_TIME from hogan_pdf"
+    [tables.f_file]
+    replaceSql = "select file_id, file_name, '(BLOB)' file_content from f_file"
+
 [links]
     [links.user_id-et]
     classifiers = ["et"]

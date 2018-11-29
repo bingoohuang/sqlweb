@@ -2,15 +2,13 @@
     $.exportDb = function () {
         $.contextMenu({
             zIndex: 10,
-            selector: '.searchResult span',
+            selector: 'span.activeMerchantCode',
             callback: function (key, options) {
-                var $this = $(this)
-                var tid = $this.attr('tid')
-                var tcode = $this.attr('tcode')
-                var homeArea = $this.attr('homeArea')
-                var classifier = $this.attr('classifier')
-                var tname = $this.text()
-                // $.alertMe(tid + ',' + tcode + ',' + homeArea + ',' + classifier + ',' + tname)
+                var tid = activeMerchantId
+                var tcode = activeMerchantCode
+                var homeArea = activeHomeArea
+                var classifier = activeClassifier
+                var tname = activeMerchantName
 
                 if (key === 'ExportDb') {
                     exportDb(tid, tcode, homeArea, classifier, tname)

@@ -108,7 +108,7 @@
         })
     }
 
-    $.SingleTableQueryAppends = {}
+    $.SingleTableQuery = {}
 
     function removePostfixTag(key) {
         var pos = key.indexOf("-")
@@ -154,9 +154,9 @@
         })
 
 
-        $.SingleTableQueryAppends = {}
+        $.SingleTableQuery = {}
         $.each(linksConfig.tables, function (tableName, value) {
-            $.SingleTableQueryAppends[tableName.toUpperCase()] = value.appendSql
+            $.SingleTableQuery[tableName.toUpperCase()] = value
         })
     }
 

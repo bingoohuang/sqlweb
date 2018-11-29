@@ -283,6 +283,8 @@
         return old === undefined ? $cell.text() : old
     }
 
+    $.cellValue = cellValue
+
     $.createWherePart = function (result, headRow, cells) {
         var sql = ' where '
         if (result.PrimaryKeysIndex.length > 0) {

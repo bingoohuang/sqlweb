@@ -1,7 +1,9 @@
 (function () {
-    $.createLinkToTableContextMenu = function (contextMenuHolder, classifier, tid, tcode, tname) {
+    $.createLinkToTableContextMenu = function (contextMenuHolder, classifier, tid, tcode, tname, resultId, result) {
         $.each(contextMenuHolder.allColumnNames, function (key, value) {
-            createLinkToTableColumnContextMenu(classifier, tid, tcode, tname, contextMenuHolder.queryResultId, contextMenuHolder.tableName, key, contextMenuHolder.columnNames)
+            createLinkToTableColumnContextMenu(classifier, tid, tcode, tname,
+                contextMenuHolder.queryResultId, contextMenuHolder.tableName, key,
+                contextMenuHolder.columnNames, resultId, result)
         })
     }
 
@@ -132,7 +134,9 @@
     }
 
 
-    var createLinkToTableColumnContextMenu = function (classifier, tid, tcode, tname, queryResultId, tableName, columnName, linkColumnNames) {
+    var createLinkToTableColumnContextMenu = function (classifier, tid, tcode, tname,
+                                                       queryResultId, tableName, columnName, linkColumnNames,
+                                                       resultId, result) {
         var itemsHead = {}
         var itemsData = {}
 
@@ -148,6 +152,7 @@
         }
         itemsData['Copy Where'] = {name: 'Copy Where', icon: 'link'}
         itemsData['Show Column'] = {name: 'Show Column', icon: 'link'}
+        itemsData['Download'] = {name: 'Download', icon: 'link'}
 
         var selector = '#queryResult' + queryResultId + ' td.' + $.escapeContextMenuCssName(columnName)
 
@@ -170,6 +175,8 @@
                         $.copiedTips('Where clause copied.')
                     } else if (key === 'Show Column') {
                         $.processShowColumn(classifier, tid, tableName, columnName)
+                    } else if (key === 'Download') {
+                        $.downloadColumn(classifier, tid, tableName, columnName, resultId, result, $(this))
                     }
                 },
                 items: itemsData
@@ -183,6 +190,8 @@
                         processCopyWhere(columnName, $(this).text())
                     } else if (key === 'Show Column') {
                         $.processShowColumn(classifier, tid, tableName, columnName)
+                    } else if (key === 'Download') {
+                        $.downloadColumn(classifier, tid, tableName, columnName, resultId, result, $(this))
                     }
                 },
                 items: itemsData
