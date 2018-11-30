@@ -7,14 +7,12 @@ import (
 	"strings"
 )
 
-func parseSql(querySql, dbDataSource string) (bool, string, []string, bool) {
+func parseSql(querySql, dbDataSource string) (string, []string) {
 	var tableName string
 	var primaryKeys []string
-	isSelect := false
 	firstWord := strings.ToUpper(go_utils.FirstWord(querySql))
 	switch firstWord {
 	case "SELECT":
-		isSelect = true
 		sqlParseResult, err := sqlparser.Parse(querySql)
 		if err == nil {
 			tableName = findSingleTableName(sqlParseResult)
@@ -22,14 +20,10 @@ func parseSql(querySql, dbDataSource string) (bool, string, []string, bool) {
 				primaryKeys = findTablePrimaryKeys(tableName, dbDataSource)
 			}
 		}
-	case "SHOW":
-		isSelect = true
-	case "INSERT", "DELETE", "UPDATE", "SET":
-		fallthrough
 	default:
 	}
 
-	return isSelect, tableName, primaryKeys, true
+	return tableName, primaryKeys
 }
 
 func writeAuthOk(r *http.Request) bool {

@@ -286,11 +286,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	_, tableName, primaryKeys, sqlAllowed := parseSql(querySql, ds)
-	if !sqlAllowed {
-		return
-	}
-
+	tableName, primaryKeys := parseSql(querySql, ds)
 	headers, rows, execTime, costTime, err, msg := processSql(tid, querySql, ds, maxRows)
 	primaryKeysIndex := findPrimaryKeysIndex(tableName, primaryKeys, headers)
 
@@ -334,7 +330,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		queryResult.TableColumns = tableColumns
 	}
 
-	json.NewEncoder(w).Encode(queryResult)
+	_ = json.NewEncoder(w).Encode(queryResult)
 }
 
 func processSql(tid, querySql, dbDataSource string, max int) ([]string, [][]string, string, string, error, string) {

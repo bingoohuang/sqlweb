@@ -6,7 +6,8 @@
     }
 
     $.executeMultiSqlsAjax = function (sql, confirmUpdate = false) {
-        if (confirmUpdate && $.firstUpperWord(sql) != 'SELECT') {
+        var firstUpperWord = $.firstUpperWord(sql);
+        if (confirmUpdate && firstUpperWord != 'SELECT' && firstUpperWord != 'EXPLAIN') {
             $.confirmMe('Are you sure to execute ?', sql, function () {
                 executeMultiSqls(sql)
             })
