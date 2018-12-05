@@ -14,7 +14,7 @@
         cells.each(function (index, cell) {
             valueSql += index > 1 ? ', ' : '';
             if (index > 0) {
-                var newValue = $.cellValue($(cell))
+                var newValue = $.cellNewValue($(cell))
                 valueSql += "(null)" === newValue ? 'null' : ('\'' + $.escapeSqlValue(newValue) + '\'')
             }
         });
@@ -127,9 +127,8 @@
                 where += i > 0 ? ' and ' : ''
 
                 var pkName = headers[ki]
-                var $cell = cells.eq(ki + 1)
-                var pkValue = $.cellValue($cell)
-                where += wrapFieldName(pkName) + ' = \'' + $.escapeSqlValue(pkValue) + '\''
+                var pkValue = $.cellOldValue(cells.eq(ki + 1))
+                where += $.wrapWhereCondition(pkName, pkValue)
             }
         } else {
             var wherePart = ''
@@ -138,9 +137,8 @@
                     wherePart += wherePart != '' ? ' and ' : ''
                     var fieldName = headers[index - 1]
 
-                    wherePart += wrapFieldName(fieldName)
-                    var whereValue = $.cellValue($(cell))
-                    wherePart += "(null)" == whereValue ? ' is null' : ' = \'' + $.escapeSqlValue(whereValue) + '\''
+                    var whereValue = $.cellOldValue($(cell))
+                    wherePart += $.wrapWhereCondition(fieldName, whereValue)
                 }
             })
             where += wherePart
@@ -258,16 +256,14 @@
                     updateSql += ', '
                 }
                 var fieldName = $(headRow.get(jndex + 1)).text()
-                updateSql += wrapFieldName(fieldName)
-
-                var newValue = $(cell).text()
-                updateSql += "(null)" == newValue ? ' = null' : ' = \'' + $.escapeSqlValue(newValue) + '\''
+                var newValue = $.cellNewValue($(cell))
+                updateSql += $.wrapWhereCondition(fieldName, newValue)
             }
         })
         return updateSql
     }
 
-    $.cellValue = function ($cell) {
+    $.cellNewValue = function ($cell) {
         return $.trim($cell.hasClass('textAreaTd') ? $cell.find('textarea').val() : $cell.text())
     }
 
@@ -278,12 +274,12 @@
 
     $.wrapFieldName = wrapFieldName
 
-    var cellValue = function ($cell) {
+    var cellOldValue = function ($cell) {
         var old = $cell.attr('old');
         return old === undefined ? $cell.text() : old
     }
 
-    $.cellValue = cellValue
+    $.cellOldValue = cellOldValue
 
     $.createWherePart = function (result, headRow, cells) {
         var sql = ' where '
@@ -294,7 +290,7 @@
 
                 var pkName = $(headRow.get(ki + 1)).text()
                 var $cell = $(cells.get(ki))
-                sql += $.wrapWhereCondition(pkName, cellValue($cell))
+                sql += $.wrapWhereCondition(pkName, $.cellOldValue($cell))
             }
             return sql
         } else {
@@ -304,7 +300,7 @@
                     wherePart += wherePart !== '' ? ' and ' : ''
 
                     var fieldName = $(headRow.get(jndex + 1)).text()
-                    wherePart += $.wrapWhereCondition(fieldName, cellValue($(this)))
+                    wherePart += $.wrapWhereCondition(fieldName, $.cellOldValue($(this)))
                 }
             })
 

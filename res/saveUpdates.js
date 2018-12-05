@@ -42,32 +42,32 @@
         })
     }
 
-    function cellValue(cells, seq) {
-        return $.cellValue(cells.eq(seq))
+    function seqCellValue(cells, seq) {
+        return $.cellNewValue(cells.eq(seq))
     }
 
     function createAddColumn(cells, result, $rows, index) {
-        var dataType = cellValue(cells, 2)
-        var nullable = cellValue(cells, 4)
-        var defaultValue = cellValue(cells, 6)
-        var commentValue = cellValue(cells, 9)
+        var dataType = seqCellValue(cells, 2)
+        var nullable = seqCellValue(cells, 4)
+        var defaultValue = seqCellValue(cells, 6)
+        var commentValue = seqCellValue(cells, 9)
         var tableName = $.wrapFieldName(result.TableName || 'xxx')
-        var wrapFieldName = $.wrapFieldName(cellValue(cells, 1))
+        var wrapFieldName = $.wrapFieldName(seqCellValue(cells, 1))
         return 'ALTER TABLE ' + tableName + ' ADD COLUMN ' + wrapFieldName + ' ' + dataType
             + ("YES" === nullable ? " NULL " : " NOT NULL ") + ("(null)" !== defaultValue ? " DEFAULT '" + defaultValue + "' " : "")
             + ("" === commentValue ? "" : " COMMENT '" + $.escapeSqlValue(commentValue) + "' ")
-            + (index === 0 ? (' BEFORE ' + $.wrapFieldName(cellValue($rows.eq(1).find('td.dataCell'), 1)))
-                : (' AFTER ' + $.wrapFieldName(cellValue($rows.eq(index - 1).find('td.dataCell'), 1))))
+            + (index === 0 ? (' BEFORE ' + $.wrapFieldName(seqCellValue($rows.eq(1).find('td.dataCell'), 1)))
+                : (' AFTER ' + $.wrapFieldName(seqCellValue($rows.eq(index - 1).find('td.dataCell'), 1))))
     }
 
     function createModifyColumn(cells, result) {
         var changedCell = cells.eq(1).hasClass('changedCell')
-        var dataType = cellValue(cells, 2)
-        var nullable = cellValue(cells, 4)
-        var defaultValue = cellValue(cells, 6)
-        var commentValue = cellValue(cells, 9)
+        var dataType = seqCellValue(cells, 2)
+        var nullable = seqCellValue(cells, 4)
+        var defaultValue = seqCellValue(cells, 6)
+        var commentValue = seqCellValue(cells, 9)
         var tableName = $.wrapFieldName(result.TableName || 'xxx')
-        var wrapFieldName = $.wrapFieldName(cellValue(cells, 1))
+        var wrapFieldName = $.wrapFieldName(seqCellValue(cells, 1))
         var changeOrModifyColumn = changedCell ? ' CHANGE COLUMN ' + $.wrapFieldName(cells.eq(1).attr('old')) + '  ' : ' MODIFY COLUMN '
         return 'ALTER TABLE ' + tableName + changeOrModifyColumn + wrapFieldName + ' ' + dataType
             + ("YES" === nullable ? " NULL " : " NOT NULL ") + ("(null)" !== defaultValue ? " DEFAULT '" + defaultValue + "' " : "")
@@ -76,7 +76,7 @@
 
     function createDropColumn(result, headRow, cells) {
         var tableName = $.wrapFieldName(result.TableName || 'xxx')
-        var wrapFieldName = $.wrapFieldName(cellValue(cells, 1))
+        var wrapFieldName = $.wrapFieldName(seqCellValue(cells, 1))
         return 'ALTER TABLE ' + tableName + ' DROP COLUMN ' + wrapFieldName
     }
 

@@ -9,7 +9,7 @@
             if (jndex > 0) {
                 var fieldName = $(headRow.get(jndex + 1)).text()
                 if (fieldName !== columnName && fieldName.toLowerCase().indexOf("name") >= 0) {
-                    referFileName = $.cellValue($(cell))
+                    referFileName = $.cellNewValue($(cell))
                     return false
                 }
             }
@@ -58,7 +58,7 @@
 
                 var pkName = $(headRow.get(ki + 1)).text()
                 var $cell = $(cells.get(ki))
-                sql += $.wrapWhereCondition(pkName, $.cellValue($cell))
+                sql += $.wrapWhereCondition(pkName, $.cellOldValue($cell))
             }
             return sql
         }
@@ -70,7 +70,7 @@
 
                 var fieldName = $(headRow.get(jndex + 1)).text()
                 if (fieldName !== columnName) {
-                    var whereValue = $.cellValue($(cell))
+                    var whereValue = $.cellOldValue($(cell))
                     wherePart += $.wrapWhereCondition(fieldName, whereValue)
                 }
             }

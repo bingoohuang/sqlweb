@@ -68,7 +68,7 @@
                     var usable = false
                     $(tr).find('td').each(function (index, td) {
                         if (index >= 1) {
-                            var text = $.cellValue($(td))
+                            var text = $.cellNewValue($(td))
                             if (text !== "") usable = true
 
                             var val = $('#escapleSqlValues' + resultId).prop("checked") ? $.escapeSqlValue(text) : text;
@@ -135,7 +135,7 @@
                 var varValues = {}
                 tds.each(function (index, td) {
                     if (index >= 1) {
-                        var text = $.cellValue($(td))
+                        var text = $.cellNewValue($(td))
                         var val = $('#escapleSqlValues' + resultId).prop("checked") ? $.escapeSqlValue(text) : text;
                         varValues[templateVars[index]] = val
                     }
