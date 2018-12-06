@@ -48,7 +48,7 @@ func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGz
 	}
 
 	if requiredBasicAuth {
-		wrap = go_utils.MustAuth(wrap, *authParam)
+		wrap = go_utils.MustAuth(wrap, authParam)
 	}
 
 	if requiredGzip {
@@ -65,7 +65,7 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 	}
 
 	if requiredBasicAuth {
-		wrap = go_utils.MustAuth(wrap, *authParam)
+		wrap = go_utils.MustAuth(wrap, authParam)
 	}
 
 	if requiredGzip {
