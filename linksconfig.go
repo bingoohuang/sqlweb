@@ -17,21 +17,21 @@ func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 	go_utils.HeadContentTypeJson(w)
 	err := ioutil.WriteFile(linksConfigFile, []byte(linksConfig), 0644)
 	if err != nil {
-		json.NewEncoder(w).Encode(struct {
+		_ = json.NewEncoder(w).Encode(struct {
 			OK   string
 			Json string
 		}{
 			OK:   err.Error(),
 			Json: "{}",
 		})
-		w.Write([]byte(err.Error()))
+		_, _ = w.Write([]byte(err.Error()))
 	} else {
 		jsonBytes, err := go_utils.TomlToJson([]byte(linksConfig))
 		ok := "OK"
 		if err != nil {
 			ok = err.Error()
 		}
-		json.NewEncoder(w).Encode(struct {
+		_ = json.NewEncoder(w).Encode(struct {
 			LinksConfig string
 			OK          string
 			Json        string
@@ -46,7 +46,7 @@ func serveLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
 	go_utils.HeadContentTypeJson(w)
 
 	if _, err := os.Stat(linksConfigFile); os.IsNotExist(err) {
-		json.NewEncoder(w).Encode(struct {
+		_ = json.NewEncoder(w).Encode(struct {
 			LinksConfig string
 			Json        string
 		}{
@@ -62,7 +62,7 @@ func serveLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("tomlToJson err:", err.Error())
 	}
 
-	json.NewEncoder(w).Encode(struct {
+	_ = json.NewEncoder(w).Encode(struct {
 		LinksConfig string
 		Json        string
 	}{

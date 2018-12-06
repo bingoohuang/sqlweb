@@ -2,8 +2,8 @@ github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/DATA-DOG/go-sqlmock v1.3.0 h1:ljjRxlddjfChBJdFKJs5LuCwCWPLaC1UZLwAo3PBBMk=
 github.com/DATA-DOG/go-sqlmock v1.3.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
-github.com/bingoohuang/go-utils v0.0.0-20181130005313-333794500222 h1:p8EL6sLy+w2bSvm3rK7+Ny4kdv72dKcbclCfrm+QzP8=
-github.com/bingoohuang/go-utils v0.0.0-20181130005313-333794500222/go.mod h1:mNSgYgB56xZssIFj9a+pHFAIMzg/pccPIeHywf8vPtc=
+github.com/bingoohuang/go-utils v0.0.0-20181206040405-46dcb05961a7 h1:SpMoxnA2L1xIOj4c+p6w5NZiP8bejRpfWnJ/rdIanFg=
+github.com/bingoohuang/go-utils v0.0.0-20181206040405-46dcb05961a7/go.mod h1:mNSgYgB56xZssIFj9a+pHFAIMzg/pccPIeHywf8vPtc=
 github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927/go.mod h1:h/aW8ynjgkuj+NQRlZcDbAbM1ORAbXjXX77sX7T289U=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
