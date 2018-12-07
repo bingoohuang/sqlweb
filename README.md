@@ -10,34 +10,29 @@ sql web based on golang
 3. `./gobin.sh ; go mod tidy ; go build -x -v` 
 5. build for linux :`env GOOS=linux GOARCH=amd64 go build -o go-sql-web.linux.bin`
 
-# startup
-```
-bingoo@bingodeMacBook-Pro ~/G/go-sql-web> ./go-sql-web -h
-Usage of ./go-sql-web:
-  -agentId string
-    	agentId
-  -contextPath string
-    	context path
-  -cookieName string
-    	cookieName (default "easyhi_qyapi")
-  -corpId string
-    	corpId
-  -corpSecret string
-    	cropId
-  -dataSource string
-    	dataSource string. (default "user:pass@tcp(127.0.0.1:3306)/db?charset=utf8")
-  -devMode
-    	devMode(disable js/css minify)
-  -key string
-    	key to encyption or decyption
-  -maxRows int
-    	Max number of rows to return. (default 1000)
-  -port int
-    	Port to serve. (default 8381)
-  -redirectUri string
-    	redirectUri
-  -writeAuthRequired
-    	write auth required (default true)
+# center database tables for multiple-tenant databases
+```sql
+CREATE TABLE `tr_f_db` (
+  `MERCHANT_ID` bigint(20) NOT NULL COMMENT '商户ID',
+  `DB_NAME` varchar(50) NOT NULL COMMENT '数据库名',
+  `DB_USERNAME` varchar(50) NOT NULL COMMENT '用户名',
+  `DB_PASSWORD` varchar(100) NOT NULL COMMENT '用户密码',
+  `INSTANCE_ID` varchar(100) NOT NULL COMMENT '实例ID',
+  `PROXY_IP` varchar(100) NOT NULL COMMENT '应用接入数据库的IP。',
+  `PROXY_PORT` varchar(100) NOT NULL COMMENT '应用端口号',
+  `STATE` char(1) NOT NULL COMMENT '1-空闲；2-在用',
+  PRIMARY KEY (`MERCHANT_ID`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '数据库信息';
+
+CREATE TABLE `tr_f_merchant` (
+  `MERCHANT_ID` varchar(36) NOT NULL COMMENT '商户ID',
+  `MERCHANT_NAME` varchar(50) NOT NULL COMMENT '商户名称',
+  `MERCHANT_CODE` varchar(20) DEFAULT NULL COMMENT '商户code',
+  `HOME_AREA` varchar(15) NOT NULL DEFAULT '部署中心',
+  `CLASSIFIER` varchar(45) not null DEFAULT 'default',
+  PRIMARY KEY (`MERCHANT_ID`),
+  UNIQUE KEY `MERCHANT_CODE` (`MERCHANT_CODE`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '商户信息';
 ```
 
 # snapshots
