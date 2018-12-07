@@ -52,6 +52,7 @@
                     $('.executeQuery').prop("disabled", true)
                     $('.tables').html('')
                 }
+
                 searchResult.html(searchHtml)
                 if (content.length > 0) {
                     selectDB($('.searchResult').select2('data')[0].id)
@@ -67,14 +68,14 @@
     }
 
     if (multiTenants === 'false') {
-        $.searchTenants('trr')
+        $.searchTenants('trr', function () {
+            tableApp.initTable()
+        })
     } else {
         $('#multiTenantsDiv').show()
-        if (defaultTenant) {
-            $.searchTenants('%', function () {
-                tableApp.initTable()
-            })
-        }
+        $.searchTenants('%', function () {
+            tableApp.initTable()
+        })
     }
 
     function selectDB(data) {
@@ -86,7 +87,6 @@
         activeHomeArea = arr[2]
         activeClassifier = arr[3]
         activeMerchantName = arr[4]
-
 
         $('#tidtcodeSpan').html('　<span title="tid" class="context-menu-icons context-menu-icon-id" onclick="prompt(\'tid:\', \'' + activeMerchantId + '\')"></span>' +
             '　<span>' + activeClassifier + '</span>' +
