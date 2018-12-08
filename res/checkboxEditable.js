@@ -16,7 +16,7 @@
             }
             $td.focus().keydown(function (event) {
                 var keyCode = event.keyCode || event.which
-                if (keyCode == 13 && event.ctrlKey) {
+                if (keyCode === 13 && event.ctrlKey) {
                     $this.blur()
                 }
             })
@@ -24,9 +24,11 @@
             var $this = $(this)
             var $td = $this.parent()
             $this.val($.trim($this.val()))
-            if ($td.attr('old') == $this.val()) {
+            if ($td.attr('old') === $this.val()) {
                 $td.removeAttr('old').removeClass('changedCell')
+                $this.removeClass('changedCell')
             } else {
+                $this.addClass('changedCell')
                 $td.addClass('changedCell')
             }
         })
@@ -38,14 +40,14 @@
             }
             $this.focus().keydown(function (event) {
                 var keyCode = event.keyCode || event.which
-                if (keyCode == 13 && event.ctrlKey) {
+                if (keyCode === 13 && event.ctrlKey) {
                     $this.blur()
                 }
             })
         }).blur(function () {
             var $this = $(this)
             $this.text($.trim($this.text()))
-            if ($this.attr('old') ==  $this.text()) {
+            if ($this.attr('old') ===  $this.text()) {
                 $this.removeAttr('old').removeClass('changedCell')
             } else {
                 $this.addClass('changedCell')

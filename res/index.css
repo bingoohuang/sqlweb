@@ -162,7 +162,7 @@ table.executionSummary tr:first-child {
 }
 
 .highlight {
-    background-color: rgba(20, 255, 20, .5);
+    background-color: rgba(20, 255, 20, .5)!important;
 }
 
 .hide {
