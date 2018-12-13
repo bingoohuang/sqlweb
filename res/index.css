@@ -122,8 +122,10 @@ span.clickable {
     margin-bottom: 18px;
 }
 
-.headRow {
+.headRow td {
     background-color: aliceblue;
+    position: sticky;
+    top: 0;
 }
 
 .aliceblue {
