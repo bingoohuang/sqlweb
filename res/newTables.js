@@ -66,7 +66,7 @@ tableApp = new Vue({
                 if (!$.isCharForShowHint(ch)) return
 
                 var tok = cm.getTokenAt(cur)
-                if (tok.type == "string" && tok.string.length >= 1 && tok.string.substr(0, 1) === "'") return false;
+                if (tok.type === "string" && tok.string.length >= 1 && tok.string.substr(0, 1) === "'") return false;
 
                 if (timeout) clearTimeout(timeout)
                 timeout = setTimeout(function () {
@@ -87,9 +87,9 @@ tableApp = new Vue({
                     var tableName = $(this).text()
                     if (key === 'ShowFullColumns') {
                         $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, 'show full columns from ' + tableName)
-                    } else if (key == 'ShowCreateTable') {
+                    } else if (key === 'ShowCreateTable') {
                         $.showSqlAjax('show create table ' + tableName)
-                    } else if (key == 'RenameTable') {
+                    } else if (key === 'RenameTable') {
                         $.appendSqlToSqlEditor('RENAME TABLE ' + tableName + ' TO ' + tableName + "_new", true, false)
                     }
                 },

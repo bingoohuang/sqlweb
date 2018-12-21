@@ -14,10 +14,6 @@
     width: 250px;
 }
 
-.tablesRightBox span {
-    text-decoration: underline;
-}
-
 #tableBoxSwitch {
     position: absolute;
     bottom: 0;
@@ -44,9 +40,12 @@
     width: calc(100% - 250px);
     margin-left: 250px;
 }
+
 .tableModifyBtn {
     cursor: pointer;
+    text-decoration: underline;
 }
+
 .tipsDivWrapPosition {
     right: calc(10px + 250px) !important;
 }
