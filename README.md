@@ -84,6 +84,20 @@ Copy Columns As TSV(Tab separated values, can be pasted in Excel very well):
 
 
 # Some useful javascript snippet
+## date-fns
+
+```javascript
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = 'https://cdn.bootcss.com/date-fns/1.30.1/date_fns.min.js';
+document.head.appendChild(script);
+
+dateFns.parse('20090131')
+dateFns.startOfWeek(dateFns.parse('20090131'))
+
+dateFns.format(dateFns.addHours(dateFns.parse('20090131'), 8), 'YYYY-MM-DD HH:mm:ss')
+
+```
 
 ## date and time [datajs](http://www.datejs.com/)
 ```javascript
