@@ -4,10 +4,10 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <title>sql web</title>
-    <link href="https://cdn.bootcss.com/codemirror/5.38.0/codemirror.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/codemirror/5.38.0/addon/hint/show-hint.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery-confirm/3.3.2/jquery-confirm.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <link href="${contextPath}/static/codemirror.min.css" rel="stylesheet">
+    <link href="${contextPath}/static/show-hint.min.css" rel="stylesheet">
+    <link href="${contextPath}/static/jquery-confirm.min.css" rel="stylesheet">
+    <link href="${contextPath}/static/select2.min.css" rel="stylesheet" />
     <style>
         /*.CSS*/
     </style>
@@ -98,19 +98,19 @@
     </div>
     <div id="tableBoxSwitch" class="context-menu-icon-columns context-menu-icons" @click="switchShow">{{switchText}}</div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/vue"></script>
-<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdn.bootcss.com/codemirror/5.38.0/codemirror.min.js"></script>
-<script src="https://cdn.bootcss.com/codemirror/5.38.0/mode/sql/sql.min.js"></script>
-<script src="https://cdn.bootcss.com/codemirror/5.38.0/addon/hint/sql-hint.min.js"></script>
-<script src="https://cdn.bootcss.com/codemirror/5.38.0/addon/hint/show-hint.min.js"></script>
-<script src="https://cdn.bootcss.com/codemirror/5.38.0/mode/toml/toml.min.js"></script>
-<script src="https://cdn.bootcss.com/codemirror/5.38.0/addon/display/placeholder.min.js"></script>
-<script src="https://cdn.bootcss.com/jquery-contextmenu/2.6.4/jquery.contextMenu.min.js"></script>
-<script src="https://cdn.bootcss.com/jquery-contextmenu/2.6.4/jquery.ui.position.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sql-formatter@2.3.1/dist/sql-formatter.min.js"></script>
-<script src="https://cdn.bootcss.com/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<script src="${contextPath}/static/vue.min.js"></script>
+<script src="${contextPath}/static/jquery.min.js"></script>
+<script src="${contextPath}/static/codemirror.min.js"></script>
+<script src="${contextPath}/static/sql.min.js"></script>
+<script src="${contextPath}/static/sql-hint.min.js"></script>
+<script src="${contextPath}/static/show-hint.min.js"></script>
+<script src="${contextPath}/static/toml.min.js"></script>
+<script src="${contextPath}/static/placeholder.min.js"></script>
+<script src="${contextPath}/static/jquery.contextMenu.min.js"></script>
+<script src="${contextPath}/static/jquery.ui.position.min.js"></script>
+<script src="${contextPath}/static/sql-formatter.min.js"></script>
+<script src="${contextPath}/static/jquery-confirm.min.js"></script>
+<script src="${contextPath}/static/select2.min.js"></script>
 <script>
     var contextPath = '${contextPath}';
     var multiTenants = '${multiTenants}';

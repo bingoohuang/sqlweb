@@ -4,6 +4,8 @@ MaxQueryRows  = 1000
 DataSource = "user:pass@tcp(127.0.0.1:3306)/db?charset=utf8"
 DevMode = false
 AuthBasic = false
+AuthBasicUser = ""
+AuthBasicPass = ""
 MultiTenants = false
 ImportDb = false
 DefaultTenant = ""

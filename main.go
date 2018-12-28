@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"encoding/base64"
 	"fmt"
 	"github.com/bingoohuang/go-utils"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -31,6 +34,10 @@ func main() {
 	}
 	handleFunc(r, "/searchDb", serveSearchDb, false, true)
 	handleFunc(r, "/action", serveAction, false, true)
+
+	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, r.URL.Path[1:])
+	})
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", appConfig.ListenPort)
@@ -61,7 +68,11 @@ func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGz
 func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := go_utils.DumpRequest(f)
 	if requiredBasicAuth && appConfig.AuthBasic {
-		wrap = go_utils.RandomPoemBasicAuth(wrap)
+		if appConfig.AuthBasicUser != "" {
+			wrap = BasicAuth(wrap, appConfig.AuthBasicUser, appConfig.AuthBasicPass)
+		} else {
+			wrap = go_utils.RandomPoemBasicAuth(wrap)
+		}
 	}
 
 	if requiredBasicAuth {
@@ -76,11 +87,41 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	if !appConfig.AuthBasic || authParam.ForceLogin {
+	if !appConfig.AuthBasic || authParam.ForceLogin || appConfig.AuthBasicUser != "" {
 		// fmt.Println("Redirect to", contextPath+"/home")
 		// http.Redirect(w, r, contextPath+"/home", 301)
 		serveHome(w, r)
 	} else {
 		go_utils.ServeWelcome(w, MustAsset("res/welcome.html"), appConfig.ContextPath)
+	}
+}
+
+func BasicAuth(fn http.HandlerFunc, user, pass string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		basicAuthPrefix := "Basic "
+
+		// 获取 request header
+		auth := r.Header.Get("Authorization")
+		// 如果是 http basic auth
+		if strings.HasPrefix(auth, basicAuthPrefix) {
+			// 解码认证信息
+			payload, err := base64.StdEncoding.DecodeString(auth[len(basicAuthPrefix):])
+			if err == nil {
+				pair := bytes.SplitN(payload, []byte(":"), 2)
+
+				if len(pair) == 2 {
+					if user == string(pair[0]) && pass == string(pair[1]) {
+						fn(w, r) // 执行被装饰的函数
+						return
+					}
+				}
+			}
+		}
+
+		w.Header().Set("Content-Type", "'Content-type:text/html;charset=ISO-8859-1'")
+		// 认证失败，提示 401 Unauthorized
+		w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
+		// 401 状态码
+		w.WriteHeader(http.StatusUnauthorized)
 	}
 }
