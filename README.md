@@ -10,7 +10,20 @@ sql web based on golang
 3. `./gobin.sh ; go mod tidy ; go build -x -v` 
 5. build for linux :`env GOOS=linux GOARCH=amd64 go build -o go-sql-web.linux.bin`
 
+# docker
+```sh
+docker run -d\
+ --name go-sql-web\
+ --restart=always\
+ --rm\
+ -p 8381:8381\
+ -v $(pwd)/appConfig.toml:/root/appConfig.toml:ro\
+ registry.cn-beijing.aliyuncs.com/gobars/go-sql-web
+```
+
+
 # center database tables for multiple-tenant databases
+
 ```sql
 CREATE TABLE `tr_f_db` (
   `MERCHANT_ID` bigint(20) NOT NULL COMMENT '商户ID',
