@@ -15,7 +15,6 @@ sql web based on golang
 docker run -d \
  --name go-sql-web \
  --restart=always \
- --rm \
  -p 8381:8381 \
  -v $(pwd)/appConfig.toml:/root/appConfig.toml:ro \
  registry.cn-hangzhou.aliyuncs.com/bingoo-docker/go-sql-web
