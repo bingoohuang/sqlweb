@@ -117,22 +117,22 @@
         table += '<div id="divTranspose' + resultId + '" class="hide"></div>'
         table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
-        table += '<input id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
+        table += '<input title="Search in the rows" id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
 
-        table += '<button title="Transpose Rows" id="rowTranspose' + resultId + '"><span class="context-menu-icons context-menu-icon-transpose"></span></button>'
-        table += '<button title="Mark Rows or Cells" id="markRowsOrCells' + resultId + '"><span class="context-menu-icons context-menu-icon-mark"></span></button>'
-        table += '<button id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
+        table += '<button title="Transpose rows" id="rowTranspose' + resultId + '"><span class="context-menu-icons context-menu-icon-transpose"></span></button>'
+        table += '<button title="Mark rows or cells" id="markRowsOrCells' + resultId + '"><span class="context-menu-icons context-menu-icon-mark"></span></button>'
+        table += '<button title="Expand/Collapse Rrows" id="expandRows' + resultId + '"><span class="context-menu-icons context-menu-icon-expand"></span></button>'
         if (rowUpdateReady) {
-            table += '<input title="toggle changeable" type="checkbox" id="checkboxEditable' + resultId + '" class="checkboxEditable">'
-                + '<label for="checkboxEditable' + resultId + '"><span class="context-menu-icons context-menu-icon-edit"></span></label>'
-                + '<span class="editButtons"><button title="Clone Rows" id="copyRow' + resultId + '" class="copyRow"><span class="context-menu-icons context-menu-icon-cloneRows"></span></button>'
-                + '<button title="Tag Rows As Deleted" id="deleteRows' + resultId + '"><span class="context-menu-icons context-menu-icon-deleteRows"></span></button>'
-                + '<button title="Commit Changes" id="saveUpdates' + resultId + '"><span class="context-menu-icons context-menu-icon-commitChanges"></span></button>'
+            table += '<input title="Start to change" type="checkbox" id="checkboxEditable' + resultId + '" class="checkboxEditable">'
+                + '<label title="Start to change" for="checkboxEditable' + resultId + '"><span class="context-menu-icons context-menu-icon-edit"></span></label>'
+                + '<span class="editButtons"><button title="Clone rows" id="copyRow' + resultId + '" class="copyRow"><span class="context-menu-icons context-menu-icon-cloneRows"></span></button>'
+                + '<button title="Tag rows as deleted" id="deleteRows' + resultId + '"><span class="context-menu-icons context-menu-icon-deleteRows"></span></button>'
+                + '<button title="Commit changes" id="saveUpdates' + resultId + '"><span class="context-menu-icons context-menu-icon-commitChanges"></span></button>'
                 + '</span>'
         }
 
-        table += '<span class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
-        table += '<span class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
+        table += '<span title="Click to rerun sql" class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
+        table += '<span title="Show/Change sql here" class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 
         contextMenuHolder.queryResultId = resultId
