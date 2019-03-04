@@ -3,7 +3,6 @@ tableApp = new Vue({
     data() {
         return {
             message: 'Hello Vue!',
-            withColumnsCache: {},
             tableNames: [],
             isShow: false,
             tableNameFilterText: '',
@@ -28,7 +27,7 @@ tableApp = new Vue({
         initTable() {
             var self = this
             var tid = activeMerchantId
-            var withColumns = !this.withColumnsCache[tid]
+            var withColumns = !$.withColumnsCache[tid]
             $.ajax({
                 type: 'POST',
                 url: contextPath + "/query",
@@ -40,9 +39,9 @@ tableApp = new Vue({
                     }
 
                     if (withColumns) {
-                        self.withColumnsCache[tid] = content.TableColumns
+                        $.withColumnsCache[tid] = content.TableColumns
                     }
-                    self.showTables(content, self.withColumnsCache[tid])
+                    self.showTables(content, $.createTableColumns(tid))
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)

@@ -6,7 +6,6 @@ import (
 	"net/http"
 )
 
-
 func serveFont(prefix string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := prefix + mux.Vars(r)["extension"]

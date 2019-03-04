@@ -1,5 +1,5 @@
 (function () {
-    var ExcludedIntelliSenseTriggerKeys = {
+    $.ExcludedIntelliSenseTriggerKeys = {
         "8": "backspace",
         "9": "tab",
         "13": "enter",
@@ -51,109 +51,65 @@
         "222": "quote"
     }
 
-    $.ExcludedIntelliSenseTriggerKeys = ExcludedIntelliSenseTriggerKeys
-
-    function isCharForShowHint(str) {
-        return str.length === 1 && str.match(/[a-z\._0-9]/i)
+    $.isCharForShowHint = function (str) {
+        return str.length === 1 && str.match(/[a-z._0-9]/i)
     }
-    $.isCharForShowHint = isCharForShowHint
-    function showTables(result, tableColumns) {
-        var resultHtml = ''
-        if (result.Rows && result.Rows.length > 0) {
-            for (var i = 0; i < result.Rows.length; i++) {
-                var tableName = result.Rows[i][1];
-                resultHtml += '<span>' + tableName + '</span>'
+
+    $.withColumnsCache = {}
+
+    $.createTableColumns = function(tid) {
+        var tableColumnsWithComments = $.withColumnsCache[tid]
+        var tableColumns = {}
+
+        for (var tableName in tableColumnsWithComments) {
+            if (tableColumnsWithComments.hasOwnProperty(tableName)) {
+                var columnWithComments = tableColumnsWithComments[tableName]
+                var columnNames = []
+                for (var i = 0; i < columnWithComments.length; i += 2) {
+                    columnNames.push(columnWithComments[i])
+                }
+
+                tableColumns[tableName] = columnNames
             }
         }
-        $('.tables').html(resultHtml)
-        $('.searchTableNames').change()
 
-        var timeout = null
-        var editor = $.sqlCodeMirror
-        editor.off("keyup")
-        editor.on("keyup", function (cm, event) {
-            if (ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]
-                || cm.state.completionActive) return
-
-            var cur = cm.getCursor()
-            var ch = cm.getRange(CodeMirror.Pos(cur.line, cur.ch - 1), cur)
-            if (!isCharForShowHint(ch)) return
-
-            var tok = cm.getTokenAt(cur)
-            if (tok.type == "string" && tok.string.length >= 1 && tok.string.substr(0, 1) === "'") return false;
-
-            if (timeout) clearTimeout(timeout)
-            timeout = setTimeout(function () {
-                CodeMirror.showHint(cm, CodeMirror.hint.sql, {
-                    // "completeSingle: false" prevents case when you are typing some word
-                    // and in the middle it is automatically completed and you continue typing by reflex.
-                    // So user will always need to select the intended string
-                    // from popup (even if it's single option). (copy from @Oleksandr Pshenychnyy)
-                    completeSingle: false,
-                    tables: tableColumns
-                })
-            }, 150)
-        })
-
-
-        $.contextMenu({
-            zIndex: 10,
-            selector: '.tables span',
-            callback: function (key, options) {
-                var tableName = $(this).text()
-                if (key === 'ShowFullColumns') {
-                    $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, 'show full columns from ' + tableName)
-                } else if (key == 'ShowCreateTable') {
-                    $.showSqlAjax('show create table ' + tableName)
-                } else if (key == 'RenameTable') {
-                    $.appendSqlToSqlEditor('RENAME TABLE ' + tableName + ' TO ' + tableName + "_new", true, false)
-                }
-            },
-            items: {
-                ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
-                ShowCreateTable: {name: 'Show Create Table', icon: 'create-table'},
-                RenameTable: {name: 'Rename Table', icon: 'create-table'},
-            }
-        })
+        return tableColumns
     }
 
-    var withColumnsCache = {}
-    $.showTablesAjax = function (tid) {
-        var withColumns = !withColumnsCache[tid]
-        $.ajax({
-            type: 'POST',
-            url: contextPath + "/query",
-            data: {tid: tid, sql: 'show tables', withColumns: withColumns},
-            success: function (content, textStatus, request) {
-                if (content && content.Error) {
-                    $.alertMe(content.Error)
-                    return
-                }
 
-                if (withColumns) {
-                    withColumnsCache[tid] = content.TableColumns
-                }
-                showTables(content, withColumnsCache[tid])
-                $('.tablesWrapper').show()
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
-            }
-        })
+    $.findTableComment = function(tid, tableName) {
+        var withColumns = $.withColumnsCache[tid]
+        if (withColumns) {
+            return withColumns[tableName + '_TABLE_COMMENT'][0]
+        }
+
+        return ""
     }
 
-    $('.searchTableNames').on('keyup change', function () {
-        var filter = $.trim($(this).val()).toUpperCase()
+    $.createJavaBeanFieldNamesList = function(tid, tableName) {
+        var fieldProperties = ''
 
-        $('.tables span').each(function (index, span) {
-            var $span = $(span)
-            var text = $.trim($span.text()).toUpperCase()
-            var contains = text.indexOf(filter) > -1
-            $span.toggle(contains)
-        })
-    }).focus(function () {
-        $(this).select()
-        $('.tablesWrapper').show()
-    })
+        var columnWithComments = $.withColumnsCache[tid][tableName]
+        for (var i = 0, ii = columnWithComments.length; i < ii; i += 2) {
+            var fieldName = columnWithComments[i]
+            if (fieldName.toLowerCase().indexOf("time") >= 0) {
+                fieldProperties += '    private DateTime '
+            } else {
+                fieldProperties += '    private String '
+            }
+
+
+            fieldProperties += $.camelCased(fieldName) + ';'
+
+            var fieldComment = columnWithComments[i + 1]
+            if (fieldComment !== "") {
+                fieldProperties += ' // ' + $.mergeLines(fieldComment)
+            }
+
+            fieldProperties += '\n'
+        }
+
+        return fieldProperties
+    }
 
 })()

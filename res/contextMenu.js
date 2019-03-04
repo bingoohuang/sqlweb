@@ -338,7 +338,7 @@
                     $.appendSqlToSqlEditor(insertEqlTemplate + ';\n\n' + deleteEqlTemplate + ';\n\n'
                         + updateEqlTemplate + ';\n\n' + selectEqlTemplate, true)
                 } else if (key === 'CreateJavaBean') {
-                    var javabean = $.createJavaBean(result)
+                    var javabean = $.createJavaBean(tid, result)
                     $.appendSqlToSqlEditor(javabean, true, true)
                 }
             },

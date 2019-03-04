@@ -304,7 +304,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 
 	if "true" == withColumns {
 		tableColumns := make(map[string][]string)
-		columnsSql := `select TABLE_NAME, COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS ` +
+		columnsSql := `select TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT from INFORMATION_SCHEMA.COLUMNS ` +
 			`where TABLE_SCHEMA = '` + dbName + `' order by TABLE_NAME`
 		_, colRows, _, _, _, _ := processSql(tid, columnsSql, ds, 0)
 
@@ -320,11 +320,24 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 				tableName = row[1]
 			}
 
-			columns = append(columns, row[2])
+			columns = append(columns, row[2], row[3])
 		}
 
 		if tableName != "" {
 			tableColumns[tableName] = columns
+		}
+
+		tableCommentSql := `select TABLE_NAME, TABLE_COMMENT from INFORMATION_SCHEMA.TABLES ` +
+			`where TABLE_SCHEMA = '` + dbName + `'`
+		_, tableRows, _, _, _, _ := processSql(tid, tableCommentSql, ds, 0)
+		for _, row := range tableRows {
+			tblName := row[1]
+			_, ok := tableColumns[tblName]
+			if ok {
+				tableCommentCols := make([]string, 0)
+				tableCommentCols = append(tableCommentCols, row[2])
+				tableColumns[tblName+`_TABLE_COMMENT`] = tableCommentCols
+			}
 		}
 
 		queryResult.TableColumns = tableColumns

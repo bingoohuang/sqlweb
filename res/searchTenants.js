@@ -40,13 +40,14 @@
                         + '|' + $.simplePinyin(MerchantName)}" ${defaultTenant === MerchantCode ? 'selected="selected"' : ''}>${MerchantName}</option>`
                     }
 
-                    $('.searchResult').select2({matcher: matcherCustom});
-                    $('.searchResult').on('select2:select', function (e) {
-                        selectDB(e.params.data.id)
-                    });
-                    $('.searchResult').on('select2:open', function (e) {
-                        $('.select2-search__field').attr('placeholder', 'tid|tcode|名称|缩写|全拼|HomeArea')
-                    });
+                    $('.searchResult')
+                        .select2({matcher: matcherCustom})
+                        .on('select2:select', function (e) {
+                            selectDB(e.params.data.id)
+                        })
+                        .on('select2:open', function (e) {
+                            $('.select2-search__field').attr('placeholder', 'tid|tcode|名称|缩写|全拼|HomeArea')
+                        });
 
                 } else {
                     $('.executeQuery').prop("disabled", true)

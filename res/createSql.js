@@ -36,23 +36,6 @@
         return fieldNames
     }
 
-    function createJavaBeanFieldNamesList(result) {
-        var headers = result.Headers
-        var fieldNames = ''
-        for (var i = 0; i < headers.length; ++i) {
-            var header = headers[i]
-            if (header.toLowerCase().indexOf("time") >= 0) {
-                fieldNames += '    private DateTime '
-            } else {
-                fieldNames += '    private String '
-            }
-
-            fieldNames += camelCased(header) + ';\n'
-        }
-
-        return fieldNames
-    }
-
     $.createInsertSqlPrefix = function (result) {
         return 'insert into ' + wrapFieldName(result.TableName || 'xxx') + '(' + createFieldNamesList(result) + ') values'
     }
@@ -67,12 +50,20 @@
         return 'delete from ' + wrapFieldName(result.TableName || 'xxx') + '\nwhere ' + createWhereItems(result)
     }
 
-    $.createJavaBean = function (result) {
+    $.createJavaBean = function (tid, result) {
         var bean = 'import lombok.*;\n' +
             '\n' +
-            '@Data @AllArgsConstructor @NoArgsConstructor @Builder\n' +
-            'public class ' + CamelCased(result.TableName || 'xxx') + ' {\n'
-        bean += createJavaBeanFieldNamesList(result)
+            '@Data @AllArgsConstructor @NoArgsConstructor @Builder\n'
+
+        var tableName = result.TableName || 'xxx'
+        bean += 'public class ' + $.CamelCased(tableName) + ' {'
+
+        var tableComment = $.findTableComment(tid, tableName)
+        if (tableComment !== "") {
+            bean += ' // ' + $.mergeLines(tableComment)
+        }
+
+        bean += '\n' + $.createJavaBeanFieldNamesList(tid, tableName)
         bean += '}'
 
         return bean
@@ -85,7 +76,7 @@
         for (var i = 0; i < headers.length; ++i) {
             sql += sql != '' ? ',\n' : ''
             var fieldName = headers[i]
-            sql += wrapFieldName(fieldName) + ' = \'#' + camelCased(fieldName) + '#\''
+            sql += wrapFieldName(fieldName) + ' = \'#' + $.camelCased(fieldName) + '#\''
         }
 
         return sql
@@ -102,7 +93,7 @@
                 sql += i > 0 ? '\nand ' : ''
 
                 var pkName = headers[ki]
-                sql += wrapFieldName(pkName) + ' = \'#' + camelCased(pkName) + '#\''
+                sql += wrapFieldName(pkName) + ' = \'#' + $.camelCased(pkName) + '#\''
             }
             return sql
         } else {
@@ -110,7 +101,7 @@
             for (var i = 0; i < headers.length; ++i) {
                 wherePart += wherePart != '' ? '\nand ' : ''
                 var fieldName = headers[i]
-                wherePart += wrapFieldName(fieldName) + ' = \'#' + camelCased(fieldName) + '#\''
+                wherePart += wrapFieldName(fieldName) + ' = \'#' + $.camelCased(fieldName) + '#\''
             }
             sql += wherePart
         }
@@ -146,26 +137,13 @@
         return where;
     }
 
-    function camelCased(str) {
-        return str.toLowerCase().replace(/_([a-z])/g, function (g) {
-            return g[1].toUpperCase()
-        })
-    }
-
-    function CamelCased(str) {
-        var camelCasedStr = str.toLowerCase().replace(/_([a-z])/g, function (g) {
-            return g[1].toUpperCase()
-        })
-
-        return camelCasedStr.substr(0, 1).toUpperCase() + camelCasedStr.substring(1)
-    }
 
     $.createInsertEqlTemplate = function (result) {
         var values = 'insert into ' + wrapFieldName(result.TableName || 'xxx') + '(' + createFieldNamesList(result) + ')\nvalues('
         var headers = result.Headers
         for (var i = 0; i < headers.length; ++i) {
             values += i > 0 ? ', ' : ''
-            values += '\'#' + camelCased(headers[i]) + '#\''
+            values += '\'#' + $.camelCased(headers[i]) + '#\''
         }
         return values + ')'
     }

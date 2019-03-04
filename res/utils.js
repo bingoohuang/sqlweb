@@ -301,4 +301,23 @@
             }
         })
     }
+
+    $.mergeLines = function (str) {
+        return str.replace(/(\r\n|\n|\r)/gm, " ")
+    }
+
+    $.camelCased = function (str) {
+        return str.toLowerCase().replace(/_([a-z])/g, function (g) {
+            return g[1].toUpperCase()
+        })
+    }
+
+    $.CamelCased = function (str) {
+        var camelCasedStr = str.toLowerCase().replace(/_([a-z])/g, function (g) {
+            return g[1].toUpperCase()
+        })
+
+        return camelCasedStr.substr(0, 1).toUpperCase() + camelCasedStr.substring(1)
+    }
+
 })()
