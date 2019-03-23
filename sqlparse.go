@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/bingoohuang/go-utils"
-	"github.com/xwb1989/sqlparser"
 	"net/http"
 	"strings"
+
+	go_utils "github.com/bingoohuang/go-utils"
+	"github.com/xwb1989/sqlparser"
 )
 
 func parseSql(querySql, dbDataSource string) (string, []string) {
@@ -68,7 +69,7 @@ func findTablePrimaryKeys(tableName string, dbDataSource string) []string {
 
 func findSingleTableName(sqlParseResult sqlparser.Statement) string {
 	selectSql, _ := sqlParseResult.(*sqlparser.Select)
-	if len(selectSql.From) != 1 {
+	if selectSql == nil || len(selectSql.From) != 1 {
 		return ""
 	}
 
