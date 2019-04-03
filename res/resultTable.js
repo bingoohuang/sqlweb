@@ -1,5 +1,5 @@
 (function () {
-    function createHead(resultId, result, isTableInLinked, contextMenuHolder) {
+    function createHead(tid, resultId, result, isTableInLinked, contextMenuHolder) {
         var head = '<thead><tr class="headRow">'
         head += '<td></td>'
         head += '<td class="headCell">#</td>'
@@ -10,7 +10,13 @@
         for (var j = 0; j < result.Headers.length; ++j) {
             var headName = result.Headers[j]
             contextMenuHolder.allColumnNames[headName] = true
-            head += '<td class="headCell ' + $.escapeContextMenuCssName(headName) + '">' + headName + '</td>'
+            head += '<td class="headCell ' + $.escapeContextMenuCssName(headName)
+
+            var columnTitle = $.findColumnTitle(tid, result.TableName, headName)
+            if (columnTitle !== "") {
+                head += '" title="' + $.escapeHTML(columnTitle)
+            }
+            head += '">' + headName + '</td>'
             if (contextMenuHolder.hasRows && $.isInLinkedTableField(result.TableName, headName)) {
                 contextMenuHolder.columnNames[headName] = true
             }
@@ -143,7 +149,7 @@
 
         if (result.Headers && result.Headers.length > 0) {
             var isTableInLinked = hasRows && result.TableName !== '' && $.isInLinkedTable(result.TableName)
-            table += createHead(resultId, result, isTableInLinked, contextMenuHolder)
+            table += createHead(tid, resultId, result, isTableInLinked, contextMenuHolder)
         }
 
         table += '<tbody>'

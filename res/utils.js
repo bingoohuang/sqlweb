@@ -320,4 +320,18 @@
         return camelCasedStr.substr(0, 1).toUpperCase() + camelCasedStr.substring(1)
     }
 
+    $.escapeHTML = function (unsafe) {
+        return unsafe.replace(/[&<"']/g, function (m) {
+            switch (m) {
+                case '&':
+                    return '&amp;';
+                case '<':
+                    return '&lt;';
+                case '"':
+                    return '&quot;';
+                default:
+                    return '&#039;';
+            }
+        })
+    }
 })()

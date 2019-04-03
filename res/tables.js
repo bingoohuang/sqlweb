@@ -57,7 +57,7 @@
 
     $.withColumnsCache = {}
 
-    $.createTableColumns = function(tid) {
+    $.createTableColumns = function (tid) {
         var tableColumnsWithComments = $.withColumnsCache[tid]
         var tableColumns = {}
 
@@ -65,7 +65,7 @@
             if (tableColumnsWithComments.hasOwnProperty(tableName)) {
                 var columnWithComments = tableColumnsWithComments[tableName]
                 var columnNames = []
-                for (var i = 0; i < columnWithComments.length; i += 2) {
+                for (var i = 0; i < columnWithComments.length; i += 6) {
                     columnNames.push(columnWithComments[i])
                 }
 
@@ -77,20 +77,56 @@
     }
 
 
-    $.findTableComment = function(tid, tableName) {
+    $.findTableComment = function (tid, tableName) {
         var withColumns = $.withColumnsCache[tid]
-        if (withColumns) {
-            return withColumns[tableName + '_TABLE_COMMENT'][0]
+        if (!withColumns) {
+            return ""
+        }
+
+        return withColumns[tableName + '_TABLE_COMMENT'][0]
+    }
+
+    $.findColumnTitle = function (tid, tableName, columnName) {
+        var withColumns = $.withColumnsCache[tid]
+        if (!withColumns) {
+            return ""
+        }
+
+        var columnWithComments = withColumns[tableName]
+        if (!columnWithComments) {
+            return ""
+        }
+
+        for (var i = 0, ii = columnWithComments.length; i < ii; i += 6) {
+            var fieldName = columnWithComments[i]
+            if (fieldName === columnName) {
+                var title = columnWithComments[i + 1]
+                if (title !== "") {
+                    title += "\n"
+                }
+
+                if (columnWithComments[i + 2] !== "") { // COLUMN_KEY
+                    title += columnWithComments[i + 2] + " "
+                }
+
+                title += columnWithComments[i + 3]  // COLUMN_TYPE
+                title += columnWithComments[i + 4] === "YES" ? " null" : " not null" // IS_NULLABLE
+                if (columnWithComments[i + 5] !== "(null)") { // COLUMN_DEFAULT
+                    title += " default " + columnWithComments[i + 5]
+                }
+
+                return title
+            }
         }
 
         return ""
     }
 
-    $.createJavaBeanFieldNamesList = function(tid, tableName) {
+    $.createJavaBeanFieldNamesList = function (tid, tableName) {
         var fieldProperties = ''
 
         var columnWithComments = $.withColumnsCache[tid][tableName]
-        for (var i = 0, ii = columnWithComments.length; i < ii; i += 2) {
+        for (var i = 0, ii = columnWithComments.length; i < ii; i += 6) {
             var fieldName = columnWithComments[i]
             if (fieldName.toLowerCase().indexOf("time") >= 0) {
                 fieldProperties += '    private DateTime '
@@ -98,9 +134,7 @@
                 fieldProperties += '    private String '
             }
 
-
             fieldProperties += $.camelCased(fieldName) + ';'
-
             var fieldComment = columnWithComments[i + 1]
             if (fieldComment !== "") {
                 fieldProperties += ' // ' + $.mergeLines(fieldComment)
@@ -111,5 +145,6 @@
 
         return fieldProperties
     }
+
 
 })()

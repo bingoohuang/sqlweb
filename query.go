@@ -5,13 +5,14 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/bingoohuang/go-utils"
 	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
+
+	go_utils "github.com/bingoohuang/go-utils"
 )
 
 type QueryResult struct {
@@ -304,12 +305,13 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 
 	if "true" == withColumns {
 		tableColumns := make(map[string][]string)
-		columnsSql := `select TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT from INFORMATION_SCHEMA.COLUMNS ` +
-			`where TABLE_SCHEMA = '` + dbName + `' order by TABLE_NAME`
+		columnsSql := `select TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT, COLUMN_KEY, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT
+			from INFORMATION_SCHEMA.COLUMNS
+			where TABLE_SCHEMA = '` + dbName + `' order by TABLE_NAME`
 		_, colRows, _, _, _, _ := processSql(tid, columnsSql, ds, 0)
 
 		tableName := ""
-		var columns []string = nil
+		var columns []string
 
 		for _, row := range colRows {
 			if tableName != row[1] {
@@ -320,7 +322,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 				tableName = row[1]
 			}
 
-			columns = append(columns, row[2], row[3])
+			columns = append(columns, row[2], row[3], row[4], row[5], row[6], row[7])
 		}
 
 		if tableName != "" {
