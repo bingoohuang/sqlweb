@@ -1,8 +1,8 @@
 ContextPath = ""
 ListenPort  = 8381
 MaxQueryRows  = 1000
-DataSource = "user:pass@tcp(127.0.0.1:3306)/db?charset=utf8"
-DevMode = false
+DataSource = "root:111111@tcp(192.168.136.90:3307)/typhon?charset=utf8"
+DevMode = true
 AuthBasic = false
 AuthBasicUser = ""
 AuthBasicPass = ""

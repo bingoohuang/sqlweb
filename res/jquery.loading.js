@@ -45,9 +45,7 @@
             })
     }
 
-})(jQuery)
-
-$(document).ready(function () {
     $('body').loading()
-})
+
+})(jQuery)
 

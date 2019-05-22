@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/bingoohuang/go-utils"
+	"github.com/bingoohuang/gou"
 	"net/http"
 	"strconv"
 	"strings"
@@ -13,29 +13,29 @@ func loginedUserName(r *http.Request) string {
 		return ""
 	}
 
-	cookie := cookieValue.(*go_utils.CookieValueImpl)
+	cookie := cookieValue.(*gou.CookieValueImpl)
 	return cookie.Name
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
-	go_utils.HeadContentTypeHtml(w)
+	gou.HeadContentTypeHtml(w)
 	cookieValue := r.Context().Value("CookieValue")
 	loginedHtml := ""
 	if cookieValue != nil {
-		cookie := cookieValue.(*go_utils.CookieValueImpl)
+		cookie := cookieValue.(*gou.CookieValueImpl)
 		loginedHtml = `<span id="loginSpan"><img class="loginAvatar" src="` + cookie.Avatar +
 			`"/><span class="loginName">` + cookie.Name + `</span></span>`
 	}
 
-	indexHtml := string(MustAsset("res/index.html"))
+	indexHtml := string(MustAsset("index.html"))
 	indexHtml = strings.Replace(indexHtml, "<LOGIN/>", loginedHtml, 1)
 
-	html := go_utils.MinifyHtml(indexHtml, appConfig.DevMode)
+	html := gou.MinifyHtml(indexHtml, appConfig.DevMode)
 
-	mergeCss := go_utils.MergeCss(MustAsset, go_utils.FilterAssetNames(AssetNames(), ".css"))
-	css := go_utils.MinifyCss(mergeCss, appConfig.DevMode)
-	mergeScripts := go_utils.MergeJs(MustAsset, go_utils.FilterAssetNames(AssetNames(), ".js"))
-	js := go_utils.MinifyJs(mergeScripts, appConfig.DevMode)
+	mergeCss := gou.MergeCss(MustAsset, FilterAssetNames(AssetNames, ".css"))
+	css := gou.MinifyCss(mergeCss, appConfig.DevMode)
+	mergeScripts := gou.MergeJs(MustAsset, FilterAssetNames(AssetNames, ".js"))
+	js := gou.MinifyJs(mergeScripts, appConfig.DevMode)
 	html = strings.Replace(html, "/*.CSS*/", css, 1)
 	html = strings.Replace(html, "/*.SCRIPT*/", js, 1)
 	html = strings.Replace(html, "${contextPath}", appConfig.ContextPath, -1)
@@ -43,4 +43,15 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	html = strings.Replace(html, "${defaultTenant}", appConfig.DefaultTenant, -1)
 
 	w.Write([]byte(html))
+}
+
+func FilterAssetNames(assetNames []string, suffix string) []string {
+	filtered := make([]string, 0)
+	for _, assetName := range assetNames {
+		if !strings.HasPrefix(assetName, "static/") && strings.HasSuffix(assetName, suffix) {
+			filtered = append(filtered, assetName)
+		}
+	}
+
+	return filtered
 }

@@ -2,7 +2,8 @@ module github.com/bingoohuang/go-sql-web
 
 require (
 	github.com/BurntSushi/toml v0.3.1
-	github.com/bingoohuang/go-utils v0.0.0-20181228012832-46d05d822f51
+	github.com/bingoohuang/gou v0.0.0-20190519004841-fdf834f3b415
+	github.com/bingoohuang/statiq v0.2.1
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2

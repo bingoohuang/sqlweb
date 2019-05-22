@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/bingoohuang/go-utils"
+	"github.com/bingoohuang/gou"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -9,6 +9,6 @@ import (
 func serveFont(prefix string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := prefix + mux.Vars(r)["extension"]
-		go_utils.ServeFavicon(path, MustAsset, AssetInfo)(w, r)
+		gou.ServeFavicon(path, MustAsset, AssetInfo)(w, r)
 	}
 }

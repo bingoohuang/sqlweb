@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/BurntSushi/toml"
-	"github.com/bingoohuang/go-utils"
+	"github.com/bingoohuang/gou"
 	"log"
 	"strings"
 )
@@ -41,7 +41,7 @@ type AppConfig struct {
 var configFile string
 var appConfig AppConfig
 
-var authParam go_utils.MustAuthParam
+var authParam gou.MustAuthParam
 
 func init() {
 	flag.StringVar(&configFile, "configFile", "appConfig.toml", "config file path")
@@ -56,7 +56,7 @@ func init() {
 		appConfig.ContextPath = "/" + appConfig.ContextPath
 	}
 
-	authParam = go_utils.MustAuthParam{
+	authParam = gou.MustAuthParam{
 		EncryptKey:  appConfig.EncryptKey,
 		CookieName:  appConfig.CookieName,
 		RedirectUri: appConfig.RedirectUri,

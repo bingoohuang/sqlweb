@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"fmt"
-	"github.com/bingoohuang/go-utils"
+	"github.com/bingoohuang/gou"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -63,7 +63,7 @@ func executeQuery(querySql, dataSource string, max int) (
 func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string, string, error, string) {
 	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
 
-	sqlResult := go_utils.ExecuteSql(db, query, maxRows)
+	sqlResult := gou.ExecuteSql(db, query, maxRows)
 	data := addRowsSeq(&sqlResult)
 	fmt.Println("IsQuerySql:", sqlResult.IsQuerySql)
 
@@ -75,7 +75,7 @@ func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string,
 	return sqlResult.Headers, data, executionTime, sqlResult.CostTime.String(), sqlResult.Error, msg
 }
 
-func addRowsSeq(sqlResult *go_utils.ExecuteSqlResult) [][]string {
+func addRowsSeq(sqlResult *gou.ExecuteSqlResult) [][]string {
 	data := make([][]string, 0)
 	if sqlResult.Rows != nil {
 		for index, row := range sqlResult.Rows {

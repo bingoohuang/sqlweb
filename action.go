@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"github.com/bingoohuang/go-utils"
+	"github.com/bingoohuang/gou"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -10,7 +10,7 @@ import (
 )
 
 func serveAction(w http.ResponseWriter, r *http.Request) {
-	go_utils.HeadContentTypeHtml(w)
+	gou.HeadContentTypeHtml(w)
 
 	tid := strings.TrimSpace(r.FormValue("tid"))
 	action := strings.TrimSpace(r.FormValue("action"))
@@ -68,13 +68,13 @@ func (t *CacheAction) Execute() ([]byte, error) {
 
 	db := "&db=" + strconv.Itoa(t.Db)
 	if t.Op == "Get" {
-		return go_utils.HttpGet(proxy + "/getCache?key=" + url.QueryEscape(t.Key) + db)
+		return gou.HttpGet(proxy + "/getCache?key=" + url.QueryEscape(t.Key) + db)
 	} else if t.Op == "ZAdd" {
-		return go_utils.HttpGet(proxy + "/zaddCache?key=" + url.QueryEscape(t.Key) + db + "&value=" + t.Value + "&score=" + t.Score)
+		return gou.HttpGet(proxy + "/zaddCache?key=" + url.QueryEscape(t.Key) + db + "&value=" + t.Value + "&score=" + t.Score)
 	} else if t.Op == "Set" {
-		return go_utils.HttpGet(proxy + "/setCache?key=" + url.QueryEscape(t.Key) + db + "&value=" + t.Value + "&ttl=" + t.Ttl)
+		return gou.HttpGet(proxy + "/setCache?key=" + url.QueryEscape(t.Key) + db + "&value=" + t.Value + "&ttl=" + t.Ttl)
 	} else if t.Op == "Clear" {
-		return go_utils.HttpGet(proxy + "/clearCache?keys=" + url.QueryEscape(t.Key) + db)
+		return gou.HttpGet(proxy + "/clearCache?keys=" + url.QueryEscape(t.Key) + db)
 	} else {
 		return nil, errors.New("unknown Operation " + t.Op)
 	}
@@ -82,7 +82,7 @@ func (t *CacheAction) Execute() ([]byte, error) {
 
 func findAction(action string, merchant *Merchant, key string, r *http.Request) Action {
 	if action == "CacheAction" {
-		db, _ := strconv.Atoi(go_utils.EmptyThen(r.FormValue("db"), "0"))
+		db, _ := strconv.Atoi(gou.EmptyThen(r.FormValue("db"), "0"))
 		return &CacheAction{
 			Tenant: merchant,
 			Key:    key,

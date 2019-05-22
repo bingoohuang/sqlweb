@@ -3,7 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/bingoohuang/go-utils"
+	"github.com/bingoohuang/gou"
 	"net/http"
 	"strconv"
 	"strings"
@@ -21,7 +21,7 @@ type UpdateResult struct {
 }
 
 func serveUpdate(w http.ResponseWriter, r *http.Request) {
-	go_utils.HeadContentTypeJson(w)
+	gou.HeadContentTypeJson(w)
 
 	if !writeAuthOk(r) {
 		http.Error(w, "write auth required", 405)
@@ -49,7 +49,7 @@ func serveUpdate(w http.ResponseWriter, r *http.Request) {
 	resultRows := make([]UpdateResultRow, 0)
 	for _, s := range strings.Split(sqls, ";\n") {
 		saveHistory(tid, s)
-		sqlResult := go_utils.ExecuteSql(db, s, 0)
+		sqlResult := gou.ExecuteSql(db, s, 0)
 		if sqlResult.Error != nil {
 			resultRows = append(resultRows, UpdateResultRow{Ok: false, Message: sqlResult.Error.Error()})
 		} else if sqlResult.RowsAffected == 1 {

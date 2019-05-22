@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"github.com/bingoohuang/go-utils"
+	"github.com/bingoohuang/gou"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,7 +18,7 @@ type Merchant struct {
 }
 
 func serveSearchDb(w http.ResponseWriter, req *http.Request) {
-	go_utils.HeadContentTypeJson(w)
+	gou.HeadContentTypeJson(w)
 	searchKey := strings.TrimSpace(req.FormValue("searchKey"))
 	byTenant := strings.TrimSpace(req.FormValue("byTenant"))
 	if searchKey == "" {

@@ -12,7 +12,7 @@ import (
 	"time"
 	"unicode"
 
-	go_utils "github.com/bingoohuang/go-utils"
+	gou "github.com/bingoohuang/gou"
 )
 
 type QueryResult struct {
@@ -30,7 +30,7 @@ type QueryResult struct {
 }
 
 func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
-	go_utils.HeadContentTypeJson(w)
+	gou.HeadContentTypeJson(w)
 	tid := strings.TrimSpace(req.FormValue("tid"))
 	columnName := strings.TrimSpace(req.FormValue("columnName"))
 
@@ -55,7 +55,7 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 		Msg           string
 	}{
 		Rows:          rows,
-		Error:         go_utils.Error(err),
+		Error:         gou.Error(err),
 		ExecutionTime: executionTime,
 		CostTime:      costTime,
 		DatabaseName:  databaseName,
@@ -66,14 +66,14 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 }
 
 func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
-	go_utils.HeadContentTypeJson(w)
+	gou.HeadContentTypeJson(w)
 	sqlString := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
 
-	sqls := go_utils.SplitSqls(sqlString, ';')
+	sqls := gou.SplitSqls(sqlString, ';')
 	for _, sql := range sqls {
-		if go_utils.IsQuerySql(sql) {
+		if gou.IsQuerySql(sql) {
 			continue
 		}
 		if !writeAuthOk(req) {
@@ -105,7 +105,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 	dbDataSource, databaseName, err := selectDbByTid(tid, appConfig.DataSource)
 	if err != nil {
 		resultChan <- &QueryResult{
-			Error: go_utils.Error(err),
+			Error: gou.Error(err),
 			Tid:   tid,
 		}
 		return
@@ -114,7 +114,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 	db, err := sql.Open("mysql", dbDataSource)
 	if err != nil {
 		resultChan <- &QueryResult{
-			Error:        go_utils.Error(err),
+			Error:        gou.Error(err),
 			DatabaseName: databaseName,
 			Tid:          tid,
 		}
@@ -125,11 +125,11 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 
 	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
 
-	sqls := go_utils.SplitSqls(sqlString, ';')
+	sqls := gou.SplitSqls(sqlString, ';')
 	sqlsLen := len(sqls)
 
 	if sqlsLen == 1 {
-		sqlResult := go_utils.ExecuteSql(db, sqls[0], 0)
+		sqlResult := gou.ExecuteSql(db, sqls[0], 0)
 		msg := ""
 		if !sqlResult.IsQuerySql {
 			msg = strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
@@ -137,7 +137,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 		result := QueryResult{
 			Headers:       sqlResult.Headers,
 			Rows:          sqlResult.Rows,
-			Error:         go_utils.Error(sqlResult.Error),
+			Error:         gou.Error(sqlResult.Error),
 			ExecutionTime: executionTime,
 			CostTime:      sqlResult.CostTime.String(),
 			DatabaseName:  databaseName,
@@ -152,7 +152,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 	querySqlMixed := false
 	if sqlsLen > 1 {
 		for _, oneSql := range sqls {
-			if go_utils.IsQuerySql(oneSql) {
+			if gou.IsQuerySql(oneSql) {
 				querySqlMixed = true
 				break
 			}
@@ -172,7 +172,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 	start := time.Now()
 	msg := ""
 	for _, oneSql := range sqls {
-		sqlResult := go_utils.ExecuteSql(db, oneSql, 0)
+		sqlResult := gou.ExecuteSql(db, oneSql, 0)
 		if msg != "" {
 			msg += "\n"
 		}
@@ -259,12 +259,12 @@ func downloadColumn(w http.ResponseWriter, req *http.Request) {
 }
 
 func serveQuery(w http.ResponseWriter, req *http.Request) {
-	go_utils.HeadContentTypeJson(w)
+	gou.HeadContentTypeJson(w)
 	querySql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
 
-	if !go_utils.IsQuerySql(querySql) && !writeAuthOk(req) {
+	if !gou.IsQuerySql(querySql) && !writeAuthOk(req) {
 		http.Error(w, "write auth required", 405)
 		return
 	}
@@ -294,7 +294,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 	queryResult := QueryResult{
 		Headers:          headers,
 		Rows:             rows,
-		Error:            go_utils.Error(err),
+		Error:            gou.Error(err),
 		ExecutionTime:    execTime,
 		CostTime:         costTime,
 		DatabaseName:     dbName,

@@ -4,17 +4,49 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
-	"github.com/bingoohuang/go-utils"
+	"github.com/bingoohuang/gou"
+	"github.com/bingoohuang/statiq/fs"
 	"github.com/gorilla/mux"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
+
+	_ "github.com/bingoohuang/go-sql-web/statiq"
 )
 
-func main() {
-	r := mux.NewRouter()
+var StaticFs *fs.StatiqFS
+var MustAsset func(name string) []byte
+var AssetInfo func(name string) (os.FileInfo, error)
+var AssetNames []string
 
+func init() {
+	StaticFs, _ = fs.New()
+	MustAsset = func(name string) []byte {
+		return StaticFs.Files["/"+name].Data
+	}
+
+	AssetNames = make([]string, 0, len(StaticFs.Files))
+	for k := range StaticFs.Files {
+		AssetNames = append(AssetNames, k[1:])
+	}
+
+	AssetInfo = func(name string) (info os.FileInfo, e error) {
+		f, err := StaticFs.Open("/" + name)
+		if err != nil {
+			return nil, err
+		}
+
+		return f.Stat()
+	}
+}
+
+func main() {
+	//defer gou.Recover()
+
+	r := mux.NewRouter()
 	handleFunc(r, "/", serveWelcome, false, true)
 	handleFunc(r, "/home", serveHome, true, true)
 	handleFunc(r, "/query", serveQuery, true, true)
@@ -22,8 +54,8 @@ func main() {
 	handleFunc(r, "/tablesByColumn", serveTablesByColumn, false, true)
 	handleFunc(r, "/loadLinksConfig", serveLoadLinksConfig, false, true)
 	handleFunc(r, "/saveLinksConfig", serveSaveLinksConfig, false, true)
-	handleFunc(r, "/iconfont.{extension}", serveFont("res/iconfont."), true, false)
-	handleFunc(r, "/favicon.ico", go_utils.ServeFavicon("res/favicon.ico", MustAsset, AssetInfo), true, false)
+	handleFunc(r, "/iconfont.{extension}", serveFont("iconfont."), true, false)
+	handleFunc(r, "/favicon.ico", gou.ServeFavicon("favicon.ico", MustAsset, AssetInfo), true, false)
 	handleFunc(r, "/update", serveUpdate, false, true)
 	handleFunc(r, "/exportDatabase", exportDatabase, true, true)
 	if appConfig.ImportDb {
@@ -35,52 +67,67 @@ func main() {
 	handleFunc(r, "/searchDb", serveSearchDb, false, true)
 	handleFunc(r, "/action", serveAction, false, true)
 
-	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, r.URL.Path[1:])
-	})
+	http.HandleFunc("/static/", ServeStatic())
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", appConfig.ListenPort)
-	go_utils.OpenExplorerWithContext(appConfig.ContextPath, strconv.Itoa(appConfig.ListenPort))
+	gou.OpenExplorerWithContext(appConfig.ContextPath, strconv.Itoa(appConfig.ListenPort))
 
 	if err := http.ListenAndServe(":"+strconv.Itoa(appConfig.ListenPort), nil); err != nil {
 		log.Fatal(err)
 	}
 }
 
+func ServeStatic() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		filename := r.URL.Path[1:]
+		fi, _ := AssetInfo(filename)
+		if fi == nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		buffer := bytes.NewReader(MustAsset(filename))
+		w.Header().Set("Content-Type", gou.DetectContentType(fi.Name()))
+		w.Header().Set("Last-Modified", fi.ModTime().UTC().Format(http.TimeFormat))
+		w.WriteHeader(http.StatusOK)
+		io.Copy(w, buffer)
+	}
+}
+
 func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := f
 	if requiredBasicAuth && appConfig.AuthBasic {
-		wrap = go_utils.RandomPoemBasicAuth(wrap)
+		wrap = gou.RandomPoemBasicAuth(wrap)
 	}
 
 	if requiredBasicAuth {
-		wrap = go_utils.MustAuth(wrap, authParam)
+		wrap = gou.MustAuth(wrap, authParam)
 	}
 
 	if requiredGzip {
-		wrap = go_utils.GzipHandlerFunc(wrap)
+		wrap = gou.GzipHandlerFunc(wrap)
 	}
 
 	r.HandleFunc(appConfig.ContextPath+path, wrap)
 }
 
 func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
-	wrap := go_utils.DumpRequest(f)
+	wrap := gou.DumpRequest(f)
 	if requiredBasicAuth && appConfig.AuthBasic {
 		if appConfig.AuthBasicUser != "" {
 			wrap = BasicAuth(wrap, appConfig.AuthBasicUser, appConfig.AuthBasicPass)
 		} else {
-			wrap = go_utils.RandomPoemBasicAuth(wrap)
+			wrap = gou.RandomPoemBasicAuth(wrap)
 		}
 	}
 
 	if requiredBasicAuth {
-		wrap = go_utils.MustAuth(wrap, authParam)
+		wrap = gou.MustAuth(wrap, authParam)
 	}
 
 	if requiredGzip {
-		wrap = go_utils.GzipHandlerFunc(wrap)
+		wrap = gou.GzipHandlerFunc(wrap)
 	}
 
 	r.HandleFunc(appConfig.ContextPath+path, wrap)
@@ -92,7 +139,7 @@ func serveWelcome(w http.ResponseWriter, r *http.Request) {
 		// http.Redirect(w, r, contextPath+"/home", 301)
 		serveHome(w, r)
 	} else {
-		go_utils.ServeWelcome(w, MustAsset("res/welcome.html"), appConfig.ContextPath)
+		gou.ServeWelcome(w, MustAsset("welcome.html"), appConfig.ContextPath)
 	}
 }
 

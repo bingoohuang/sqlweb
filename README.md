@@ -5,12 +5,7 @@ sql web based on golang
 ## build
 
 1. install golang 1.11+
-1. `set -x GO111MODULE off`
-1. `go get -u github.com/TykTechnologies/go-bindata/...`
-1. `set -x GO111MODULE on`
-1. `go get -u -v golang.org/x/tools/cmd/goimports`
 1. git clone git@github.com:bingoohuang/go-sql-web.git & cd go-sql-web
-1. `./gobin.sh ; go mod tidy ; go build -x -v`
 1. build for linux :`env GOOS=linux GOARCH=amd64 go build -o go-sql-web.linux.bin`
 
 ## docker

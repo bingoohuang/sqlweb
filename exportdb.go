@@ -2,7 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"github.com/bingoohuang/go-utils"
+	"github.com/bingoohuang/gou"
 	"io"
 	"log"
 	"net/http"
@@ -53,7 +53,7 @@ func customMysqlDump(tn *Merchant, w http.ResponseWriter, tid string) error {
 		return err
 	}
 	defer db.Close()
-	err = go_utils.MySqlDump(db, w)
+	err = gou.MySqlDump(db, w)
 	if err != nil {
 		return err
 	}

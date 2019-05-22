@@ -12,11 +12,6 @@ RUN set -x \
 	&& echo 'http://mirrors.aliyun.com/alpine/v3.8/main/' >> /etc/apk/repositories \
 	&& apk add --no-cache --virtual .build-deps git build-base curl \
 	&& git config --global http.sslVerify true \
-	&& GO111MODULE=off go get -u -v github.com/jteeuwen/go-bindata/... \
-	&& GO111MODULE=off go get -u -v golang.org/x/tools/cmd/goimports \
-	&& sh download-static.sh \
-	&& go-bindata -ignore=res/.DS_Store res/... \
-	&& goimports -w bindata.go \
 	&& go mod tidy \
 	&& GOOS=linux GOARCH=amd64 go build -a -o app . \
 	&& apk del .build-deps
@@ -32,8 +27,6 @@ RUN apk --no-cache add ca-certificates tzdata  && \
 WORKDIR /root/
 COPY --from=builder /go/src/github.com/bingoohuang/go-sql-web/app .
 COPY --from=builder /go/src/github.com/bingoohuang/go-sql-web/appConfig.toml .
-COPY --from=builder /go/src/github.com/bingoohuang/go-sql-web/static ./static/
-
 
 
 EXPOSE 8381
