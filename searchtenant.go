@@ -53,13 +53,22 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	searchResult := make([]Merchant, len(data))
-	for i, v := range data {
-		searchResult[i] = Merchant{
-			MerchantName: v[1], MerchantId: v[2], MerchantCode: v[3], HomeArea: v[4], Classifier: v[5]}
-	}
+	searchResult := make([]Merchant, 0, len(data)+1)
 
+	if len(data) == 0 {
+		searchResult = append(searchResult,
+			Merchant{MerchantName: "trr", MerchantId: "trr", MerchantCode: "trr", HomeArea: "south-center", Classifier: "trr"})
+	} else {
+		for _, v := range data {
+			tid := v[2]
+			if tid != "trr" {
+				searchResult = append(searchResult,
+					Merchant{MerchantName: v[1], MerchantId: tid, MerchantCode: v[3], HomeArea: v[4], Classifier: v[5]})
+			}
+		}
+	}
 	json.NewEncoder(w).Encode(searchResult)
+
 }
 
 type MerchantDb struct {

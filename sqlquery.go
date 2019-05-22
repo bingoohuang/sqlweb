@@ -13,7 +13,7 @@ import (
 )
 
 func selectDb(tid string) (string, string, error) {
-	if tid == "trr" {
+	if tid == "" || tid == "trr" {
 		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", appConfig.DataSource, 0)
 		if err != nil {
 			return "", "", err

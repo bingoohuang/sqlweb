@@ -22,12 +22,11 @@
             type: 'POST',
             url: contextPath + "/searchDb",
             data: {searchKey: searchKey, byTenant: !!byTenant},
-            success: function (content, textStatus, request) {
-                var searchResult = $('.searchResult')
+            success: function (content) {
+                const searchResult = $('.searchResult');
                 var searchHtml = ''
-                var hasContent = content && content.length
+                const hasContent = content && content.length;
                 if (hasContent) {
-                    searchHtml += !byTenant ? `<option value="trr|trr|south-center|trr|trr|trr|trr">trr</option>` : ``
                     for (var j = 0; j < content.length; j++) {
                         const {MerchantId, MerchantCode, HomeArea, Classifier, MerchantName} = content[j]
                         // activeMerchantId|activeMerchantCode|activeHomeArea|activeClassifier|activeMerchantName|activeMerchantNamePinyin|activeMerchantNameSimplePinyin
