@@ -1,12 +1,14 @@
-package main
+package sqlweb
 
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/bingoohuang/gou"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/bingoohuang/gou/htt"
+	"github.com/bingoohuang/sqlx"
 )
 
 type UpdateResultRow struct {
@@ -20,8 +22,8 @@ type UpdateResult struct {
 	RowsResult []UpdateResultRow
 }
 
-func serveUpdate(w http.ResponseWriter, r *http.Request) {
-	gou.HeadContentTypeJson(w)
+func ServeUpdate(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", htt.ContentTypeJSON)
 
 	if !writeAuthOk(r) {
 		http.Error(w, "write auth required", 405)
@@ -48,8 +50,7 @@ func serveUpdate(w http.ResponseWriter, r *http.Request) {
 
 	resultRows := make([]UpdateResultRow, 0)
 	for _, s := range strings.Split(sqls, ";\n") {
-		saveHistory(tid, s)
-		sqlResult := gou.ExecuteSql(db, s, 0)
+		sqlResult := sqlx.ExecSQL(db, s, 0, "(null)")
 		if sqlResult.Error != nil {
 			resultRows = append(resultRows, UpdateResultRow{Ok: false, Message: sqlResult.Error.Error()})
 		} else if sqlResult.RowsAffected == 1 {

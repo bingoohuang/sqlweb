@@ -1,4 +1,4 @@
-package main
+package sqlweb
 
 import (
 	"database/sql"
@@ -7,22 +7,22 @@ import (
 	"strconv"
 	"time"
 
-	"fmt"
-	"github.com/bingoohuang/gou"
+	"github.com/bingoohuang/sqlx"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func selectDb(tid string) (string, string, error) {
 	if tid == "" || tid == "trr" {
-		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", appConfig.DataSource, 0)
+		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", AppConf.DataSource, 0)
 		if err != nil {
 			return "", "", err
 		}
 
-		return appConfig.DataSource, rows[0][1], nil
+		return AppConf.DataSource, rows[0][1], nil
 	}
 
-	return selectDbByTid(tid, appConfig.DataSource)
+	return selectDbByTid(tid, AppConf.DataSource)
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {
@@ -63,19 +63,18 @@ func executeQuery(querySql, dataSource string, max int) (
 func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string, string, error, string) {
 	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
 
-	sqlResult := gou.ExecuteSql(db, query, maxRows)
+	sqlResult := sqlx.ExecSQL(db, query, maxRows, "(null)")
 	data := addRowsSeq(&sqlResult)
-	fmt.Println("IsQuerySql:", sqlResult.IsQuerySql)
 
 	msg := ""
-	if !sqlResult.IsQuerySql {
+	if !sqlResult.IsQuerySQL {
 		msg = strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
 	}
 
 	return sqlResult.Headers, data, executionTime, sqlResult.CostTime.String(), sqlResult.Error, msg
 }
 
-func addRowsSeq(sqlResult *gou.ExecuteSqlResult) [][]string {
+func addRowsSeq(sqlResult *sqlx.ExecResult) [][]string {
 	data := make([][]string, 0)
 	if sqlResult.Rows != nil {
 		for index, row := range sqlResult.Rows {

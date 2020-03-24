@@ -1,12 +1,13 @@
-package main
+package sqlweb
 
 import (
 	"encoding/json"
 	"errors"
-	"github.com/bingoohuang/gou"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/bingoohuang/gou/htt"
 )
 
 type Merchant struct {
@@ -17,8 +18,8 @@ type Merchant struct {
 	Classifier   string
 }
 
-func serveSearchDb(w http.ResponseWriter, req *http.Request) {
-	gou.HeadContentTypeJson(w)
+func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", htt.ContentTypeJSON)
 	searchKey := strings.TrimSpace(req.FormValue("searchKey"))
 	byTenant := strings.TrimSpace(req.FormValue("byTenant"))
 	if searchKey == "" {
@@ -26,7 +27,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if searchKey == "trr" || !appConfig.MultiTenants {
+	if searchKey == "trr" || !AppConf.MultiTenants {
 		var searchResult [1]Merchant
 		searchResult[0] = Merchant{
 			MerchantName: "trr",
@@ -47,7 +48,7 @@ func serveSearchDb(w http.ResponseWriter, req *http.Request) {
 			"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
 			"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
 	}
-	_, data, _, _, err, _ := executeQuery(searchSql, appConfig.DataSource, 0)
+	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DataSource, 0)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -99,7 +100,7 @@ func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 
 func searchMerchant(tid string) (*Merchant, error) {
 	if tid == "trr" {
-		return &Merchant{MerchantName: tid, MerchantId: tid, MerchantCode: tid, HomeArea: appConfig.TrrHomeArea, Classifier: tid}, nil
+		return &Merchant{MerchantName: tid, MerchantId: tid, MerchantCode: tid, HomeArea: AppConf.TrrHomeArea, Classifier: tid}, nil
 	}
 
 	sql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
@@ -116,7 +117,7 @@ func searchMerchantByTcode(tcode string) (*Merchant, error) {
 }
 
 func searchMerchantBySql(searchSql string, maxRows int) (*Merchant, error) {
-	_, data, _, _, err, _ := executeQuery(searchSql, appConfig.DataSource, maxRows)
+	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DataSource, maxRows)
 	if err != nil {
 		return nil, err
 	}

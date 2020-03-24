@@ -1,16 +1,19 @@
-package main
+package sqlweb
 
 import (
 	"errors"
-	"github.com/bingoohuang/gou"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/bingoohuang/gou/str"
+
+	"github.com/bingoohuang/gonet"
 )
 
-func serveAction(w http.ResponseWriter, r *http.Request) {
-	gou.HeadContentTypeHtml(w)
+func ServeAction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	tid := strings.TrimSpace(r.FormValue("tid"))
 	action := strings.TrimSpace(r.FormValue("action"))
@@ -42,7 +45,7 @@ type Action interface {
 }
 
 func findProxy(homeArea string) (string, error) {
-	proxy, ok := appConfig.YogaProxy[homeArea]
+	proxy, ok := AppConf.YogaProxy[homeArea]
 	if ok {
 		return proxy.Proxy, nil
 	}
@@ -68,13 +71,13 @@ func (t *CacheAction) Execute() ([]byte, error) {
 
 	db := "&db=" + strconv.Itoa(t.Db)
 	if t.Op == "Get" {
-		return gou.HttpGet(proxy + "/getCache?key=" + url.QueryEscape(t.Key) + db)
+		return gonet.HTTPGet(proxy + "/getCache?key=" + url.QueryEscape(t.Key) + db)
 	} else if t.Op == "ZAdd" {
-		return gou.HttpGet(proxy + "/zaddCache?key=" + url.QueryEscape(t.Key) + db + "&value=" + t.Value + "&score=" + t.Score)
+		return gonet.HTTPGet(proxy + "/zaddCache?key=" + url.QueryEscape(t.Key) + db + "&value=" + t.Value + "&score=" + t.Score)
 	} else if t.Op == "Set" {
-		return gou.HttpGet(proxy + "/setCache?key=" + url.QueryEscape(t.Key) + db + "&value=" + t.Value + "&ttl=" + t.Ttl)
+		return gonet.HTTPGet(proxy + "/setCache?key=" + url.QueryEscape(t.Key) + db + "&value=" + t.Value + "&ttl=" + t.Ttl)
 	} else if t.Op == "Clear" {
-		return gou.HttpGet(proxy + "/clearCache?keys=" + url.QueryEscape(t.Key) + db)
+		return gonet.HTTPGet(proxy + "/clearCache?keys=" + url.QueryEscape(t.Key) + db)
 	} else {
 		return nil, errors.New("unknown Operation " + t.Op)
 	}
@@ -82,7 +85,7 @@ func (t *CacheAction) Execute() ([]byte, error) {
 
 func findAction(action string, merchant *Merchant, key string, r *http.Request) Action {
 	if action == "CacheAction" {
-		db, _ := strconv.Atoi(gou.EmptyThen(r.FormValue("db"), "0"))
+		db, _ := strconv.Atoi(str.EmptyThen(r.FormValue("db"), "0"))
 		return &CacheAction{
 			Tenant: merchant,
 			Key:    key,

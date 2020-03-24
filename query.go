@@ -1,4 +1,4 @@
-package main
+package sqlweb
 
 import (
 	"bytes"
@@ -12,7 +12,9 @@ import (
 	"time"
 	"unicode"
 
-	gou "github.com/bingoohuang/gou"
+	"github.com/bingoohuang/gou/htt"
+	"github.com/bingoohuang/gou/str"
+	"github.com/bingoohuang/sqlx"
 )
 
 type QueryResult struct {
@@ -29,8 +31,8 @@ type QueryResult struct {
 	Tid              string
 }
 
-func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
-	gou.HeadContentTypeJson(w)
+func ServeTablesByColumn(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", htt.ContentTypeJSON)
 	tid := strings.TrimSpace(req.FormValue("tid"))
 	columnName := strings.TrimSpace(req.FormValue("columnName"))
 
@@ -55,7 +57,7 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 		Msg           string
 	}{
 		Rows:          rows,
-		Error:         gou.Error(err),
+		Error:         str.Error(err),
 		ExecutionTime: executionTime,
 		CostTime:      costTime,
 		DatabaseName:  databaseName,
@@ -65,15 +67,15 @@ func serveTablesByColumn(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(queryResult)
 }
 
-func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
-	gou.HeadContentTypeJson(w)
+func MultipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", htt.ContentTypeJSON)
 	sqlString := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
 
-	sqls := gou.SplitSqls(sqlString, ';')
+	sqls := sqlx.SplitSqls(sqlString, ';')
 	for _, sql := range sqls {
-		if gou.IsQuerySql(sql) {
+		if _, yes := sqlx.IsQuerySQL(sql); yes {
 			continue
 		}
 		if !writeAuthOk(req) {
@@ -87,7 +89,6 @@ func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 
 	tenantsSize := len(multipleTenantIds)
 	resultChan := make(chan *QueryResult, tenantsSize)
-	saveHistory(tids, sqlString)
 
 	for _, tid := range multipleTenantIds {
 		go executeSqlInTid(tid, resultChan, sqlString)
@@ -102,10 +103,10 @@ func multipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 }
 
 func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string) {
-	dbDataSource, databaseName, err := selectDbByTid(tid, appConfig.DataSource)
+	dbDataSource, databaseName, err := selectDbByTid(tid, AppConf.DataSource)
 	if err != nil {
 		resultChan <- &QueryResult{
-			Error: gou.Error(err),
+			Error: str.Error(err),
 			Tid:   tid,
 		}
 		return
@@ -114,7 +115,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 	db, err := sql.Open("mysql", dbDataSource)
 	if err != nil {
 		resultChan <- &QueryResult{
-			Error:        gou.Error(err),
+			Error:        str.Error(err),
 			DatabaseName: databaseName,
 			Tid:          tid,
 		}
@@ -125,19 +126,19 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 
 	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
 
-	sqls := gou.SplitSqls(sqlString, ';')
+	sqls := sqlx.SplitSqls(sqlString, ';')
 	sqlsLen := len(sqls)
 
 	if sqlsLen == 1 {
-		sqlResult := gou.ExecuteSql(db, sqls[0], 0)
+		sqlResult := sqlx.ExecSQL(db, sqls[0], 0, "(null)")
 		msg := ""
-		if !sqlResult.IsQuerySql {
+		if !sqlResult.IsQuerySQL {
 			msg = strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
 		}
 		result := QueryResult{
 			Headers:       sqlResult.Headers,
 			Rows:          sqlResult.Rows,
-			Error:         gou.Error(sqlResult.Error),
+			Error:         str.Error(sqlResult.Error),
 			ExecutionTime: executionTime,
 			CostTime:      sqlResult.CostTime.String(),
 			DatabaseName:  databaseName,
@@ -152,7 +153,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 	querySqlMixed := false
 	if sqlsLen > 1 {
 		for _, oneSql := range sqls {
-			if gou.IsQuerySql(oneSql) {
+			if _, yes := sqlx.IsQuerySQL(oneSql); yes {
 				querySqlMixed = true
 				break
 			}
@@ -172,7 +173,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 	start := time.Now()
 	msg := ""
 	for _, oneSql := range sqls {
-		sqlResult := gou.ExecuteSql(db, oneSql, 0)
+		sqlResult := sqlx.ExecSQL(db, oneSql, 0, "(null)")
 		if msg != "" {
 			msg += "\n"
 		}
@@ -192,7 +193,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 	}
 }
 
-func downloadColumn(w http.ResponseWriter, req *http.Request) {
+func DownloadColumn(w http.ResponseWriter, req *http.Request) {
 	querySql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
@@ -217,6 +218,7 @@ func downloadColumn(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), 405)
 		return
 	}
+
 	columns, err := rows.Columns()
 	if err != nil {
 		http.Error(w, err.Error(), 405)
@@ -258,13 +260,13 @@ func downloadColumn(w http.ResponseWriter, req *http.Request) {
 	http.ServeContent(w, req, fileName, time.Now(), bytes.NewReader([]byte(values[0])))
 }
 
-func serveQuery(w http.ResponseWriter, req *http.Request) {
-	gou.HeadContentTypeJson(w)
+func ServeQuery(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", htt.ContentTypeJSON)
 	querySql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
 
-	if !gou.IsQuerySql(querySql) && !writeAuthOk(req) {
+	if _, yes := sqlx.IsQuerySQL(querySql); yes && !writeAuthOk(req) {
 		http.Error(w, "write auth required", 405)
 		return
 	}
@@ -277,8 +279,8 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 		maxRows, _ = strconv.Atoi(maxRowsStr)
 	}
 
-	if maxRows < appConfig.MaxQueryRows {
-		maxRows = appConfig.MaxQueryRows
+	if maxRows < AppConf.MaxQueryRows {
+		maxRows = AppConf.MaxQueryRows
 	}
 
 	ds, dbName, err := selectDb(tid)
@@ -294,7 +296,7 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 	queryResult := QueryResult{
 		Headers:          headers,
 		Rows:             rows,
-		Error:            gou.Error(err),
+		Error:            str.Error(err),
 		ExecutionTime:    execTime,
 		CostTime:         costTime,
 		DatabaseName:     dbName,
@@ -349,11 +351,5 @@ func serveQuery(w http.ResponseWriter, req *http.Request) {
 }
 
 func processSql(tid, querySql, dbDataSource string, max int) ([]string, [][]string, string, string, error, string) {
-	isShowHistory := strings.EqualFold("show history", querySql)
-	if isShowHistory {
-		return showHistory()
-	}
-
-	saveHistory(tid, querySql)
 	return executeQuery(querySql, dbDataSource, max)
 }

@@ -1,17 +1,18 @@
-package main
+package sqlweb
 
 import (
 	"net/http"
 	"strings"
 
-	gou "github.com/bingoohuang/gou"
+	"github.com/bingoohuang/gou/str"
+
 	"github.com/xwb1989/sqlparser"
 )
 
 func parseSql(querySql, dbDataSource string) (string, []string) {
 	var tableName string
 	var primaryKeys []string
-	firstWord := strings.ToUpper(gou.FirstWord(querySql))
+	firstWord := strings.ToUpper(str.FirstWord(querySql))
 	switch firstWord {
 	case "SELECT":
 		sqlParseResult, err := sqlparser.Parse(querySql)
@@ -28,8 +29,8 @@ func parseSql(querySql, dbDataSource string) (string, []string) {
 }
 
 func writeAuthOk(r *http.Request) bool {
-	return len(appConfig.WriteAuthUserNames) == 0 ||
-		gou.IndexOf(loginedUserName(r), appConfig.WriteAuthUserNames) >= 0
+	return len(AppConf.WriteAuthUserNames) == 0 ||
+		str.IndexOf(loginedUserName(r), AppConf.WriteAuthUserNames...) >= 0
 }
 
 func findPrimaryKeysIndex(tableName string, primaryKeys, headers []string) []int {

@@ -1,19 +1,20 @@
-package main
+package sqlweb
 
 import (
 	"database/sql"
-	"github.com/bingoohuang/gou"
 	"io"
 	"log"
 	"net/http"
 	"os/exec"
 	"strings"
+
+	"github.com/bingoohuang/sqlx"
 )
 
-func exportDatabase(w http.ResponseWriter, r *http.Request) {
+func ExportDatabase(w http.ResponseWriter, r *http.Request) {
 	tid := strings.TrimSpace(r.FormValue("tid"))
 
-	tdb, err := searchMerchantDb(tid, appConfig.DataSource)
+	tdb, err := searchMerchantDb(tid, AppConf.DataSource)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -53,7 +54,7 @@ func customMysqlDump(tn *Merchant, w http.ResponseWriter, tid string) error {
 		return err
 	}
 	defer db.Close()
-	err = gou.MySqlDump(db, w)
+	err = sqlx.MySQLDump(db, w)
 	if err != nil {
 		return err
 	}

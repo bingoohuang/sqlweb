@@ -1,14 +1,16 @@
-package main
+package sqlweb
 
 import (
 	"encoding/json"
-	"github.com/bingoohuang/gou"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"strings"
 	"unicode"
+
+	"github.com/bingoohuang/gou/htt"
+	"github.com/gobars/cmd"
 )
 
 type ImportResult struct {
@@ -16,8 +18,8 @@ type ImportResult struct {
 	Result  string `json:"result"`
 }
 
-func importDatabase(w http.ResponseWriter, r *http.Request) {
-	gou.HeadContentTypeJson(w)
+func ImportDatabase(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", htt.ContentTypeJSON)
 
 	if !writeAuthOk(r) {
 		http.Error(w, "write auth required", 405)
@@ -41,17 +43,17 @@ func importDatabase(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	d, err := searchMerchantDb(t.MerchantId, appConfig.DataSource)
+	d, err := searchMerchantDb(t.MerchantId, AppConf.DataSource)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
 	}
 
 	mysqlImport := "mysql -h" + d.Host + " -P" + d.Port + " -u" + d.Username + " -p" + d.Password + " " + d.Database + "<" + sqlFileName
-	stdout, err := gou.ExecuteBash(mysqlImport)
+	_, status := cmd.Bash(mysqlImport)
 	ignoredErr := "mysql: [Warning] Using a password on the command line interface can be insecure."
-	if err != nil {
-		errMsg := strings.TrimFunc(err.Error(), func(r rune) bool {
+	if status.Error != nil {
+		errMsg := strings.TrimFunc(status.Error.Error(), func(r rune) bool {
 			return unicode.IsSpace(r) || !unicode.IsPrint(r)
 		})
 		if errMsg != ignoredErr {
@@ -62,7 +64,7 @@ func importDatabase(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(&ImportResult{
 		Success: true,
-		Result:  stdout,
+		Result:  strings.Join(status.Stdout, "\n"),
 	})
 }
 

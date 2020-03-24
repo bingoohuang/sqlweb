@@ -1,20 +1,22 @@
-package main
+package sqlweb
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/bingoohuang/gou"
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"github.com/bingoohuang/gou/enc"
+	"github.com/bingoohuang/gou/htt"
 )
 
 const linksConfigFile = "linksConfig.toml"
 
-func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
+func ServeSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 	linksConfig := r.FormValue("linksConfig")
 
-	gou.HeadContentTypeJson(w)
+	w.Header().Set("Content-Type", htt.ContentTypeJSON)
 	err := ioutil.WriteFile(linksConfigFile, []byte(linksConfig), 0644)
 	if err != nil {
 		_ = json.NewEncoder(w).Encode(struct {
@@ -26,7 +28,7 @@ func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 		})
 		_, _ = w.Write([]byte(err.Error()))
 	} else {
-		jsonBytes, err := gou.TomlToJson([]byte(linksConfig))
+		jsonBytes, err := enc.TomlToJSON([]byte(linksConfig))
 		ok := "OK"
 		if err != nil {
 			ok = err.Error()
@@ -42,8 +44,8 @@ func serveSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func serveLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
-	gou.HeadContentTypeJson(w)
+func ServeLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", htt.ContentTypeJSON)
 
 	if _, err := os.Stat(linksConfigFile); os.IsNotExist(err) {
 		_ = json.NewEncoder(w).Encode(struct {
@@ -57,7 +59,7 @@ func serveLoadLinksConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	linksConfig, _ := ioutil.ReadFile(linksConfigFile)
-	jsonBytes, err := gou.TomlToJson([]byte(linksConfig))
+	jsonBytes, err := enc.TomlToJSON(linksConfig)
 	if err != nil {
 		fmt.Println("tomlToJson err:", err.Error())
 	}
