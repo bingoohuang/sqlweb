@@ -41,19 +41,17 @@ type YogaProxy struct {
 }
 
 type AppConfig struct {
-	ContextPath   string
-	ListenPort    int
-	MaxQueryRows  int
-	DataSource    string
-	DefaultTenant string
-	TrrHomeArea   string
+	ContextPath  string
+	ListenPort   int
+	MaxQueryRows int
+	DSN          string
+	DefaultDB    string
+	TrrHomeArea  string
 
-	DevMode       bool // to disable css/js minify
-	AuthBasic     bool
-	AuthBasicUser string
-	AuthBasicPass string
-	MultiTenants  bool
-	ImportDb      bool
+	DevMode      bool // to disable css/js minify
+	BasicAuth    string
+	MultiTenants bool
+	ImportDb     bool
 
 	YogaProxy map[string]YogaProxy
 
@@ -73,8 +71,7 @@ var AuthParam htt.MustAuthParam
 func init() {
 	configFile := ""
 
-	flag.StringVar(&configFile, "configFile", "appConfig.toml", "config file path")
-	flag.StringVar(&configFile, "c", "appConfig.toml", "config file path(shorthand)")
+	flag.StringVar(&configFile, "c", "sqlweb.toml", "config file paths")
 
 	flag.Parse()
 	if _, err := toml.DecodeFile(configFile, &AppConf); err != nil {

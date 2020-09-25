@@ -14,15 +14,15 @@ import (
 
 func selectDb(tid string) (string, string, error) {
 	if tid == "" || tid == "trr" {
-		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", AppConf.DataSource, 0)
+		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", AppConf.DSN, 0)
 		if err != nil {
 			return "", "", err
 		}
 
-		return AppConf.DataSource, rows[0][1], nil
+		return AppConf.DSN, rows[0][1], nil
 	}
 
-	return selectDbByTid(tid, AppConf.DataSource)
+	return selectDbByTid(tid, AppConf.DSN)
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {

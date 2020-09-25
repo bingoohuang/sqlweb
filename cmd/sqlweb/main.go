@@ -141,7 +141,7 @@ func DumpRequest(fn http.HandlerFunc) http.HandlerFunc {
 
 func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := f
-	if requiredBasicAuth && sqlweb.AppConf.AuthBasic {
+	if requiredBasicAuth {
 		wrap = poem.RandomPoemBasicAuth(wrap)
 	}
 
@@ -158,10 +158,8 @@ func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGz
 
 func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := DumpRequest(f)
-	if requiredBasicAuth && sqlweb.AppConf.AuthBasic {
-		if sqlweb.AppConf.AuthBasicUser != "" {
-			wrap = BasicAuth(wrap, sqlweb.AppConf.AuthBasicUser, sqlweb.AppConf.AuthBasicPass)
-		}
+	if requiredBasicAuth && sqlweb.AppConf.BasicAuth != "" {
+		wrap = BasicAuth(wrap, sqlweb.AppConf.BasicAuth)
 	}
 
 	if requiredBasicAuth {
@@ -176,7 +174,7 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	if !sqlweb.AppConf.AuthBasic || sqlweb.AuthParam.ForceLogin || sqlweb.AppConf.AuthBasicUser != "" {
+	if sqlweb.AppConf.BasicAuth != "" || sqlweb.AuthParam.ForceLogin {
 		// fmt.Println("Redirect to", contextPath+"/home")
 		// http.Redirect(w, r, contextPath+"/home", 301)
 		sqlweb.ServeHome(w, r)
@@ -185,7 +183,7 @@ func serveWelcome(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func BasicAuth(fn http.HandlerFunc, user, pass string) http.HandlerFunc {
+func BasicAuth(fn http.HandlerFunc, basicAuth string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		basicAuthPrefix := "Basic "
 
@@ -194,16 +192,10 @@ func BasicAuth(fn http.HandlerFunc, user, pass string) http.HandlerFunc {
 		// 如果是 http basic auth
 		if strings.HasPrefix(auth, basicAuthPrefix) {
 			// 解码认证信息
-			payload, err := base64.StdEncoding.DecodeString(auth[len(basicAuthPrefix):])
-			if err == nil {
-				pair := bytes.SplitN(payload, []byte(":"), 2)
-
-				if len(pair) == 2 {
-					if user == string(pair[0]) && pass == string(pair[1]) {
-						fn(w, r) // 执行被装饰的函数
-						return
-					}
-				}
+			payload, _ := base64.StdEncoding.DecodeString(auth[len(basicAuthPrefix):])
+			if basicAuth == string(payload) {
+				fn(w, r) // 执行被装饰的函数
+				return
 			}
 		}
 

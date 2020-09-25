@@ -14,7 +14,7 @@ import (
 func ExportDatabase(w http.ResponseWriter, r *http.Request) {
 	tid := strings.TrimSpace(r.FormValue("tid"))
 
-	tdb, err := searchMerchantDb(tid, AppConf.DataSource)
+	tdb, err := searchMerchantDb(tid, AppConf.DSN)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
