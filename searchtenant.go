@@ -42,10 +42,10 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 	searchSql := ""
 	if byTenant == "true" {
 		searchSql = "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
-			"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey + "' OR MERCHANT_CODE = '" + searchKey + "'"
+			"FROM sqlweb WHERE MERCHANT_ID = '" + searchKey + "' OR MERCHANT_CODE = '" + searchKey + "'"
 	} else {
 		searchSql = "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
-			"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + searchKey +
+			"FROM sqlweb WHERE MERCHANT_ID = '" + searchKey +
 			"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
 	}
 	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DSN, 0)
@@ -83,7 +83,7 @@ type MerchantDb struct {
 
 func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 	sql := "SELECT MERCHANT_ID, DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
-		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "'"
+		"FROM sqlweb WHERE MERCHANT_ID = '" + tid + "'"
 
 	_, data, _, _, err, _ := executeQuery(sql, ds, 1)
 	if err != nil {
@@ -106,14 +106,14 @@ func searchMerchant(tid string) (*Merchant, error) {
 	}
 
 	sql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
-		"FROM TR_F_MERCHANT WHERE MERCHANT_ID = '" + tid + "'"
+		"FROM sqlweb WHERE MERCHANT_ID = '" + tid + "'"
 
 	return searchMerchantBySql(sql, 1)
 }
 
 func searchMerchantByTcode(tcode string) (*Merchant, error) {
 	sql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
-		"FROM TR_F_MERCHANT WHERE MERCHANT_CODE = '" + tcode + "'"
+		"FROM sqlweb WHERE MERCHANT_CODE = '" + tcode + "'"
 
 	return searchMerchantBySql(sql, 1)
 }

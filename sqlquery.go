@@ -27,7 +27,7 @@ func selectDb(tid string) (string, string, error) {
 
 func selectDbByTid(tid string, ds string) (string, string, error) {
 	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
-		"FROM TR_F_DB WHERE MERCHANT_ID = '" + tid + "'"
+		"FROM sqlweb WHERE MERCHANT_ID = '" + tid + "'"
 
 	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, 1)
 	if err != nil {

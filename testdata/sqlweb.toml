@@ -4,6 +4,6 @@ MaxQueryRows  = 1000
 DSN = "root:root@tcp(127.0.0.1:3306)/mydb?charset=utf8"
 DevMode = true
 BasicAuth= "admin:admin"
-MultiTenants = false
+MultiTenants = true
 ImportDb = false
 DefaultDB = ""
