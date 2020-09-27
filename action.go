@@ -44,8 +44,8 @@ type Action interface {
 	Execute() ([]byte, error)
 }
 
-func findProxy(homeArea string) (string, error) {
-	proxy, ok := AppConf.YogaProxy[homeArea]
+func findActionProxy(homeArea string) (string, error) {
+	proxy, ok := AppConf.ActionProxy[homeArea]
 	if ok {
 		return proxy.Proxy, nil
 	}
@@ -64,7 +64,7 @@ type CacheAction struct {
 }
 
 func (t *CacheAction) Execute() ([]byte, error) {
-	proxy, err := findProxy(t.Tenant.HomeArea)
+	proxy, err := findActionProxy(t.Tenant.HomeArea)
 	if err != nil {
 		return nil, err
 	}

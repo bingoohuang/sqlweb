@@ -33,7 +33,7 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 			MerchantName: "trr",
 			MerchantId:   "trr",
 			MerchantCode: "trr",
-			HomeArea:     "south-center",
+			HomeArea:     "BJ",
 			Classifier:   "trr"}
 		json.NewEncoder(w).Encode(searchResult)
 		return
@@ -58,7 +58,7 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 
 	if len(data) == 0 {
 		searchResult = append(searchResult,
-			Merchant{MerchantName: "trr", MerchantId: "trr", MerchantCode: "trr", HomeArea: "south-center", Classifier: "trr"})
+			Merchant{MerchantName: "trr", MerchantId: "trr", MerchantCode: "trr", HomeArea: "BJ", Classifier: "trr"})
 	} else {
 		for _, v := range data {
 			tid := v[2]

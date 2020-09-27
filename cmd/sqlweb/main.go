@@ -16,7 +16,6 @@ import (
 	"strings"
 
 	"github.com/bingoohuang/gou/htt"
-	"github.com/bingoohuang/gou/poem"
 
 	"github.com/bingoohuang/sqlweb"
 	"github.com/bingoohuang/statiq/fs"
@@ -141,13 +140,6 @@ func DumpRequest(fn http.HandlerFunc) http.HandlerFunc {
 
 func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := f
-	if requiredBasicAuth {
-		wrap = poem.RandomPoemBasicAuth(wrap)
-	}
-
-	if requiredBasicAuth {
-		wrap = htt.MustAuth(wrap, sqlweb.AuthParam, "CookieValue")
-	}
 
 	if requiredGzip {
 		wrap = GzipHandlerFunc(wrap)
@@ -162,10 +154,6 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 		wrap = BasicAuth(wrap, sqlweb.AppConf.BasicAuth)
 	}
 
-	if requiredBasicAuth {
-		wrap = htt.MustAuth(wrap, sqlweb.AuthParam, "CookieValue")
-	}
-
 	if requiredGzip {
 		wrap = GzipHandlerFunc(wrap)
 	}
@@ -174,12 +162,10 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 }
 
 func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	if sqlweb.AppConf.BasicAuth != "" || sqlweb.AuthParam.ForceLogin {
+	if sqlweb.AppConf.BasicAuth != "" {
 		// fmt.Println("Redirect to", contextPath+"/home")
 		// http.Redirect(w, r, contextPath+"/home", 301)
 		sqlweb.ServeHome(w, r)
-	} else {
-		poem.ServeWelcome(w, sqlweb.MustAsset("welcome.html"), sqlweb.AppConf.ContextPath)
 	}
 }
 

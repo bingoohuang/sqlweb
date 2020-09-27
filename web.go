@@ -36,7 +36,7 @@ var MustAsset func(name string) []byte
 var AssetInfo func(name string) (os.FileInfo, error)
 var AssetNames []string
 
-type YogaProxy struct {
+type ActionProxy struct {
 	Proxy string
 }
 
@@ -53,7 +53,7 @@ type AppConfig struct {
 	MultiTenants bool
 	ImportDb     bool
 
-	YogaProxy map[string]YogaProxy
+	ActionProxy map[string]ActionProxy
 
 	EncryptKey  string
 	CookieName  string
@@ -65,8 +65,6 @@ type AppConfig struct {
 }
 
 var AppConf AppConfig
-
-var AuthParam htt.MustAuthParam
 
 func init() {
 	configFile := ""
@@ -80,13 +78,5 @@ func init() {
 
 	if AppConf.ContextPath != "" && !strings.Contains(AppConf.ContextPath, "/") {
 		AppConf.ContextPath = "/" + AppConf.ContextPath
-	}
-
-	AuthParam = htt.MustAuthParam{
-		EncryptKey:  AppConf.EncryptKey,
-		CookieName:  AppConf.CookieName,
-		RedirectURI: AppConf.RedirectUri,
-		LocalURL:    AppConf.LocalUrl,
-		ForceLogin:  AppConf.ForceLogin,
 	}
 }
