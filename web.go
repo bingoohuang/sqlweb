@@ -6,6 +6,7 @@ import (
 	"github.com/bingoohuang/gou/htt"
 	"github.com/bingoohuang/statiq/fs"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -70,13 +71,31 @@ func init() {
 	configFile := ""
 
 	flag.StringVar(&configFile, "c", "sqlweb.toml", "config file paths")
-
 	flag.Parse()
+
+	createDefaultConfigFile(configFile)
+
 	if _, err := toml.DecodeFile(configFile, &AppConf); err != nil {
 		log.Panic("config file decode error", err.Error())
 	}
 
 	if AppConf.ContextPath != "" && !strings.Contains(AppConf.ContextPath, "/") {
 		AppConf.ContextPath = "/" + AppConf.ContextPath
+	}
+}
+
+func createDefaultConfigFile(configFile string) {
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		ioutil.WriteFile(configFile, []byte(`
+#ContextPath = ""
+ListenPort  = 8381
+#MaxQueryRows  = 1000
+DSN = "root:root@tcp(127.0.0.1:3306)/information_schema?charset=utf8"
+#DevMode = true
+#BasicAuth= "admin:admin"
+#MultiTenants = true
+#ImportDb = false
+#DefaultDB = ""
+`), 0644)
 	}
 }

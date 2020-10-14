@@ -47,7 +47,7 @@ func init() {
 
 func main() {
 	r := mux.NewRouter()
-	handleFunc(r, "/", serveWelcome, false, true)
+	handleFunc(r, "/", sqlweb.ServeHome, false, true)
 	handleFunc(r, "/home", sqlweb.ServeHome, true, true)
 	handleFunc(r, "/query", sqlweb.ServeQuery, true, true)
 	handleFunc(r, "/downloadColumn", sqlweb.DownloadColumn, true, true)
@@ -159,14 +159,6 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 	}
 
 	r.HandleFunc(sqlweb.AppConf.ContextPath+path, wrap)
-}
-
-func serveWelcome(w http.ResponseWriter, r *http.Request) {
-	if sqlweb.AppConf.BasicAuth != "" {
-		// fmt.Println("Redirect to", contextPath+"/home")
-		// http.Redirect(w, r, contextPath+"/home", 301)
-		sqlweb.ServeHome(w, r)
-	}
 }
 
 func BasicAuth(fn http.HandlerFunc, basicAuth string) http.HandlerFunc {
