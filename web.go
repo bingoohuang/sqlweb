@@ -79,7 +79,7 @@ func init() {
 		log.Panic("config file decode error", err.Error())
 	}
 
-	if AppConf.ContextPath != "" && !strings.Contains(AppConf.ContextPath, "/") {
+	if AppConf.ContextPath != "" && !strings.HasPrefix(AppConf.ContextPath, "/") {
 		AppConf.ContextPath = "/" + AppConf.ContextPath
 	}
 }

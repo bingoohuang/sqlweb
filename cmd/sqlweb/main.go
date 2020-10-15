@@ -67,7 +67,7 @@ func main() {
 	handleFunc(r, "/searchDb", sqlweb.ServeSearchDb, false, true)
 	handleFunc(r, "/action", sqlweb.ServeAction, false, true)
 
-	http.HandleFunc("/static/", ServeStatic())
+	http.HandleFunc(sqlweb.AppConf.ContextPath+"/static/", ServeStatic(sqlweb.AppConf.ContextPath))
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", sqlweb.AppConf.ListenPort)
@@ -78,9 +78,9 @@ func main() {
 	}
 }
 
-func ServeStatic() http.HandlerFunc {
+func ServeStatic(contextPath string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		filename := r.URL.Path[1:]
+		filename := strings.TrimPrefix(r.URL.Path, contextPath)[1:]
 		fi, _ := sqlweb.AssetInfo(filename)
 		if fi == nil {
 			w.WriteHeader(http.StatusNotFound)
