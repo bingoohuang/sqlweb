@@ -5,6 +5,8 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"fmt"
+	"github.com/bingoohuang/gou/ran"
+	"github.com/skratchdot/open-golang/open"
 	"io"
 	"log"
 	"mime"
@@ -12,8 +14,10 @@ import (
 	"net/http/httputil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bingoohuang/gou/htt"
 
@@ -71,11 +75,25 @@ func main() {
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", sqlweb.AppConf.ListenPort)
-	htt.OpenExplorerWithContext(sqlweb.AppConf.ContextPath, strconv.Itoa(sqlweb.AppConf.ListenPort))
+	OpenExplorerWithContext(sqlweb.AppConf.ContextPath, strconv.Itoa(sqlweb.AppConf.ListenPort))
 
 	if err := http.ListenAndServe(":"+strconv.Itoa(sqlweb.AppConf.ListenPort), nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// OpenExplorerWithContext ...
+func OpenExplorerWithContext(contextPath, port string) {
+	go func() {
+		time.Sleep(100 * time.Millisecond) // nolint gomnd
+
+		switch runtime.GOOS {
+		case "windows":
+			fallthrough
+		case "darwin":
+			_ = open.Run("http://127.0.0.1:" + port + contextPath + "?" + ran.String(10)) // nolint gomnd
+		}
+	}()
 }
 
 func ServeStatic(contextPath string) http.HandlerFunc {
@@ -158,7 +176,12 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 		wrap = GzipHandlerFunc(wrap)
 	}
 
-	r.HandleFunc(sqlweb.AppConf.ContextPath+path, wrap)
+	p := filepath.Join(sqlweb.AppConf.ContextPath, path)
+	if p != "/" {
+		p = strings.TrimSuffix(p, "/")
+	}
+
+	r.HandleFunc(p, wrap)
 }
 
 func BasicAuth(fn http.HandlerFunc, basicAuth string) http.HandlerFunc {
