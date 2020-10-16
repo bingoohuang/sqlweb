@@ -129,6 +129,10 @@
     }
 
     $.tableCreate = function (result, sql, oldResultId, classifier, tid, tcode, tname) {
+        if (!$('#preserveResults').prop('checked')) {
+            $('.result').html('') // 不保留结果
+        }
+
         if (!result.Headers) {
             result.Headers = []
         }
@@ -136,7 +140,7 @@
         if (showFullColumns) {
             result.TableName = sql.substring("show full columns from ".length)
         }
-        var rowUpdateReady = result.TableName && result.TableName != ""
+        var rowUpdateReady = result.TableName && result.TableName !== ""
         var resultId = oldResultId !== null && oldResultId >= 0 ? oldResultId : ++queryResultId
         var contextMenuHolder = {}
         var totalRows = result.Rows && result.Rows.length > 0 ? result.Rows.length : 0
@@ -163,6 +167,9 @@
             } else {
                 $.attachSaveUpdatesEvent(tid, result, resultId)
             }
+        }
+        if (!$('#preserveResults').prop('checked')) {
+            $('#collapseDiv' + resultId).removeClass('collapseDiv') // 不折叠
         }
     }
 })()
