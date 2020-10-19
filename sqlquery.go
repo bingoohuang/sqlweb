@@ -3,8 +3,10 @@ package sqlweb
 import (
 	"database/sql"
 	"errors"
+	"github.com/go-sql-driver/mysql"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bingoohuang/sqlx"
@@ -22,7 +24,17 @@ func selectDb(tid string) (string, string, error) {
 		return AppConf.DSN, rows[0][1], nil
 	}
 
-	return selectDbByTid(tid, AppConf.DSN)
+	if !strings.HasPrefix(tid, "sdb-") {
+		return selectDbByTid(tid, AppConf.DSN)
+	}
+
+	dsnConfig, err := mysql.ParseDSN(AppConf.DSN)
+	if err != nil {
+		return "", "", err
+	}
+
+	dsnConfig.DBName = strings.TrimPrefix(tid, "sdb-")
+	return dsnConfig.FormatDSN(), dsnConfig.DBName, nil
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {
@@ -45,7 +57,7 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 
 	// user:pass@tcp(127.0.0.1:3306)/db?charset=utf8
 	return row[1] + ":" + row[2] + "@tcp(" + row[3] + ":" + row[4] + ")/" + row[5] +
-		"?charset=utf8mb4,utf8&timeout=3s", row[5], nil
+		"?charset=utf8mb4,utf8&timeout=30s", row[5], nil
 }
 
 func executeQuery(querySql, dataSource string, max int) (

@@ -49,27 +49,44 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 			"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
 	}
 	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DSN, 0)
+	errSqlwebTableNotExists := false
 	if err != nil {
-		http.Error(w, err.Error(), 405)
-		return
+		errSqlwebTableNotExists = strings.Contains(err.Error(), "doesn't exist")
+		if !errSqlwebTableNotExists {
+			http.Error(w, err.Error(), 405)
+			return
+		}
 	}
 
 	searchResult := make([]Merchant, 0, len(data)+1)
 
-	if len(data) == 0 {
+	if len(data) == 0 && err == nil {
 		searchResult = append(searchResult,
 			Merchant{MerchantName: "trr", MerchantId: "trr", MerchantCode: "trr", HomeArea: "BJ", Classifier: "trr"})
-	} else {
-		for _, v := range data {
-			tid := v[2]
-			if tid != "trr" {
-				searchResult = append(searchResult,
-					Merchant{MerchantName: v[1], MerchantId: tid, MerchantCode: v[3], HomeArea: v[4], Classifier: v[5]})
-			}
+		json.NewEncoder(w).Encode(searchResult)
+		return
+	}
+
+	for _, v := range data {
+		tid := v[2]
+		if tid != "trr" {
+			searchResult = append(searchResult,
+				Merchant{MerchantName: v[1], MerchantId: tid, MerchantCode: v[3], HomeArea: v[4], Classifier: v[5]})
 		}
 	}
-	json.NewEncoder(w).Encode(searchResult)
 
+	// 添加库列表
+	if errSqlwebTableNotExists {
+		_, data, _, _, _, _ = executeQuery("show databases", AppConf.DSN, 0)
+
+		for _, v := range data {
+			tid := "sdb-" + v[1]
+			searchResult = append(searchResult,
+				Merchant{MerchantName: tid, MerchantId: tid, MerchantCode: tid, HomeArea: tid, Classifier: tid})
+		}
+	}
+
+	json.NewEncoder(w).Encode(searchResult)
 }
 
 type MerchantDb struct {
