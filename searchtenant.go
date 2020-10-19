@@ -80,9 +80,9 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 		_, data, _, _, _, _ = executeQuery("show databases", AppConf.DSN, 0)
 
 		for _, v := range data {
-			tid := "sdb-" + v[1]
+			tid := v[1]
 			searchResult = append(searchResult,
-				Merchant{MerchantName: tid, MerchantId: tid, MerchantCode: tid, HomeArea: tid, Classifier: tid})
+				Merchant{MerchantName: tid, MerchantId: "sdb-" + tid, MerchantCode: tid, HomeArea: tid, Classifier: tid})
 		}
 	}
 
