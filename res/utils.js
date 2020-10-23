@@ -210,6 +210,11 @@
     $.replaceOrPrependResult = function (resultId, oldResultId, html) {
         if (resultId === oldResultId) {
             $('#executionResultDiv' + oldResultId).replaceWith(html)
+            return
+        }
+
+        if (!$('#preserveResults').prop('checked')) {
+            $('.result').html(html) // 不保留结果
         } else {
             $(html).prependTo($('.result'))
         }

@@ -129,10 +129,6 @@
     }
 
     $.tableCreate = function (result, sql, oldResultId, classifier, tid, tcode, tname) {
-        if (!$('#preserveResults').prop('checked')) {
-            $('.result').html('') // 不保留结果
-        }
-
         if (!result.Headers) {
             result.Headers = []
         }
