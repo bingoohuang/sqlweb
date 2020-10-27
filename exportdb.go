@@ -69,6 +69,7 @@ func systemMysqldump(t *Merchant, w http.ResponseWriter, d *MerchantDb) error {
 	w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
 	log.Println("use system mysqldump to export database")
 	mysqldump := "mysqldump -h" + d.Host + " -P" + d.Port + " -u" + d.Username + " -p" + d.Password + " " + d.Database + "|gzip"
+	log.Printf("export by command: %s", mysqldump)
 	cmd := exec.Command("/bin/sh", "-c", mysqldump)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {

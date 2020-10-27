@@ -3,6 +3,7 @@ package sqlweb
 import (
 	"encoding/json"
 	"errors"
+	"github.com/go-sql-driver/mysql"
 	"net/http"
 	"strconv"
 	"strings"
@@ -82,7 +83,8 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 		for _, v := range data {
 			tid := v[1]
 			searchResult = append(searchResult,
-				Merchant{MerchantName: tid, MerchantId: "sdb-" + tid, MerchantCode: tid, HomeArea: tid, Classifier: tid})
+				Merchant{MerchantName: tid, MerchantId: "sdb-" + tid,
+					MerchantCode: "sdb-" + tid, HomeArea: "sdb-" + tid, Classifier: "sdb-" + tid})
 		}
 	}
 
@@ -99,6 +101,10 @@ type MerchantDb struct {
 }
 
 func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
+	if strings.HasPrefix(tid, "sdb-") {
+		return parseMerchantDbByDirect(strings.TrimPrefix(tid, "sdb-"))
+	}
+
 	sql := "SELECT MERCHANT_ID, DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
 		"FROM sqlweb WHERE MERCHANT_ID = '" + tid + "'"
 
@@ -116,7 +122,29 @@ func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 		Password: v[3], Host: v[4], Port: v[5], Database: v[6]}, nil
 }
 
+func parseMerchantDbByDirect(tid string) (*MerchantDb, error) {
+	dc, err := mysql.ParseDSN(AppConf.DSN)
+	if err != nil {
+		return nil, err
+	}
+
+	host := dc.Addr
+	port := "3306"
+	if idx := strings.LastIndex(dc.Addr, ":"); idx > 0 {
+		host = dc.Addr[:idx]
+		port = dc.Addr[idx+1:]
+	}
+
+	return &MerchantDb{MerchantId: tid, Username: dc.User,
+		Password: dc.Passwd, Host: host, Port: port, Database: tid}, nil
+}
+
 func searchMerchant(tid string) (*Merchant, error) {
+	if strings.HasPrefix(tid, "sdb-") {
+		return &Merchant{MerchantName: tid, MerchantId: tid,
+			MerchantCode: tid, HomeArea: tid, Classifier: tid}, nil
+	}
+
 	if tid == "trr" {
 		return &Merchant{MerchantName: tid, MerchantId: tid, MerchantCode: tid,
 			HomeArea: AppConf.TrrHomeArea, Classifier: tid}, nil
@@ -129,6 +157,11 @@ func searchMerchant(tid string) (*Merchant, error) {
 }
 
 func searchMerchantByTcode(tcode string) (*Merchant, error) {
+	if strings.HasPrefix(tcode, "sdb-") {
+		return &Merchant{MerchantName: tcode, MerchantId: tcode,
+			MerchantCode: tcode, HomeArea: tcode, Classifier: tcode}, nil
+	}
+
 	sql := "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
 		"FROM sqlweb WHERE MERCHANT_CODE = '" + tcode + "'"
 

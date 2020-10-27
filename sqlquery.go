@@ -15,6 +15,16 @@ import (
 )
 
 func selectDb(tid string) (string, string, error) {
+	if strings.HasPrefix(tid, "sdb-") {
+		dsnConfig, err := mysql.ParseDSN(AppConf.DSN)
+		if err != nil {
+			return "", "", err
+		}
+
+		dsnConfig.DBName = strings.TrimPrefix(tid, "sdb-")
+		return dsnConfig.FormatDSN(), dsnConfig.DBName, nil
+	}
+
 	if tid == "" || tid == "trr" {
 		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", AppConf.DSN, 0)
 		if err != nil {
@@ -24,17 +34,8 @@ func selectDb(tid string) (string, string, error) {
 		return AppConf.DSN, rows[0][1], nil
 	}
 
-	if !strings.HasPrefix(tid, "sdb-") {
-		return selectDbByTid(tid, AppConf.DSN)
-	}
+	return selectDbByTid(tid, AppConf.DSN)
 
-	dsnConfig, err := mysql.ParseDSN(AppConf.DSN)
-	if err != nil {
-		return "", "", err
-	}
-
-	dsnConfig.DBName = strings.TrimPrefix(tid, "sdb-")
-	return dsnConfig.FormatDSN(), dsnConfig.DBName, nil
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {
