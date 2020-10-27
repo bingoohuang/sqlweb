@@ -53,8 +53,7 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DSN, 0)
 	errSqlwebTableNotExists := false
 	if err != nil {
-		errSqlwebTableNotExists = strings.Contains(err.Error(), "doesn't exist")
-		if !errSqlwebTableNotExists {
+		if errSqlwebTableNotExists = strings.Contains(err.Error(), "doesn't exist"); !errSqlwebTableNotExists {
 			http.Error(w, err.Error(), 405)
 			return
 		}

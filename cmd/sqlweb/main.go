@@ -64,7 +64,7 @@ func main() {
 	handleFunc(r, "/update", sqlweb.ServeUpdate, false, true)
 	handleFunc(r, "/exportDatabase", sqlweb.ExportDatabase, true, true)
 	if sqlweb.AppConf.ImportDb {
-		handleFuncNoDump(r, "/importDatabase", sqlweb.ImportDatabase, false, true)
+		handleFuncNoDump(r, "/importDatabase", sqlweb.ImportDatabase, false)
 	}
 	if sqlweb.AppConf.MultiTenants {
 		handleFunc(r, "/multipleTenantsQuery", sqlweb.MultipleTenantsQuery, true, true)
@@ -157,7 +157,7 @@ func DumpRequest(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
+func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGzip bool) {
 	wrap := f
 
 	if requiredGzip {
