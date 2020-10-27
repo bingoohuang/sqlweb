@@ -3,11 +3,12 @@ package sqlweb
 import (
 	"database/sql"
 	"errors"
-	"github.com/go-sql-driver/mysql"
 	"log"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-sql-driver/mysql"
 
 	"github.com/bingoohuang/sqlx"
 
@@ -89,15 +90,19 @@ func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string,
 
 func addRowsSeq(sqlResult *sqlx.ExecResult) [][]string {
 	data := make([][]string, 0)
-	if sqlResult.Rows != nil {
-		for index, row := range sqlResult.Rows {
-			r := make([]string, len(row)+1)
-			r[0] = strconv.Itoa(index + 1)
-			for j, cell := range row {
-				r[j+1] = cell
-			}
-			data = append(data, r)
-		}
+	if sqlResult.Rows == nil {
+		return data
 	}
+
+	for index, row := range sqlResult.Rows {
+		r := make([]string, len(row)+1)
+		r[0] = strconv.Itoa(index + 1)
+		for j, cell := range row {
+			r[j+1] = cell
+		}
+
+		data = append(data, r)
+	}
+
 	return data
 }

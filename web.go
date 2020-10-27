@@ -2,10 +2,6 @@ package sqlweb
 
 import (
 	"flag"
-	"github.com/BurntSushi/toml"
-	"github.com/bingoohuang/gou/htt"
-	"github.com/bingoohuang/statiq/fs"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,6 +9,11 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/BurntSushi/toml"
+	"github.com/bingoohuang/gou/htt"
+	"github.com/bingoohuang/statiq/fs"
+	"github.com/gorilla/mux"
 )
 
 func ServeFont(prefix string) http.HandlerFunc {

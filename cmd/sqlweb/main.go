@@ -5,8 +5,6 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"fmt"
-	"github.com/bingoohuang/gou/ran"
-	"github.com/skratchdot/open-golang/open"
 	"io"
 	"log"
 	"mime"
@@ -18,6 +16,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/bingoohuang/gou/ran"
+	"github.com/skratchdot/open-golang/open"
 
 	"github.com/bingoohuang/gou/htt"
 
