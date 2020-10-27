@@ -36,7 +36,7 @@
                         + '|' + Classifier
                         + '|' + MerchantName
                         + '|' + $.toPinyin(MerchantName)
-                        + '|' + $.simplePinyin(MerchantName)}" ${defaultTenant === MerchantCode ? 'selected="selected"' : ''}>${MerchantName}</option>`
+                        + '|' + $.simplePinyin(MerchantName)}" ${MerchantCode.includes(defaultTenant) ? 'selected="selected"' : ''}>${MerchantName}</option>`
                     }
 
                     $('.searchResult')
