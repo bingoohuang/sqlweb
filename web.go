@@ -62,6 +62,8 @@ type AppConfig struct {
 	RedirectUri string
 	LocalUrl    string
 	ForceLogin  bool
+	// 是否只显示sqlweb表定义的库，不自动补充show databases()的库列表
+	OnlyShowSqlWebDatabases bool
 
 	WriteAuthUserNames []string // UserNames which has write auth
 }
@@ -82,6 +84,13 @@ func init() {
 
 	if AppConf.ContextPath != "" && !strings.HasPrefix(AppConf.ContextPath, "/") {
 		AppConf.ContextPath = "/" + AppConf.ContextPath
+	}
+
+	if AppConf.DefaultDB == "" {
+		_, rows, _, _, _, _ := executeQuery("SELECT DATABASE()", AppConf.DSN, 0)
+		if len(rows) > 0 {
+			AppConf.DefaultDB = rows[0][1]
+		}
 	}
 }
 
