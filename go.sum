@@ -39,6 +39,8 @@ github.com/bingoohuang/statiq v0.2.1/go.mod h1:0b9LPVgSSJpbpSBpJqUH7GnuwbYisd32W
 github.com/bingoohuang/strcase v0.0.0-20190707081139-fae4a99e1218/go.mod h1:WYrcjWhT2QgbWZcYzfYqWxaxut2hPFa6if/zYwEEEio=
 github.com/bingoohuang/strcase v0.0.0-20200311021209-892ceea89194 h1:xYB3kjwtiQ/fh1RL5T625UvRRC0QSqpXOaoUcpNBaYw=
 github.com/bingoohuang/strcase v0.0.0-20200311021209-892ceea89194/go.mod h1:WYrcjWhT2QgbWZcYzfYqWxaxut2hPFa6if/zYwEEEio=
+github.com/bingoohuang/toml v0.0.0-20201109023109-8e5aa0ee3d73 h1:aCG0h2Ey5i5F1dcAYegl4hi3CW3FNKg+/aI3Gaj0AMc=
+github.com/bingoohuang/toml v0.0.0-20201109023109-8e5aa0ee3d73/go.mod h1:aixwsUzzh8XHIqLUnWUAGLUVYv8HOEhABIXQYx8U1/o=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=

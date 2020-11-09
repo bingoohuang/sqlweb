@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/BurntSushi/toml"
 	"github.com/bingoohuang/gou/htt"
 	"github.com/bingoohuang/statiq/fs"
+	"github.com/bingoohuang/toml"
 	"github.com/gorilla/mux"
 )
 
@@ -51,7 +51,7 @@ type AppConfig struct {
 	TrrHomeArea  string
 
 	DevMode      bool // to disable css/js minify
-	BasicAuth    string
+	BasicAuth    []string
 	MultiTenants bool
 	ImportDb     bool
 
@@ -70,7 +70,7 @@ type AppConfig struct {
 
 var AppConf AppConfig
 
-func init() {
+func InitConf() {
 	configFile := ""
 
 	flag.StringVar(&configFile, "c", "sqlweb.toml", "config file paths")
@@ -97,12 +97,12 @@ func init() {
 func createDefaultConfigFile(configFile string) {
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		ioutil.WriteFile(configFile, []byte(`
-#ContextPath = ""
+ContextPath = "sqlweb"
 ListenPort  = 8381
 #MaxQueryRows  = 1000
 DSN = "root:root@tcp(127.0.0.1:3306)/information_schema?charset=utf8"
 #DevMode = true
-#BasicAuth= "admin:admin"
+#BasicAuth= ["admin:admin"]
 #MultiTenants = true
 #ImportDb = false
 #DefaultDB = ""

@@ -52,7 +52,7 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 	}
 	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DSN, 0)
 	if err != nil {
-		if errSqlwebTableNotExists := strings.Contains(err.Error(), "doesn't exist"); !errSqlwebTableNotExists {
+		if errSqlwebTableNotExists := Contains(err.Error(), "doesn't exist", "Unknown table"); !errSqlwebTableNotExists {
 			http.Error(w, err.Error(), 405)
 			return
 		}
@@ -88,6 +88,16 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(searchResult)
+}
+
+func Contains(s string, sub ...string) bool {
+	for _, ss := range sub {
+		if strings.Contains(s, ss) {
+			return true
+		}
+	}
+
+	return false
 }
 
 type MerchantDb struct {

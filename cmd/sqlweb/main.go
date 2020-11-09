@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -48,10 +49,12 @@ func init() {
 
 		return f.Stat()
 	}
+
+	sqlweb.InitConf()
 }
 
 func main() {
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 	handleFunc(r, "/", sqlweb.ServeHome, false, true)
 	handleFunc(r, "/home", sqlweb.ServeHome, true, true)
 	handleFunc(r, "/query", sqlweb.ServeQuery, true, true)
@@ -169,7 +172,7 @@ func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGz
 
 func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := DumpRequest(f)
-	if requiredBasicAuth && sqlweb.AppConf.BasicAuth != "" {
+	if requiredBasicAuth && len(sqlweb.AppConf.BasicAuth) > 0 {
 		wrap = BasicAuth(wrap, sqlweb.AppConf.BasicAuth)
 	}
 
@@ -185,7 +188,7 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 	r.HandleFunc(p, wrap)
 }
 
-func BasicAuth(fn http.HandlerFunc, basicAuth string) http.HandlerFunc {
+func BasicAuth(fn http.HandlerFunc, basicAuth []string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		basicAuthPrefix := "Basic "
 
@@ -195,8 +198,14 @@ func BasicAuth(fn http.HandlerFunc, basicAuth string) http.HandlerFunc {
 		if strings.HasPrefix(auth, basicAuthPrefix) {
 			// 解码认证信息
 			payload, _ := base64.StdEncoding.DecodeString(auth[len(basicAuthPrefix):])
-			if basicAuth == string(payload) {
-				fn(w, r) // 执行被装饰的函数
+			if yes, user := Contains(basicAuth, string(payload)); yes {
+				rr := r.WithContext(context.WithValue(r.Context(), "CookieValue", &htt.CookieValueImpl{
+					UserID:    user,
+					Name:      user,
+					Avatar:    "",
+					CsrfToken: "",
+				}))
+				fn(w, rr) // 执行被装饰的函数
 				return
 			}
 		}
@@ -207,4 +216,14 @@ func BasicAuth(fn http.HandlerFunc, basicAuth string) http.HandlerFunc {
 		// 401 状态码
 		w.WriteHeader(http.StatusUnauthorized)
 	}
+}
+
+func Contains(ss []string, s string) (bool, string) {
+	for _, el := range ss {
+		if s == el {
+			return true, el[:strings.Index(el, ":")]
+		}
+	}
+
+	return false, ""
 }

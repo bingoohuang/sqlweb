@@ -24,8 +24,12 @@ func ServeHome(w http.ResponseWriter, r *http.Request) {
 	loginedHtml := ""
 	if cookieValue != nil {
 		cookie := cookieValue.(*htt.CookieValueImpl)
-		loginedHtml = `<span id="loginSpan"><img class="loginAvatar" src="` + cookie.Avatar +
-			`"/><span class="loginName">` + cookie.Name + `</span></span>`
+		if cookie.Avatar == "" {
+			loginedHtml = `<span id="loginSpan"><span class="loginName">` + cookie.Name + `</span></span>`
+		} else {
+			loginedHtml = `<span id="loginSpan"><img class="loginAvatar" src="` + cookie.Avatar +
+				`"/><span class="loginName">` + cookie.Name + `</span></span>`
+		}
 	}
 
 	indexHtml := string(MustAsset("index.html"))
