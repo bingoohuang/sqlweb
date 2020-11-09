@@ -174,6 +174,8 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 	wrap := DumpRequest(f)
 	if requiredBasicAuth && len(sqlweb.AppConf.BasicAuth) > 0 {
 		wrap = BasicAuth(wrap, sqlweb.AppConf.BasicAuth)
+	} else {
+		wrap = anonymousWrap(wrap)
 	}
 
 	if requiredGzip {
@@ -186,6 +188,18 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 	}
 
 	r.HandleFunc(p, wrap)
+}
+
+func anonymousWrap(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		rr := r.WithContext(context.WithValue(r.Context(), "CookieValue", &htt.CookieValueImpl{
+			UserID:    "anonymous",
+			Name:      "anonymous",
+			Avatar:    "",
+			CsrfToken: "",
+		}))
+		f(w, rr)
+	}
 }
 
 func BasicAuth(fn http.HandlerFunc, basicAuth []string) http.HandlerFunc {
