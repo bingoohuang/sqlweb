@@ -64,7 +64,7 @@ func main() {
 	handleFunc(r, "/saveLinksConfig", sqlweb.ServeSaveLinksConfig, false, true)
 	handleFunc(r, "/iconfont.{extension}", sqlweb.ServeFont("iconfont."), true, false)
 	handleFunc(r, "/favicon.ico", htt.ServeFavicon("favicon.ico", sqlweb.MustAsset, sqlweb.AssetInfo), true, false)
-	handleFunc(r, "/update", sqlweb.ServeUpdate, false, true)
+	handleFunc(r, "/update", sqlweb.WrapHandlerFunc(sqlweb.ServeUpdate), false, true)
 	handleFunc(r, "/exportDatabase", sqlweb.ExportDatabase, true, true)
 	if sqlweb.AppConf.ImportDb {
 		handleFuncNoDump(r, "/importDatabase", sqlweb.ImportDatabase, false)
