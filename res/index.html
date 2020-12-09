@@ -88,6 +88,7 @@
         <div>
             <span class="tableModifyBtn" @click="truncateTables" v-if="selectMode">Truncate</span>
             <span class="tableModifyBtn" @click="renameTables" v-if="selectMode">Rename</span>
+            <span class="tableModifyBtn" @click="exportTables" v-if="selectMode">Export</span>
 
         </div>
         <div class="itemTables" v-if="tableNames.length >0">

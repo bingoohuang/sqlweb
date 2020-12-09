@@ -137,7 +137,22 @@ tableApp = new Vue({
                 selectedTableName.push($(item).attr('value'))
             })
             if (selectedTableName.length <= 0) return alert("No tables checked")
-            $.executeMultiSqlsAjax(`truncate table ${selectedTableName.join(';\ntruncate table ')};` , true)
+            $.executeMultiSqlsAjax(`truncate table ${selectedTableName.join(';\ntruncate table ')};`, true)
+        },
+        exportTables() {
+            const selectedTableName = []
+            $("input[type='checkbox'][name='selectedTable']:checked").each((index, item) => {
+                selectedTableName.push($(item).attr('value'))
+            })
+            if (selectedTableName.length <= 0) return alert("No tables checked")
+
+            const tid = activeMerchantId
+            const tcode = activeMerchantCode
+            const homeArea = activeHomeArea
+            const classifier = activeClassifier
+            const tname = activeMerchantName
+
+            $.exportDbImpl(tid, tcode, homeArea, classifier, tname, `${selectedTableName.join(',')}`)
         }
     }
 })

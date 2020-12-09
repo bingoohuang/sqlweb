@@ -27,11 +27,12 @@ func ExportDatabase(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Transfer-Encoding", "binary")
+	tables := strings.Split(r.URL.Query().Get("tables"), ",")
 
 	if CommandExist("mysqldump") {
-		err = systemMysqldump(tn, w, tdb)
+		err = systemMysqldump(tn, w, tdb, tables...)
 	} else {
-		err = customMysqlDump(tn, w, tid)
+		err = customMysqlDump(tn, w, tid, tables...)
 	}
 
 	if err != nil {
@@ -39,7 +40,7 @@ func ExportDatabase(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func customMysqlDump(tn *Merchant, w http.ResponseWriter, tid string) error {
+func customMysqlDump(tn *Merchant, w http.ResponseWriter, tid string, tables ...string) error {
 	w.Header().Set("Content-Type", "text/plain")
 
 	fileName := tn.MerchantCode + "." + TimeNow() + ".sql"
@@ -54,7 +55,7 @@ func customMysqlDump(tn *Merchant, w http.ResponseWriter, tid string) error {
 		return err
 	}
 	defer db.Close()
-	err = sqlx.MySQLDump(db, w)
+	err = sqlx.MySQLDump(db, w, tables...)
 	if err != nil {
 		return err
 	}
@@ -62,13 +63,18 @@ func customMysqlDump(tn *Merchant, w http.ResponseWriter, tid string) error {
 	return nil
 }
 
-func systemMysqldump(t *Merchant, w http.ResponseWriter, d *MerchantDb) error {
+// https://dba.stackexchange.com/a/9309
+// If you are dumping tables t1, t2, and t3 from mydb
+// mysqldump -u... -p... mydb t1 t2 t3 > mydb_tables.sql
+func systemMysqldump(t *Merchant, w http.ResponseWriter, d *MerchantDb, tables ...string) error {
 	w.Header().Set("Content-Type", "application/gzip")
 
 	fileName := t.MerchantCode + "." + TimeNow() + ".sql.gz"
 	w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
 	log.Println("use system mysqldump to export database")
-	mysqldump := "mysqldump -h" + d.Host + " -P" + d.Port + " -u" + d.Username + " -p" + d.Password + " " + d.Database + "|gzip"
+	mysqldump := "mysqldump -h" + d.Host + " -P" + d.Port +
+		" -u" + d.Username + " -p" + d.Password +
+		" " + d.Database + " " + strings.Join(tables, " ") + "|gzip"
 	log.Printf("export by command: %s", mysqldump)
 	cmd := exec.Command("/bin/sh", "-c", mysqldump)
 	stdout, err := cmd.StdoutPipe()
