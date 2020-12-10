@@ -86,9 +86,9 @@
         <input type="checkbox" v-model="selectMode">
         <span title="refresh tables" style="cursor: pointer" class="context-menu-icon-reload context-menu-icons" @click="initTable"></span>
         <div>
-            <span class="tableModifyBtn" @click="truncateTables" v-if="selectMode">Truncate</span>
-            <span class="tableModifyBtn" @click="renameTables" v-if="selectMode">Rename</span>
-            <span class="tableModifyBtn" @click="exportTables" v-if="selectMode">Export</span>
+            <span class="tableModifyBtn" @click="truncateTables" v-if="selectMode" title="Create truncate tables statements">Trunc</span>
+            <span class="tableModifyBtn" @click="renameTables" v-if="selectMode" title="Create rename table statements">Rename</span>
+            <span class="tableModifyBtn" @click="dumpTables" v-if="selectMode" title="Dump chosen tables">Dump</span>
 
         </div>
         <div class="itemTables" v-if="tableNames.length >0">

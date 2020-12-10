@@ -5,6 +5,7 @@ default:
 	go fmt ./...&&revive .&&goimports -w .&&golangci-lint run --enable-all&&go install -ldflags="-s -w" ./...
 
 install:
+	statiq -src=res
 	go install -ldflags="-s -w" ./...
 
 test:

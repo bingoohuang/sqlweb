@@ -1,7 +1,7 @@
 ContextPath = "sqlweb"
 ListenPort  = 8381
 #MaxQueryRows  = 1000
-DSN = "root:root@tcp(127.0.0.1:3306)/information_schema?charset=utf8"
+DSN = "betaapiadmin:DVvLoqt4ootvGuu@tcp(123.206.185.162:53306)/metrics_ump?charset=utf8"
 #DevMode = true
 BasicAuth= ["user:user", "bingoo:bingoo"]
 MultiTenants = true
