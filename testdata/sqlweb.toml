@@ -1,9 +1,0 @@
-ContextPath = ""
-ListenPort  = 8381
-MaxQueryRows  = 1000
-DSN = "root:root@tcp(127.0.0.1:3306)/sqlweb?charset=utf8"
-DevMode = true
-BasicAuth= "admin:admin"
-MultiTenants = true
-ImportDb = false
-DefaultDB = ""

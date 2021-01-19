@@ -38,11 +38,19 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 	if user != nil && user.Limit2ConfigDSN {
 		var searchResult []Merchant
 		for _, dbIndex := range user.DSNGroups {
-			dsn := AppConf.GetDSN(dbIndex)
-			tid, _ := FindDbName(dsn)
-			searchResult = append(searchResult,
-				Merchant{MerchantName: tid, MerchantId: "sdb-" + tid,
-					MerchantCode: "sdb-" + tid, HomeArea: "sdb-" + tid, Classifier: "sdb-" + tid})
+			if dsn := AppConf.GetDSN(dbIndex); dsn != "" {
+				tid, _ := FindDbName(dsn)
+				if user.DefaultDB == dbIndex {
+					searchResult = append([]Merchant{
+						{MerchantName: tid, MerchantId: "sdb-" + tid,
+							MerchantCode: "sdb-" + tid, HomeArea: "sdb-" + tid, Classifier: "sdb-" + tid}}, searchResult...)
+				} else {
+					searchResult = append(searchResult,
+						Merchant{MerchantName: tid, MerchantId: "sdb-" + tid,
+							MerchantCode: "sdb-" + tid, HomeArea: "sdb-" + tid, Classifier: "sdb-" + tid})
+				}
+
+			}
 		}
 
 		json.NewEncoder(w).Encode(searchResult)
@@ -72,7 +80,7 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 	}
 	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DSN, 0)
 	if err != nil {
-		if ignorable := Contains(err.Error(), "doesn't exist", "Unknown table"); !ignorable {
+		if ignorable := Contains(err.Error(), "doesn't exist", "Unknown table", "No database selected"); !ignorable {
 			http.Error(w, err.Error(), 405)
 			return
 		}

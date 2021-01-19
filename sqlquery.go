@@ -30,13 +30,14 @@ func selectDb(r *http.Request, tid string, databaseNameRequired bool) (string, s
 		} else {
 			dbName := strings.TrimPrefix(tid, "sdb-")
 			for _, dbi := range user.DSNGroups {
-				ds := AppConf.GetDSN(dbi)
-				foundDbName, _ := FindDbName(ds)
-				if foundDbName == dbName {
-					dbIndex = dbi
-					break
+				if ds := AppConf.GetDSN(dbi); ds != "" {
+					if found, _ := FindDbName(ds); found == dbName {
+						return ds, dbName, nil
+					}
 				}
 			}
+
+			dbIndex = user.DefaultDB
 		}
 
 		dsn := AppConf.GetDSN(dbIndex)
