@@ -48,6 +48,12 @@ type ActionProxy struct {
 	Proxy string
 }
 
+type DSNS struct {
+	DSN       string
+	BasicAuth []string
+	DefaultDB bool
+}
+
 type AppConfig struct {
 	ContextPath  string
 	ListenPort   int
@@ -56,10 +62,9 @@ type AppConfig struct {
 	DefaultDB    string
 	TrrHomeArea  string
 
-	DevMode      bool // to disable css/js minify
-	BasicAuth    []string
-	MultiTenants bool
-	ImportDb     bool
+	DevMode   bool // to disable css/js minify
+	BasicAuth []string
+	ImportDb  bool
 
 	ActionProxy map[string]ActionProxy
 
@@ -71,7 +76,21 @@ type AppConfig struct {
 	// 是否只显示sqlweb表定义的库，不自动补充show databases()的库列表
 	OnlyShowSqlWebDatabases bool
 
-	WriteAuthUserNames []string // UserNames which has write auth
+	WriteAuthUserNames []string   // UserNames which has write auth
+	DSNS               []DSNS     // 配置文件中的多数据源配置
+	BasicAuthGroups    [][]string `toml:"-"`
+}
+
+func (c AppConfig) BasicAuthRequired() bool {
+	return len(c.BasicAuth) > 0 || len(c.DSNS) > 0
+}
+
+func (c AppConfig) GetDSN(index int) string {
+	if index == 0 {
+		return c.DSN
+	}
+
+	return c.DSNS[index-1].DSN
 }
 
 var AppConf AppConfig
@@ -90,37 +109,22 @@ func InitConf() {
 		os.Exit(0)
 	}
 
-	createDefaultConfigFile(configFile)
-
 	if _, err := toml.DecodeFile(configFile, &AppConf); err != nil {
 		log.Panic("config file decode error", err.Error())
 	}
+
+	basicAuthGroups := [][]string{AppConf.BasicAuth}
+	for _, dsn := range AppConf.DSNS {
+		basicAuthGroups = append(basicAuthGroups, dsn.BasicAuth)
+	}
+	AppConf.BasicAuthGroups = basicAuthGroups
 
 	if AppConf.ContextPath != "" && !strings.HasPrefix(AppConf.ContextPath, "/") {
 		AppConf.ContextPath = "/" + AppConf.ContextPath
 	}
 
-	if AppConf.DefaultDB == "" {
-		_, rows, _, _, _, _ := executeQuery("SELECT DATABASE()", AppConf.DSN, 0)
-		if len(rows) > 0 {
-			AppConf.DefaultDB = rows[0][1]
-		}
-	}
-}
-
-func createDefaultConfigFile(configFile string) {
-	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		ioutil.WriteFile(configFile, []byte(`
-ContextPath = "sqlweb"
-ListenPort  = 8381
-#MaxQueryRows  = 1000
-DSN = "root:root@tcp(127.0.0.1:3306)/information_schema?charset=utf8"
-#DevMode = true
-#BasicAuth= ["admin:admin"]
-#MultiTenants = true
-#ImportDb = false
-#DefaultDB = ""
-`), 0644)
+	if AppConf.DefaultDB == "" && len(AppConf.DSNS) == 0 {
+		AppConf.DefaultDB, _ = FindDbName(AppConf.DSN)
 	}
 }
 
@@ -188,7 +192,7 @@ func InitCtl(ctlTplName, ctlFilename string) error {
 }
 
 func argsExcludeInit() []string {
-	binArgs := make([]string, 0, len(os.Args)-2) // nolint gomnd
+	binArgs := make([]string, 0, len(os.Args)-2)
 
 	for i, arg := range os.Args {
 		if i == 0 {

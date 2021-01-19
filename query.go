@@ -36,7 +36,7 @@ func ServeTablesByColumn(w http.ResponseWriter, req *http.Request) {
 	tid := strings.TrimSpace(req.FormValue("tid"))
 	columnName := strings.TrimSpace(req.FormValue("columnName"))
 
-	dbDataSource, databaseName, err := selectDb(tid)
+	dbDataSource, databaseName, err := selectDb(req, tid, true)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -200,7 +200,7 @@ func DownloadColumn(w http.ResponseWriter, req *http.Request) {
 	fileName := strings.TrimSpace(req.FormValue("fileName"))
 	tid := strings.TrimSpace(req.FormValue("tid"))
 
-	ds, _, err := selectDb(tid)
+	ds, _, err := selectDb(req, tid, false)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
@@ -283,7 +283,7 @@ func ServeQuery(w http.ResponseWriter, req *http.Request) {
 		maxRows = AppConf.MaxQueryRows
 	}
 
-	ds, dbName, err := selectDb(tid)
+	ds, dbName, err := selectDb(req, tid, true)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return

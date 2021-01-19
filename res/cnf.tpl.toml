@@ -4,6 +4,15 @@ ListenPort  = 8381
 DSN = "user:pass@tcp(127.0.0.1:3306)/db?charset=utf8"
 #DevMode = true
 BasicAuth= ["user:user", "bingoo:bingoo"]
-MultiTenants = true
 #ImportDb = false
 #DefaultDB = ""
+
+# 多个数据源配置
+# 当配置了多个数据源配置时，上面的单DSN可以不配置，上面的BasicAuth会作为多DSN的继承项
+# 以下示例给出：用户a:a登录，会看到1号库，用户c:c会看到1号和2号库，用户d:d1会看到1号库，用户d:d2会看到2号库
+#[[DSNS]] # 1号库
+#DSN = "user1:pass1@tcp(127.0.0.1:3306)/db1@tcp(123.206.185.162:53306)/metrics_ump?charset=utf8"
+#BasicAuth = ["a:a", "c:c", "d:d1"]
+#[[DSNS]] # 2号库
+#DSN = "user2:pass2@tcp(127.0.0.1:3306)/db2?charset=utf8"
+#BasicAuth = ["b:b", "c:c", "d:d2"]

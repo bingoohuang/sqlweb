@@ -32,7 +32,7 @@ func ExportDatabase(w http.ResponseWriter, r *http.Request) {
 	if CommandExist("mysqldump") {
 		err = systemMysqldump(tn, w, tdb, tables...)
 	} else {
-		err = customMysqlDump(tn, w, tid, tables...)
+		err = customMysqlDump(tn, r, w, tid, tables...)
 	}
 
 	if err != nil {
@@ -40,13 +40,13 @@ func ExportDatabase(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func customMysqlDump(tn *Merchant, w http.ResponseWriter, tid string, tables ...string) error {
+func customMysqlDump(tn *Merchant, r *http.Request, w http.ResponseWriter, tid string, tables ...string) error {
 	w.Header().Set("Content-Type", "text/plain")
 
 	fileName := tn.MerchantCode + "." + TimeNow() + ".sql"
 	w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
 	log.Println("use custom mysqldump to export database")
-	tenantDataSource, _, err := selectDb(tid)
+	tenantDataSource, _, err := selectDb(r, tid, false)
 	if err != nil {
 		return err
 	}

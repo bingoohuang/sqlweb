@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -15,7 +16,34 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func selectDb(tid string) (string, string, error) {
+func selectDb(r *http.Request, tid string, databaseNameRequired bool) (string, string, error) {
+	cookieValue := r.Context().Value(LoginUserKey)
+	var user *LoginUser
+	if cookieValue != nil {
+		user = cookieValue.(*LoginUser)
+	}
+
+	if user != nil && user.Limit2ConfigDSN {
+		dbIndex := 0
+		if len(user.DSNGroups) == 1 {
+			dbIndex = user.DSNGroups[0]
+		} else {
+			dbName := strings.TrimPrefix(tid, "sdb-")
+			for _, dbi := range user.DSNGroups {
+				ds := AppConf.GetDSN(dbi)
+				foundDbName, _ := FindDbName(ds)
+				if foundDbName == dbName {
+					dbIndex = dbi
+					break
+				}
+			}
+		}
+
+		dsn := AppConf.GetDSN(dbIndex)
+		dbName, err := FindDbName(dsn)
+		return dsn, dbName, err
+	}
+
 	if strings.HasPrefix(tid, "sdb-") {
 		dsnConfig, err := mysql.ParseDSN(AppConf.DSN)
 		if err != nil {
@@ -27,16 +55,29 @@ func selectDb(tid string) (string, string, error) {
 	}
 
 	if tid == "" || tid == "trr" {
-		_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", AppConf.DSN, 0)
-		if err != nil {
-			return "", "", err
-		}
-
-		return AppConf.DSN, rows[0][1], nil
+		dbName, _ := FindDbName(AppConf.DSN)
+		return AppConf.DSN, dbName, nil
 	}
 
 	return selectDbByTid(tid, AppConf.DSN)
 
+}
+
+func FindDbName(dsn string) (string, error) {
+	dsnConfig, err := mysql.ParseDSN(dsn)
+	if err != nil {
+		return "", err
+	}
+
+	if dsnConfig != nil && dsnConfig.DBName != "" {
+		return dsnConfig.DBName, nil
+	}
+
+	_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", dsn, 0)
+	if err != nil {
+		return "", err
+	}
+	return rows[0][1], nil
 }
 
 func selectDbByTid(tid string, ds string) (string, string, error) {

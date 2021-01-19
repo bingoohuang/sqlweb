@@ -29,7 +29,27 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if searchKey == "trr" || !AppConf.MultiTenants {
+	cookieValue := req.Context().Value(LoginUserKey)
+	var user *LoginUser
+	if cookieValue != nil {
+		user = cookieValue.(*LoginUser)
+	}
+
+	if user != nil && user.Limit2ConfigDSN {
+		var searchResult []Merchant
+		for _, dbIndex := range user.DSNGroups {
+			dsn := AppConf.GetDSN(dbIndex)
+			tid, _ := FindDbName(dsn)
+			searchResult = append(searchResult,
+				Merchant{MerchantName: tid, MerchantId: "sdb-" + tid,
+					MerchantCode: "sdb-" + tid, HomeArea: "sdb-" + tid, Classifier: "sdb-" + tid})
+		}
+
+		json.NewEncoder(w).Encode(searchResult)
+		return
+	}
+
+	if searchKey == "trr" {
 		var searchResult [1]Merchant
 		searchResult[0] = Merchant{
 			MerchantName: "trr",
@@ -52,7 +72,7 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 	}
 	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DSN, 0)
 	if err != nil {
-		if errSqlwebTableNotExists := Contains(err.Error(), "doesn't exist", "Unknown table"); !errSqlwebTableNotExists {
+		if ignorable := Contains(err.Error(), "doesn't exist", "Unknown table"); !ignorable {
 			http.Error(w, err.Error(), 405)
 			return
 		}

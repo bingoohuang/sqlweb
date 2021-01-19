@@ -69,9 +69,7 @@ func main() {
 	if sqlweb.AppConf.ImportDb {
 		handleFuncNoDump(r, "/importDatabase", sqlweb.ImportDatabase, false)
 	}
-	if sqlweb.AppConf.MultiTenants {
-		handleFunc(r, "/multipleTenantsQuery", sqlweb.MultipleTenantsQuery, true, true)
-	}
+	handleFunc(r, "/multipleTenantsQuery", sqlweb.MultipleTenantsQuery, true, true)
 	handleFunc(r, "/searchDb", sqlweb.ServeSearchDb, false, true)
 	handleFunc(r, "/action", sqlweb.ServeAction, false, true)
 
@@ -89,13 +87,13 @@ func main() {
 // OpenExplorerWithContext ...
 func OpenExplorerWithContext(contextPath, port string) {
 	go func() {
-		time.Sleep(100 * time.Millisecond) // nolint gomnd
+		time.Sleep(100 * time.Millisecond)
 
 		switch runtime.GOOS {
 		case "windows":
 			fallthrough
 		case "darwin":
-			_ = open.Run("http://127.0.0.1:" + port + contextPath + "?" + ran.String(10)) // nolint gomnd
+			_ = open.Run("http://127.0.0.1:" + port + contextPath + "?" + ran.String(10))
 		}
 	}()
 }
@@ -172,8 +170,8 @@ func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGz
 
 func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
 	wrap := DumpRequest(f)
-	if requiredBasicAuth && len(sqlweb.AppConf.BasicAuth) > 0 {
-		wrap = BasicAuth(wrap, sqlweb.AppConf.BasicAuth)
+	if requiredBasicAuth && sqlweb.AppConf.BasicAuthRequired() {
+		wrap = BasicAuth(wrap, sqlweb.AppConf)
 	} else {
 		wrap = anonymousWrap(wrap)
 	}
@@ -192,33 +190,28 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 
 func anonymousWrap(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rr := r.WithContext(context.WithValue(r.Context(), "CookieValue", &htt.CookieValueImpl{
-			UserID:    "anonymous",
-			Name:      "anonymous",
-			Avatar:    "",
-			CsrfToken: "",
+		rr := r.WithContext(context.WithValue(r.Context(), sqlweb.LoginUserKey, &sqlweb.LoginUser{
+			Name: "anonymous",
 		}))
 		f(w, rr)
 	}
 }
 
-func BasicAuth(fn http.HandlerFunc, basicAuth []string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		basicAuthPrefix := "Basic "
+const prefix = "Basic "
 
-		// 获取 request header
+func BasicAuth(fn http.HandlerFunc, conf sqlweb.AppConfig) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		auth := r.Header.Get("Authorization")
-		// 如果是 http basic auth
-		if strings.HasPrefix(auth, basicAuthPrefix) {
-			// 解码认证信息
-			payload, _ := base64.StdEncoding.DecodeString(auth[len(basicAuthPrefix):])
-			if yes, user := Contains(basicAuth, string(payload)); yes {
-				rr := r.WithContext(context.WithValue(r.Context(), "CookieValue", &htt.CookieValueImpl{
-					UserID:    user,
-					Name:      user,
-					Avatar:    "",
-					CsrfToken: "",
-				}))
+		if strings.HasPrefix(auth, prefix) {
+			payload, _ := base64.StdEncoding.DecodeString(auth[len(prefix):]) // 解码认证信息
+			if user, groupIndices := Contains(conf.BasicAuthGroups, string(payload)); user != "" {
+				rr := r.WithContext(context.WithValue(r.Context(), sqlweb.LoginUserKey,
+					&sqlweb.LoginUser{
+						Name:            user,
+						DSNGroups:       groupIndices,
+						DefaultDB:       parseDefaultDB(groupIndices, conf),
+						Limit2ConfigDSN: len(conf.BasicAuthGroups) > 1,
+					}))
 				fn(w, rr) // 执行被装饰的函数
 				return
 			}
@@ -232,12 +225,37 @@ func BasicAuth(fn http.HandlerFunc, basicAuth []string) http.HandlerFunc {
 	}
 }
 
-func Contains(ss []string, s string) (bool, string) {
-	for _, el := range ss {
-		if s == el {
-			return true, el[:strings.Index(el, ":")]
+func parseDefaultDB(groupIndices []int, conf sqlweb.AppConfig) int {
+	for _, gi := range groupIndices {
+		if gi > 0 && conf.DSNS[gi-1].DefaultDB {
+			return gi
 		}
 	}
 
-	return false, ""
+	return groupIndices[0]
+}
+
+func Contains(groups [][]string, s string) (string, []int) {
+	var ii []int
+	user := ""
+
+	for i, ss := range groups {
+		for _, el := range ss {
+			if s == el {
+				user = el[:strings.Index(el, ":")]
+				if i == 0 { // 全局basic group
+					for j := 0; j < len(groups); j++ {
+						ii = append(ii, j)
+					}
+
+					return user, ii
+				}
+
+				ii = append(ii, i)
+				break
+			}
+		}
+	}
+
+	return user, ii
 }

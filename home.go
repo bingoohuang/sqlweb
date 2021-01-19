@@ -2,34 +2,43 @@ package sqlweb
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/bingoohuang/gou/htt"
 )
 
 func loginedUserName(r *http.Request) string {
-	cookieValue := r.Context().Value("CookieValue")
+	cookieValue := r.Context().Value(LoginUserKey)
 	if cookieValue == nil {
 		return ""
 	}
 
-	cookie := cookieValue.(*htt.CookieValueImpl)
-	return cookie.Name
+	user := cookieValue.(*LoginUser)
+	return user.Name
+}
+
+type ContextKey int
+
+const (
+	LoginUserKey ContextKey = iota
+)
+
+// LoginUser ...
+type LoginUser struct {
+	Name            string
+	DSNGroups       []int
+	DefaultDB       int
+	Limit2ConfigDSN bool
 }
 
 func ServeHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	cookieValue := r.Context().Value("CookieValue")
+	cookieValue := r.Context().Value(LoginUserKey)
+	var loginUser *LoginUser
 	loginedHtml := ""
 	if cookieValue != nil {
-		cookie := cookieValue.(*htt.CookieValueImpl)
-		if cookie.Avatar == "" {
-			loginedHtml = `<span id="loginSpan"><span class="loginName">` + cookie.Name + `</span></span>`
-		} else {
-			loginedHtml = `<span id="loginSpan"><img class="loginAvatar" src="` + cookie.Avatar +
-				`"/><span class="loginName">` + cookie.Name + `</span></span>`
-		}
+		loginUser = cookieValue.(*LoginUser)
+		loginedHtml = `<span id="loginSpan"><span class="loginName">` + loginUser.Name + `</span></span>`
 	}
 
 	indexHtml := string(MustAsset("index.html"))
@@ -44,7 +53,7 @@ func ServeHome(w http.ResponseWriter, r *http.Request) {
 	html = strings.Replace(html, "/*.CSS*/", css, 1)
 	html = strings.Replace(html, "/*.SCRIPT*/", js, 1)
 	html = strings.Replace(html, "${contextPath}", AppConf.ContextPath, -1)
-	html = strings.Replace(html, "${multiTenants}", strconv.FormatBool(AppConf.MultiTenants), -1)
+	html = strings.Replace(html, "${multiTenants}", "true", -1)
 	html = strings.Replace(html, "${defaultTenant}", AppConf.DefaultDB, -1)
 
 	w.Write([]byte(html))
