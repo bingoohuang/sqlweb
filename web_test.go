@@ -1,11 +1,12 @@
 package sqlweb_test
 
 import (
+	"log"
+	"testing"
+
 	"github.com/bingoohuang/sqlweb"
 	"github.com/bingoohuang/toml"
 	"github.com/magiconair/properties/assert"
-	"log"
-	"testing"
 )
 
 func TestDecodeFileConfig(t *testing.T) {

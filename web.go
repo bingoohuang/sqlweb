@@ -1,14 +1,20 @@
 package sqlweb
 
 import (
+	"bytes"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
+	"text/template"
 	"time"
+
+	"github.com/bingoohuang/gou/file"
 
 	"github.com/bingoohuang/gou/htt"
 	"github.com/bingoohuang/statiq/fs"
@@ -73,8 +79,16 @@ var AppConf AppConfig
 func InitConf() {
 	configFile := ""
 
+	ctlFlag := flag.Bool("i", false, "create sample ctl/sqlweb.toml file")
 	flag.StringVar(&configFile, "c", "sqlweb.toml", "config file paths")
 	flag.Parse()
+
+	if *ctlFlag {
+		if err := ipoInit(); err != nil {
+			fmt.Println(err)
+		}
+		os.Exit(0)
+	}
 
 	createDefaultConfigFile(configFile)
 
@@ -108,4 +122,89 @@ DSN = "root:root@tcp(127.0.0.1:3306)/information_schema?charset=utf8"
 #DefaultDB = ""
 `), 0644)
 	}
+}
+
+func ipoInit() error {
+	if err := InitCtl("ctl.tpl.sh", "./ctl"); err != nil {
+		return err
+	}
+
+	if err := InitCfgFile("cnf.tpl.toml", "./sqlweb.toml"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// InitCfgFile initializes the cfg file.
+func InitCfgFile(configTplFileName, configFileName string) error {
+	if file.Stat(configFileName) == file.Exists {
+		fmt.Printf("%s already exists, ignored!\n", configFileName)
+		return nil
+	}
+
+	conf := MustAsset(configTplFileName)
+	// 0644->即用户具有读写权限，组用户和其它用户具有只读权限；
+	if err := ioutil.WriteFile(configFileName, conf, 0644); err != nil {
+		return err
+	}
+
+	fmt.Println(configFileName + " created!")
+
+	return nil
+}
+
+// InitCtl initializes the ctl file.
+func InitCtl(ctlTplName, ctlFilename string) error {
+	if file.Stat(ctlFilename) == file.Exists {
+		fmt.Println(ctlFilename + " already exists, ignored!")
+		return nil
+	}
+
+	ctl := string(MustAsset(ctlTplName))
+	tpl, err := template.New(ctlTplName).Parse(ctl)
+
+	if err != nil {
+		return err
+	}
+
+	binArgs := argsExcludeInit()
+
+	m := map[string]string{"BinName": os.Args[0], "BinArgs": strings.Join(binArgs, " ")}
+
+	var content bytes.Buffer
+	if err := tpl.Execute(&content, m); err != nil {
+		return err
+	}
+
+	// 0755->即用户具有读/写/执行权限，组用户和其它用户具有读写权限；
+	if err = ioutil.WriteFile(ctlFilename, content.Bytes(), 0755); err != nil {
+		return err
+	}
+
+	fmt.Println(ctlFilename + " created!")
+
+	return nil
+}
+
+func argsExcludeInit() []string {
+	binArgs := make([]string, 0, len(os.Args)-2) // nolint gomnd
+
+	for i, arg := range os.Args {
+		if i == 0 {
+			continue
+		}
+
+		if strings.Index(arg, "-i") == 0 || strings.Index(arg, "--init") == 0 {
+			continue
+		}
+
+		if strings.Index(arg, "-") != 0 {
+			arg = strconv.Quote(arg)
+		}
+
+		binArgs = append(binArgs, arg)
+	}
+
+	return binArgs
 }

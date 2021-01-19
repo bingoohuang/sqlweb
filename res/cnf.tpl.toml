@@ -1,0 +1,9 @@
+ContextPath = "/sqlweb"
+ListenPort  = 8381
+#MaxQueryRows  = 1000
+DSN = "user:pass@tcp(127.0.0.1:3306)/db?charset=utf8"
+#DevMode = true
+BasicAuth= ["user:user", "bingoo:bingoo"]
+MultiTenants = true
+#ImportDb = false
+#DefaultDB = ""

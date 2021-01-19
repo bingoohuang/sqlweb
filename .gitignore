@@ -25,3 +25,4 @@ appConfigTest.toml
 dist
 dist*
 
+/ctl
