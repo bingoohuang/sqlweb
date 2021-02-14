@@ -252,7 +252,7 @@
 
     var htmlEscaper = /[<]/g
     $.isEscapeRequired = function (unsafe) {
-        return unsafe.length >= 100 || htmlEscaper.test(unsafe)
+        return unsafe.length > 36 || htmlEscaper.test(unsafe)
     }
 
     $.alertMe = function (content) {
