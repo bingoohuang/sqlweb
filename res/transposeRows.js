@@ -14,7 +14,7 @@
         for (var i = 2; i < headRow.length; ++i) {
             rowHtml += '<tr><td class="aliceblue">' + $(headRow[i]).text() + '</td>'
             $chosenRows.each(function (index, tr) {
-                rowHtml += '<td>' + $(tr).find('td').eq(i).text() + '</td>'
+                rowHtml += '<td>' + $(tr).find('td').eq(i).html() + '</td>'
             })
             rowHtml += '</tr>'
         }
