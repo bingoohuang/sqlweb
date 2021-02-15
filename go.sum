@@ -92,8 +92,8 @@ github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LB
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/go-test/deep v1.0.2 h1:onZX1rnHT3Wv6cqNgYyFOOlgVKJrksuCMCRvJStbMYw=
 github.com/go-test/deep v1.0.2/go.mod h1:wGDj63lr65AM2AQyKZd/NYHGb0R+1RLqB8NKt3aSFNA=
-github.com/gobars/cmd v0.0.0-20191114090003-c6a602977f49 h1:ouB5+asYy+vXHlwCNCPJ9mKdBt71qI7hNU+6GuvIC+E=
-github.com/gobars/cmd v0.0.0-20191114090003-c6a602977f49/go.mod h1:y4ATcJLNdRZk/9ex76986LU8ZB4yaPq08XoWhXU9z88=
+github.com/gobars/cmd v0.0.0-20210215022658-cd78beda9673 h1:CGnSYFhNo5Zz1Bhb+PAx389r4RSZYR7Q3mgyupVJxPs=
+github.com/gobars/cmd v0.0.0-20210215022658-cd78beda9673/go.mod h1:y4ATcJLNdRZk/9ex76986LU8ZB4yaPq08XoWhXU9z88=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.1/go.mod h1:hp+jE20tsWTFYpLwKvXlhS1hjn+gTNwPg2I6zVXpSg4=

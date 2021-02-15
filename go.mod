@@ -10,7 +10,7 @@ require (
 	github.com/bingoohuang/statiq v0.2.1
 	github.com/bingoohuang/toml v0.0.0-20201109023109-8e5aa0ee3d73
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gobars/cmd v0.0.0-20191114090003-c6a602977f49
+	github.com/gobars/cmd v0.0.0-20210215022658-cd78beda9673
 	github.com/gorilla/mux v1.7.4
 	github.com/magiconair/properties v1.8.1
 	github.com/skratchdot/open-golang v0.0.0-20190402232053-79abb63cd66e
