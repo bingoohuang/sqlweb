@@ -7,6 +7,9 @@ BasicAuth= ["user:user", "bingoo:bingoo"]
 #ImportDb = false
 #DefaultDB = ""
 
+#是否只显示sqlweb表定义的库，不自动补充show databases()的库列表
+#OnlyShowSqlWebDatabases = true
+
 # 多个数据源配置
 # 当配置了多个数据源配置时，上面的单DSN可以不配置，上面的BasicAuth会作为多DSN的继承项
 # 以下示例给出：用户a:a登录，会看到1号库，用户c:c会看到1号和2号库，用户d:d1会看到1号库，用户d:d2会看到2号库
