@@ -93,6 +93,7 @@
         </div>
         <div class="itemTables" v-if="tables.length > 0">
             <div v-if="selectMode">
+                <!-- prototype of toggle select: https://codepen.io/bingoohuang/pen/oNYyXjd -->
                 <label><input type="checkbox" @click="toggleSelect" :checked="selectAll" :indeterminate.prop="indeterminate">
                     <span class="itemSpan">↓Toggle Select</span>
                 </label>
