@@ -91,7 +91,13 @@
             <span class="tableModifyBtn" @click="dumpTables" v-if="selectMode" title="Dump chosen tables">Dump</span>
 
         </div>
-        <div class="itemTables" v-if="tables.length >0">
+        <div class="itemTables" v-if="tables.length > 0">
+            <div v-if="selectMode">
+                <label><input type="checkbox" @click="toggleSelect" :checked="selectAll" :indeterminate.prop="indeterminate">
+                    <span class="itemSpan">↓Toggle Select</span>
+                </label>
+            </div>
+
             <div v-for="t in filterTables">
                 <label><input type="checkbox" name="selectedTable" v-model="t.checked" :value="t.name" v-if="selectMode">
                     <span class="itemSpan" @click="selectTable(t.name)">{{t.name}}</span>

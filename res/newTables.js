@@ -23,9 +23,18 @@ tableApp = new Vue({
             if (parts.length === 0) return this.tables;
 
             return this.tables.filter(t => parts.some(part => t.name.toUpperCase().indexOf(part) > -1))
+        },
+        selectAll: function() {
+            return this.filterTables.every(u=>u.checked);
+        },
+        indeterminate: function() {
+            return this.filterTables.some(u=>!u.checked) && this.filterTables.some(u=>u.checked);
         }
     },
     methods: {
+        toggleSelect: function() {
+            this.filterTables.forEach(u=>{ u.checked = !u.checked;});
+        },
         initTable() {
             var self = this
             var tid = activeMerchantId
