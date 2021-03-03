@@ -1,19 +1,11 @@
-function parseSelectedTables() {
-    const selectedTableName = []
-    $("input[type='checkbox'][name='selectedTable']:checked").each((index, item) => {
-        selectedTableName.push($(item).attr('value'))
-    })
-    if (selectedTableName.length <= 0) alert("No tables checked")
 
-    return selectedTableName
-}
 
 tableApp = new Vue({
     el: '#rightTable',
     data() {
         return {
             message: 'Hello Vue!',
-            tableNames: [],
+            tables: [],
             isShow: false,
             tableNameFilterText: '',
             selectMode: false
@@ -23,14 +15,14 @@ tableApp = new Vue({
         switchText() {
             return this.isShow ? '合' : '开'
         },
-        showTableNames() {
+        filterTables() {
             let parts = this.tableNameFilterText.split('|')
                 .map(item => item.trim())
                 .filter(item => item.length > 0)
                 .map(item => item.toUpperCase())
-            if (parts.length === 0) return this.tableNames;
+            if (parts.length === 0) return this.tables;
 
-            return this.tableNames.filter(tableName => parts.some(part => tableName.toUpperCase().indexOf(part) > -1))
+            return this.tables.filter(t => parts.some(part => t.name.toUpperCase().indexOf(part) > -1))
         }
     },
     methods: {
@@ -59,7 +51,9 @@ tableApp = new Vue({
             })
         },
         showTables(content, tableColumns) {
-            this.tableNames = content.Rows.map(row => row[1])
+            this.tables = content.Rows.map(row => {
+                return {name: row[1], checked: false}
+            })
             this.isShow = true
             $('.MainDivs').addClass('MainDivsShowTable')
 
@@ -127,25 +121,28 @@ tableApp = new Vue({
 
             $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, sql)
         },
+        checkedTables() {
+            return this.filterTables.filter(t=>t.checked).map(t=>t.name)
+        },
         renameTables() {
-            const selectedTableName = parseSelectedTables()
-            if (selectedTableName.length <= 0) return
+            const ts = this.checkedTables()
+            if (ts.length <= 0) return
 
-            let tables = selectedTableName.map((table) => table + ' to ' + table + '_{{new}}').join(', ')
+            let tables = ts.map((table) => table + ' to ' + table + '_{{new}}').join(', ')
             $.appendSqlToSqlEditor('RENAME TABLE ' + tables, true, false)
         },
         truncateTables() {
-            const selectedTableName = parseSelectedTables()
-            if (selectedTableName.length <= 0) return
+            const ts = this.checkedTables()
+            if (ts.length <= 0) return
 
-            $.executeMultiSqlsAjax(`truncate table ${selectedTableName.join(';\ntruncate table ')};`, true)
+            $.executeMultiSqlsAjax(`truncate table ${ts.join(';\ntruncate table ')};`, true)
         },
         dumpTables() {
-            const selectedTableName = parseSelectedTables()
-            if (selectedTableName.length <= 0) return
+            const ts = this.checkedTables()
+            if (ts.length <= 0) return
 
             $.exportDbImpl(activeMerchantId, activeMerchantCode, activeHomeArea, activeClassifier, activeMerchantName,
-                `${selectedTableName.join(',')}`)
+                `${ts.join(',')}`)
         }
     }
 })
