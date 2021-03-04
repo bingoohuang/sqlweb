@@ -207,13 +207,13 @@
     }
 
 
-    $.replaceOrPrependResult = function (resultId, oldResultId, html) {
+    $.replaceOrPrependResult = function (resultId, oldResultId, html, forcePreserveResults) {
         if (resultId === oldResultId) {
             $('#executionResultDiv' + oldResultId).replaceWith(html)
             return
         }
 
-        if (!$('#preserveResults').prop('checked')) {
+        if (!$('#preserveResults').prop('checked') && !forcePreserveResults) {
             $('.result').html(html) // 不保留结果
         } else {
             $(html).prependTo($('.result'))

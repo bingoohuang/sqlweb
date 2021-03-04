@@ -128,7 +128,7 @@
         })
     }
 
-    $.tableCreate = function (result, sql, oldResultId, classifier, tid, tcode, tname) {
+    $.tableCreate = function (result, sql, oldResultId, classifier, tid, tcode, tname, forcePreserveResults) {
         if (!result.Headers) {
             result.Headers = []
         }
@@ -142,7 +142,7 @@
         var totalRows = result.Rows && result.Rows.length > 0 ? result.Rows.length : 0
         var table = $.createResultTableHtml(result, sql, rowUpdateReady, resultId, contextMenuHolder, classifier, tid, tcode, tname)
 
-        $.replaceOrPrependResult(resultId, oldResultId, table)
+        $.replaceOrPrependResult(resultId, oldResultId, table, forcePreserveResults)
 
         $('#queryResult' + resultId + ' tbody tr:odd').addClass('rowOdd').attr('rowOdd', 'true')
         $.attachSearchTableEvent(resultId)

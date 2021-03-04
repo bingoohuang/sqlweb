@@ -1,5 +1,3 @@
-
-
 tableApp = new Vue({
     el: '#rightTable',
     data() {
@@ -24,16 +22,18 @@ tableApp = new Vue({
 
             return this.tables.filter(t => parts.some(part => t.name.toUpperCase().indexOf(part) > -1))
         },
-        selectAll: function() {
-            return this.filterTables.every(u=>u.checked);
+        selectAll: function () {
+            return this.filterTables.every(u => u.checked);
         },
-        indeterminate: function() {
-            return this.filterTables.some(u=>!u.checked) && this.filterTables.some(u=>u.checked);
+        indeterminate: function () {
+            return this.filterTables.some(u => !u.checked) && this.filterTables.some(u => u.checked);
         }
     },
     methods: {
-        toggleSelect: function() {
-            this.filterTables.forEach(u=>{ u.checked = !u.checked;});
+        toggleSelect: function () {
+            this.filterTables.forEach(u => {
+                u.checked = !u.checked;
+            });
         },
         initTable() {
             var self = this
@@ -58,6 +58,34 @@ tableApp = new Vue({
                     $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
                 }
             })
+        },
+        contextMenuCallbackNoMode(key, tableName, forcePreserveResults) {
+            if (key === 'ShowFullColumns') {
+                $.executeQueryAjaxOptions({
+                    classifier: activeClassifier,
+                    tid: activeMerchantId,
+                    tcode: activeMerchantCode,
+                    tname: activeMerchantName,
+                    sql: 'show full columns from ' + tableName,
+                    forcePreserveResults: forcePreserveResults
+                })
+            } else if (key === 'ShowCreateTable') {
+                $.showSqlAjax('show create table ' + tableName)
+            } else if (key === 'RenameTable') {
+                $.appendSqlToSqlEditor('RENAME TABLE ' + tableName + ' TO ' + tableName + "_new",
+                    true, false)
+            }
+        },
+
+        contextMenuCallback(key, tableName) {
+            if (!this.selectMode) {
+                this.contextMenuCallbackNoMode(key, tableName, false)
+            } else {
+                const ts = this.checkedTables()
+                for (var i = 0; i < ts.length; ++i) {
+                    this.contextMenuCallbackNoMode(key, ts[i], i > 0)
+                }
+            }
         },
         showTables(content, tableColumns) {
             this.tables = content.Rows.map(row => {
@@ -92,18 +120,14 @@ tableApp = new Vue({
                     })
                 }, 150)
             })
+
+            var contextMenuCallback = this.contextMenuCallback
             $.contextMenu({
                 zIndex: 10,
                 selector: '.itemSpan',
                 callback: function (key, options) {
                     var tableName = $(this).text()
-                    if (key === 'ShowFullColumns') {
-                        $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, 'show full columns from ' + tableName)
-                    } else if (key === 'ShowCreateTable') {
-                        $.showSqlAjax('show create table ' + tableName)
-                    } else if (key === 'RenameTable') {
-                        $.appendSqlToSqlEditor('RENAME TABLE ' + tableName + ' TO ' + tableName + "_new", true, false)
-                    }
+                    contextMenuCallback(key, tableName)
                 },
                 items: {
                     ShowFullColumns: {name: 'Show Columns', icon: 'columns'},
@@ -131,7 +155,7 @@ tableApp = new Vue({
             $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, sql)
         },
         checkedTables() {
-            return this.filterTables.filter(t=>t.checked).map(t=>t.name)
+            return this.filterTables.filter(t => t.checked).map(t => t.name)
         },
         renameTables() {
             const ts = this.checkedTables()

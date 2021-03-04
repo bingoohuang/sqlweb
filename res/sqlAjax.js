@@ -98,7 +98,37 @@
 
     var originalTid = null
     var lastTenant = null
+
     $.executeQueryAjax = function (classifier, tid, tcode, tname, sql, resultId, sqls, nextIndex, executeResultContext, forceTenant, maxRows) {
+        return $.executeQueryAjaxOptions({
+            classifier: classifier,
+            tid: tid,
+            tcode: tcode,
+            tname: tname,
+            sql: sql,
+            resultId: resultId,
+            sqls: sqls,
+            nextIndex: nextIndex,
+            executeResultContext: executeResultContext,
+            forceTenant: forceTenant,
+            maxRows: maxRows
+        })
+    }
+
+    $.executeQueryAjaxOptions = function (options) {
+        var classifier = options.classifier;
+        var tid = options.tid;
+        var tcode = options.tcode;
+        var tname = options.tname;
+        var sql = options.sql;
+        var resultId = options.resultId;
+        var sqls = options.sqls;
+        var nextIndex = options.nextIndex;
+        var executeResultContext = options.executeResultContext;
+        var forceTenant = options.forceTenant;
+        var maxRows = options.maxRows;
+        var forcePreserveResults = options.forcePreserveResults;
+
         if (sqls && nextIndex > 0) {
             sql = translateSqlWithLastResults(sql, executeResultContext, nextIndex)
         }
@@ -134,7 +164,7 @@
         $.ajax({
             type: 'POST',
             url: contextPath + "/query",
-            data: {tid: tid, sql: sql, maxRows : maxRows || 0},
+            data: {tid: tid, sql: sql, maxRows: maxRows || 0},
             success: function (content, textStatus, request) {
                 if (content && content.Error) {
                     $.alertMe(content.Error)
@@ -143,7 +173,7 @@
 
                 $.copiedTips(sql)
 
-                $.tableCreate(content, sql, resultId, classifier, tid, tcode, tname)
+                $.tableCreate(content, sql, resultId, classifier, tid, tcode, tname, forcePreserveResults)
 
                 if (sqls) {
                     executeResultContext['_result_' + nextIndex] = content
