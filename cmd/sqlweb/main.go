@@ -69,7 +69,7 @@ func main() {
 	if sqlweb.AppConf.ImportDb {
 		handleFuncNoDump(r, "/importDatabase", sqlweb.ImportDatabase, false)
 	}
-	handleFunc(r, "/multipleTenantsQuery", sqlweb.MultipleTenantsQuery, true, true)
+	handleFunc(r, "/multipleTenantsQuery", sqlweb.TenantsQuery, true, true)
 	handleFunc(r, "/searchDb", sqlweb.ServeSearchDb, false, true)
 	handleFunc(r, "/action", sqlweb.ServeAction, false, true)
 

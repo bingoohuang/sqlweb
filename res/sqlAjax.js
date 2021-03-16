@@ -1,21 +1,45 @@
 (function () {
-    function executeMultiSqls(sql) {
-        var sqls = $.splitSqls(sql, ';')
-        var executeResultContext = []
-        $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName, sqls[0], null, sqls, 0, executeResultContext)
+    function executeMultiSqls(sql, callback) {
+        const sqls = $.splitSqls(sql, ';');
+        const executeResultContext = [];
+        $.executeQueryAjaxOptions({
+            classifier: activeClassifier,
+            tid: activeMerchantId,
+            tcode: activeMerchantCode,
+            tname: activeMerchantCode,
+            sql: sqls[0],
+            resultId: null,
+            sqls: sqls,
+            nextIndex: 0,
+            executeResultContext: executeResultContext,
+            lastCallback: callback
+        })
     }
 
-    $.executeMultiSqlsAjax = function (sql, confirmUpdate = false) {
-        var firstUpperWord = $.firstUpperWord(sql);
-        if (confirmUpdate && firstUpperWord != 'SELECT' && firstUpperWord != 'EXPLAIN') {
+    $.executeMultiSqlsAjaxOptions = function (options) {
+        const sql = options.sql;
+        const confirmUpdate = options.confirmUpdate;
+        const callback = options.callback;
+
+        const firstUpperWord = $.firstUpperWord(sql);
+        if (confirmUpdate && firstUpperWord !== 'SELECT' && firstUpperWord !== 'EXPLAIN') {
             $.confirmMe('Are you sure to execute ?', sql, function () {
-                executeMultiSqls(sql)
+                executeMultiSqls(sql, callback)
             })
             return
         }
 
-        executeMultiSqls(sql)
+        executeMultiSqls(sql, callback)
     }
+
+    $.executeMultiSqlsAjax = function (sql, confirmUpdate = false, callback) {
+        return $.executeMultiSqlsAjaxOptions({
+            sql: sql,
+            confirmUpdate: confirmUpdate,
+            callback: callback
+        })
+    }
+
 
     /*
     {
@@ -67,10 +91,10 @@
     }
 
     function translateOne(result, sql, executeResultContext, lastIndex, resultPos, keyLength) {
-        var leftHolder = {}
-        var fieldName = parseFieldName(sql, resultPos, keyLength, leftHolder).toUpperCase()
-        var fieldNameIndex = findFieldName(result, fieldName)
-        var joinedValues = createValues(fieldNameIndex, result)
+        const leftHolder = {};
+        const fieldName = parseFieldName(sql, resultPos, keyLength, leftHolder).toUpperCase();
+        const fieldNameIndex = findFieldName(result, fieldName);
+        const joinedValues = createValues(fieldNameIndex, result);
 
         return sql.substring(0, resultPos) + joinedValues
             + translateSqlWithLastResults(leftHolder.left, executeResultContext, lastIndex)
@@ -96,8 +120,8 @@
         return sql
     }
 
-    var originalTid = null
-    var lastTenant = null
+    let originalTid = null;
+    let lastTenant = null;
 
     $.executeQueryAjax = function (classifier, tid, tcode, tname, sql, resultId, sqls, nextIndex, executeResultContext, forceTenant, maxRows) {
         return $.executeQueryAjaxOptions({
@@ -116,18 +140,19 @@
     }
 
     $.executeQueryAjaxOptions = function (options) {
-        var classifier = options.classifier;
-        var tid = options.tid;
-        var tcode = options.tcode;
-        var tname = options.tname;
-        var sql = options.sql;
-        var resultId = options.resultId;
-        var sqls = options.sqls;
-        var nextIndex = options.nextIndex;
-        var executeResultContext = options.executeResultContext;
-        var forceTenant = options.forceTenant;
-        var maxRows = options.maxRows;
-        var forcePreserveResults = options.forcePreserveResults;
+        const classifier = options.classifier;
+        const tid = options.tid;
+        const tcode = options.tcode;
+        const tname = options.tname;
+        let sql = options.sql;
+        const resultId = options.resultId;
+        const sqls = options.sqls;
+        const nextIndex = options.nextIndex;
+        const executeResultContext = options.executeResultContext;
+        const forceTenant = options.forceTenant;
+        const maxRows = options.maxRows;
+        const forcePreserveResults = options.forcePreserveResults;
+        const lastCallback = options.lastCallback;
 
         if (sqls && nextIndex > 0) {
             sql = translateSqlWithLastResults(sql, executeResultContext, nextIndex)
@@ -135,14 +160,14 @@
 
         // /* tenant:18600010 */ select 1 from xxx
         sql = $.trim(sql)
-        var tenantRe = /\/\*\s*tenant:\s*(.*?)\s*\*\/(.+)/
-        var tenantReResult = tenantRe.exec(sql)
+        const tenantRe = /\/\*\s*tenant:\s*(.*?)\s*\*\/(.+)/;
+        const tenantReResult = tenantRe.exec(sql);
         if (tenantReResult) {
             if (!originalTid) {
                 originalTid = tid
             }
 
-            var tenant = tenantReResult[1]
+            const tenant = tenantReResult[1];
             sql = tenantReResult[2]
 
             if (lastTenant !== tenant) {
@@ -172,7 +197,6 @@
                 }
 
                 $.copiedTips(sql)
-
                 $.tableCreate(content, sql, resultId, classifier, tid, tcode, tname, forcePreserveResults)
 
                 if (sqls) {
@@ -181,12 +205,26 @@
                 }
 
                 if (sqls && (nextIndex + 1) < sqls.length) {
-                    $.executeQueryAjax(classifier, tid, tcode, tname, sqls[nextIndex + 1], resultId, sqls, nextIndex + 1, executeResultContext)
+                    $.executeQueryAjaxOptions({
+                        classifier: classifier,
+                        tid: tid,
+                        tcode: tcode,
+                        tname: tname,
+                        sql: sqls[nextIndex + 1],
+                        resultId: resultId,
+                        sqls: sqls,
+                        nextIndex: nextIndex + 1,
+                        executeResultContext: executeResultContext,
+                        lastCallback: lastCallback,
+                    })
                 } else {
                     if (originalTid) {
                         defaultTenant = originalTid
-                        $.searchTenants('%', null, false)
+                        $.searchTenants('%', lastCallback, false)
+                    } else if (lastCallback != null) {
+                        lastCallback()
                     }
+
                     originalTid = null
                     lastTenant = null
                 }
@@ -209,16 +247,16 @@
                     return
                 }
 
-                var hasError = 0
-                for (var i = 0; i < content.RowsResult.length; ++i) {
-                    var rowResult = content.RowsResult[i]
+                let hasError = 0;
+                for (let i = 0; i < content.RowsResult.length; ++i) {
+                    const rowResult = content.RowsResult[i];
                     if (rowResult.Message.indexOf("Error") >= 0 || !isDDl && !rowResult.Ok) {
                         $.alertMe(rowResult.Message)
                         ++hasError
                     } else {
                         $.copiedTips(sqls)
-                        var rowIndex = sqlRowIndices[i]
-                        var $row = $($rows[rowIndex])
+                        const rowIndex = sqlRowIndices[i];
+                        const $row = $($rows[rowIndex]);
 
                         $row.find('td.dataCell').each(function (jndex, cell) {
                             $(this).removeAttr('old').removeClass('changedCell')

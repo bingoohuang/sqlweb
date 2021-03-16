@@ -84,7 +84,7 @@
     <div class="tablesRightBox" style="display: none;" v-show="isShow">
         <input class="searchTableNames" placeholder="Type to search tables" v-model="tableNameFilterText">
         <input type="checkbox" v-model="selectMode">
-        <span title="refresh tables" style="cursor: pointer" class="context-menu-icon-reload context-menu-icons" @click="initTable"></span>
+        <span title="refresh tables" id="refreshTables" style="cursor: pointer" class="context-menu-icon-reload context-menu-icons" @click="initTable"></span>
         <div>
             <span class="tableModifyBtn" @click="truncateTables" v-if="selectMode" title="Create truncate tables statements">Trunc</span>
             <span class="tableModifyBtn" @click="renameTables" v-if="selectMode" title="Create rename table statements">Rename</span>

@@ -9,9 +9,7 @@ import (
 	"github.com/xwb1989/sqlparser"
 )
 
-func parseSql(querySql, dbDataSource string) (string, []string) {
-	var tableName string
-	var primaryKeys []string
+func parseSql(querySql, dbDataSource string) (tableName string, primaryKeys []string, createSth bool) {
 	firstWord := strings.ToUpper(str.FirstWord(querySql))
 	switch firstWord {
 	case "SELECT":
@@ -22,10 +20,12 @@ func parseSql(querySql, dbDataSource string) (string, []string) {
 				primaryKeys = findTablePrimaryKeys(tableName, dbDataSource)
 			}
 		}
+	case "CREATE":
+		createSth = true
 	default:
 	}
 
-	return tableName, primaryKeys
+	return tableName, primaryKeys, createSth
 }
 
 func writeAuthOk(r *http.Request) bool {

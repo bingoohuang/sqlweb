@@ -1,10 +1,10 @@
 (function () {
-    var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault // 判断是否为Mac
+    const mac = CodeMirror.keyMap.default === CodeMirror.keyMap.macDefault; // 判断是否为Mac
 
-    var runKey = (mac ? "Cmd" : "Ctrl") + "-Enter"
-    var extraKeys = {}
+    const runKey = (mac ? "Cmd" : "Ctrl") + "-Enter";
+    const extraKeys = {};
     extraKeys[runKey] = function (cm) {
-        var executeQuery = $('.executeQuery')
+        const executeQuery = $('.executeQuery');
         if (!executeQuery.prop("disabled")) executeQuery.click()
     }
 
@@ -21,7 +21,7 @@
     $.sqlCodeMirror = codeMirror
 
     $.getEditorText = function () {
-        var selected = codeMirror.somethingSelected()
+        const selected = codeMirror.somethingSelected();
         return selected ? codeMirror.getSelection() : codeMirror.getValue()
     }
 
@@ -29,9 +29,10 @@
         selector: '#sqlwebDiv .CodeMirror',
         zIndex: 10,
         callback: function (key, options) {
+            const selected = codeMirror.somethingSelected();
             if (key === 'FormatSql') {
-                var sql = $.getEditorText()
-                var formattedSql = sqlFormatter.format(sql, {language: 'sql'})
+                const sql = $.getEditorText();
+                const formattedSql = sqlFormatter.format(sql, {language: 'sql'});
 
                 if (selected) {
                     codeMirror.replaceSelection(formattedSql)
@@ -46,20 +47,18 @@
                     $executeQuery.click()
                 }
             } else if (key === 'ShowFullColumns') {
-                var selected = codeMirror.somethingSelected()
-
-                var tableName = ''
+                let tableName;
                 if (selected) {
                     tableName = codeMirror.getSelection()
                 } else {
-                    var word = codeMirror.findWordAt(codeMirror.getCursor())
+                    const word = codeMirror.findWordAt(codeMirror.getCursor());
                     tableName = codeMirror.getRange(word.anchor, word.head)
                 }
                 $.executeQueryAjax(activeClassifier, activeMerchantId, activeMerchantCode, activeMerchantName,
                     'show full columns from ' + tableName)
             } else if (key === 'ParseTemplate') {
-                var sql = $.getEditorText()
-                $.templateSql(sql)
+                const query = $.getEditorText();
+                $.templateSql(query)
             }
         },
         items: {
@@ -76,12 +75,18 @@
     }
 
     $('.executeQuery').prop("disabled", true).click(function () {
-        var sql = $.getEditorSql()
+        const sql = $.getEditorSql();
         if ($.trim(sql) === '') {
             $.alertMe("Please input sql!")
             return
         }
 
-        $.executeMultiSqlsAjax(sql)
+        $.executeMultiSqlsAjaxOptions({
+            sql: sql,
+            confirmUpdate: false,
+            callback: function () {
+                $('#refreshTables').click()
+            }
+        })
     })
 })()

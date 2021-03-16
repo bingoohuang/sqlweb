@@ -36,9 +36,9 @@ tableApp = new Vue({
             });
         },
         initTable() {
-            var self = this
-            var tid = activeMerchantId
-            var withColumns = !$.withColumnsCache[tid]
+            const self = this;
+            const tid = activeMerchantId;
+            const withColumns = !$.withColumnsCache[tid];
             $.ajax({
                 type: 'POST',
                 url: contextPath + "/query",

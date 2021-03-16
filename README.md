@@ -1,6 +1,6 @@
-# go-sql-web
+# sqlweb
 
-sql web based on golang
+sql web based on golang, currently only MySQL supported!
 
 ## build
 

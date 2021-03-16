@@ -29,6 +29,7 @@ type QueryResult struct {
 	PrimaryKeysIndex []int
 	Msg              string
 	Tid              string
+	CreateSth        bool
 }
 
 func ServeTablesByColumn(w http.ResponseWriter, req *http.Request) {
@@ -36,17 +37,16 @@ func ServeTablesByColumn(w http.ResponseWriter, req *http.Request) {
 	tid := strings.TrimSpace(req.FormValue("tid"))
 	columnName := strings.TrimSpace(req.FormValue("columnName"))
 
-	dbDataSource, databaseName, err := selectDb(req, tid, true)
+	ds, db, err := selectDb(req, tid, true)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
 	}
 
-	querySql := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
+	q := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
 		"WHERE TABLE_SCHEMA NOT IN('information_schema','mysql','performance_schema') " +
 		"AND COLUMN_NAME = '" + columnName + "'"
-
-	_, rows, executionTime, costTime, err, msg := processSql(tid, querySql, dbDataSource, 0)
+	_, rows, executionTime, costTime, err, msg := processSql(q, ds, 0)
 
 	queryResult := struct {
 		Rows          [][]string
@@ -60,31 +60,31 @@ func ServeTablesByColumn(w http.ResponseWriter, req *http.Request) {
 		Error:         str.Error(err),
 		ExecutionTime: executionTime,
 		CostTime:      costTime,
-		DatabaseName:  databaseName,
+		DatabaseName:  db,
 		Msg:           msg,
 	}
 
 	json.NewEncoder(w).Encode(queryResult)
 }
 
-func MultipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
+func TenantsQuery(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", htt.ContentTypeJSON)
-	sqlString := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
+	sqlString := strings.TrimFunc(r.FormValue("sql"), func(r rune) bool {
 		return unicode.IsSpace(r) || r == ';'
 	})
 
-	sqls := sqlx.SplitSqls(sqlString, ';')
-	for _, sql := range sqls {
-		if _, yes := sqlx.IsQuerySQL(sql); yes {
+	for _, q := range sqlx.SplitSqls(sqlString, ';') {
+		if _, yes := sqlx.IsQuerySQL(q); yes {
 			continue
 		}
-		if !writeAuthOk(req) {
+
+		if !writeAuthOk(r) {
 			http.Error(w, "write auth required", 405)
 			return
 		}
 	}
 
-	tids := req.FormValue("multipleTenantIds")
+	tids := r.FormValue("multipleTenantIds")
 	multipleTenantIds := strings.FieldsFunc(tids, func(c rune) bool { return c == ',' })
 
 	tenantsSize := len(multipleTenantIds)
@@ -102,23 +102,16 @@ func MultipleTenantsQuery(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(results)
 }
 
-func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string) {
+func executeSqlInTid(tid string, resultChan chan *QueryResult, query string) {
 	dbDataSource, databaseName, err := selectDbByTid(tid, AppConf.DSN)
 	if err != nil {
-		resultChan <- &QueryResult{
-			Error: str.Error(err),
-			Tid:   tid,
-		}
+		resultChan <- &QueryResult{Error: str.Error(err), Tid: tid}
 		return
 	}
 
 	db, err := sql.Open("mysql", dbDataSource)
 	if err != nil {
-		resultChan <- &QueryResult{
-			Error:        str.Error(err),
-			DatabaseName: databaseName,
-			Tid:          tid,
-		}
+		resultChan <- &QueryResult{Error: str.Error(err), DatabaseName: databaseName, Tid: tid}
 
 		return
 	}
@@ -126,10 +119,8 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 
 	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
 
-	sqls := sqlx.SplitSqls(sqlString, ';')
-	sqlsLen := len(sqls)
-
-	if sqlsLen == 1 {
+	sqls := sqlx.SplitSqls(query, ';')
+	if len(sqls) == 1 {
 		sqlResult := sqlx.ExecSQL(db, sqls[0], 0, "(null)")
 		msg := ""
 		if !sqlResult.IsQuerySQL {
@@ -151,7 +142,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, sqlString string)
 	}
 
 	querySqlMixed := false
-	if sqlsLen > 1 {
+	if len(sqls) > 1 {
 		for _, oneSql := range sqls {
 			if _, yes := sqlx.IsQuerySQL(oneSql); yes {
 				querySqlMixed = true
@@ -262,20 +253,14 @@ func DownloadColumn(w http.ResponseWriter, req *http.Request) {
 
 func ServeQuery(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", htt.ContentTypeJSON)
-	querySql := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool {
-		return unicode.IsSpace(r) || r == ';'
-	})
-
-	if _, yes := sqlx.IsQuerySQL(querySql); yes && !writeAuthOk(req) {
+	query := strings.TrimFunc(req.FormValue("sql"), func(r rune) bool { return unicode.IsSpace(r) || r == ';' })
+	if _, yes := sqlx.IsQuerySQL(query); yes && !writeAuthOk(req) {
 		http.Error(w, "write auth required", 405)
 		return
 	}
 
-	tid := strings.TrimSpace(req.FormValue("tid"))
-	withColumns := strings.TrimSpace(req.FormValue("withColumns"))
-	maxRowsStr := strings.TrimSpace(req.FormValue("maxRows"))
 	maxRows := 0
-	if maxRowsStr != "" {
+	if maxRowsStr := strings.TrimSpace(req.FormValue("maxRows")); maxRowsStr != "" {
 		maxRows, _ = strconv.Atoi(maxRowsStr)
 	}
 
@@ -283,15 +268,15 @@ func ServeQuery(w http.ResponseWriter, req *http.Request) {
 		maxRows = AppConf.MaxQueryRows
 	}
 
-	ds, dbName, err := selectDb(req, tid, true)
+	ds, db, err := selectDb(req, strings.TrimSpace(req.FormValue("tid")), true)
 	if err != nil {
 		http.Error(w, err.Error(), 405)
 		return
 	}
 
-	tableName, primaryKeys := parseSql(querySql, ds)
-	headers, rows, execTime, costTime, err, msg := processSql(tid, querySql, ds, maxRows)
-	primaryKeysIndex := findPrimaryKeysIndex(tableName, primaryKeys, headers)
+	tableName, pks, createSth := parseSql(query, ds)
+	headers, rows, execTime, costTime, err, msg := processSql(query, ds, maxRows)
+	primaryKeysIndex := findPrimaryKeysIndex(tableName, pks, headers)
 
 	queryResult := QueryResult{
 		Headers:          headers,
@@ -299,48 +284,45 @@ func ServeQuery(w http.ResponseWriter, req *http.Request) {
 		Error:            str.Error(err),
 		ExecutionTime:    execTime,
 		CostTime:         costTime,
-		DatabaseName:     dbName,
+		DatabaseName:     db,
 		TableName:        tableName,
 		PrimaryKeysIndex: primaryKeysIndex,
 		Msg:              msg,
+		CreateSth:        createSth,
 	}
 
-	if "true" == withColumns {
+	if "true" == strings.TrimSpace(req.FormValue("withColumns")) {
 		tableColumns := make(map[string][]string)
 		columnsSql := `select TABLE_NAME, COLUMN_NAME, COLUMN_COMMENT, COLUMN_KEY, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT
 			from INFORMATION_SCHEMA.COLUMNS
-			where TABLE_SCHEMA = '` + dbName + `' order by TABLE_NAME`
-		_, colRows, _, _, _, _ := processSql(tid, columnsSql, ds, 0)
+			where TABLE_SCHEMA = '` + db + `' order by TABLE_NAME`
+		_, colRows, _, _, _, _ := processSql(columnsSql, ds, 0)
 
 		tableName := ""
 		var columns []string
 
-		for _, row := range colRows {
-			if tableName != row[1] {
+		for _, r := range colRows {
+			if tableName != r[1] {
 				if tableName != "" {
 					tableColumns[tableName] = columns
 					columns = make([]string, 0)
 				}
-				tableName = row[1]
+				tableName = r[1]
 			}
 
-			columns = append(columns, row[2], row[3], row[4], row[5], row[6], row[7])
+			columns = append(columns, r[2], r[3], r[4], r[5], r[6], r[7])
 		}
 
 		if tableName != "" {
 			tableColumns[tableName] = columns
 		}
 
-		tableCommentSql := `select TABLE_NAME, TABLE_COMMENT from INFORMATION_SCHEMA.TABLES ` +
-			`where TABLE_SCHEMA = '` + dbName + `'`
-		_, tableRows, _, _, _, _ := processSql(tid, tableCommentSql, ds, 0)
-		for _, row := range tableRows {
+		tComment := `select TABLE_NAME, TABLE_COMMENT from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = '` + db + `'`
+		_, rows, _, _, _, _ := processSql(tComment, ds, 0)
+		for _, row := range rows {
 			tblName := row[1]
-			_, ok := tableColumns[tblName]
-			if ok {
-				tableCommentCols := make([]string, 0)
-				tableCommentCols = append(tableCommentCols, row[2])
-				tableColumns[tblName+`_TABLE_COMMENT`] = tableCommentCols
+			if _, ok := tableColumns[tblName]; ok {
+				tableColumns[tblName+`_TABLE_COMMENT`] = []string{row[2]}
 			}
 		}
 
@@ -350,6 +332,6 @@ func ServeQuery(w http.ResponseWriter, req *http.Request) {
 	_ = json.NewEncoder(w).Encode(queryResult)
 }
 
-func processSql(tid, querySql, dbDataSource string, max int) ([]string, [][]string, string, string, error, string) {
+func processSql(querySql, dbDataSource string, max int) ([]string, [][]string, string, string, error, string) {
 	return executeQuery(querySql, dbDataSource, max)
 }
