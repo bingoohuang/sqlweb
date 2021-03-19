@@ -1,4 +1,36 @@
 (function () {
+    function createInsertV2(cells, result) {
+        let valueSql = '';
+        let cellIndex = []
+        cells.each(function (index, cell) {
+            if (index <= 0) {
+                return
+            }
+            const nv = $.cellNewValue($(cell));
+            if (nv === "") {
+                return
+            }
+
+            if (valueSql.length > 0) {
+                valueSql += ', ';
+            }
+            cellIndex.push(index);
+            valueSql += "(null)" === nv ? 'null' : ("'" + $.escapeSqlValue(nv) + "'")
+        });
+
+        let fieldNames = '';
+        for (let i = 0; i < cellIndex.length; ++i) {
+            if (fieldNames.length > 0 ) {
+                fieldNames += ', '
+            }
+            const h = result.Headers[cellIndex[i]-1]
+            fieldNames += $.wrapFieldName(h)
+        }
+
+        return 'insert into ' + $.wrapFieldName(result.TableName || 'xxx')
+            + '(' + fieldNames + ') values(' + valueSql + ')';
+    }
+
     $.attachSaveUpdatesEvent = function (tid, result, resultId) {
         $('#saveUpdates' + resultId).click(function () {
             var table = $('#queryResult' + resultId)
@@ -11,8 +43,7 @@
                 var $row = $(row)
                 var cells = $row.find('td.dataCell')
                 if ($row.hasClass('clonedRow')) {
-                    var insertSql = $.createInsert(cells, result)
-                    sqls[sqls.length] = insertSql
+                    sqls[sqls.length] = createInsertV2(cells, result)
                     sqlRowIndices[sqlRowIndices.length] = index
                 } else if ($row.hasClass('deletedRow')) {
                     var deleteSql = 'delete from ' + $.wrapFieldName(result.TableName  || 'xxx') + ' '
