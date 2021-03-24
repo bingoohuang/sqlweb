@@ -34,6 +34,31 @@ func init() {
 #    linksTo = ["tt_f_mbr_card", "tt_l_mbrcard_chg"]
 
 [entries]
+     [entries.showTablesWithoutPK]
+     type = "link"
+     label = "查无主键表"
+     sql = """
+SELECT
+  t.table_schema,
+  t.table_name
+FROM
+  INFORMATION_SCHEMA.TABLES t
+  LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS c ON (
+    t.TABLE_NAME = c.TABLE_NAME
+    AND c.CONSTRAINT_SCHEMA = t.TABLE_SCHEMA
+    AND c.constraint_name = 'PRIMARY'
+  )
+WHERE
+  t.table_schema not in (
+    'mysql',
+    'information_schema',
+    'performance_schema',
+    'sys'
+  )
+  AND t.table_type = 'BASE TABLE'
+  AND c.constraint_name IS NULL
+"""
+
 #    [entries.findTenant]
 #    classifiers = ["trr"]
 #    type = "input"
