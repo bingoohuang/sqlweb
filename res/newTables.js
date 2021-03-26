@@ -89,7 +89,23 @@ tableApp = new Vue({
         },
         showTables(content, tableColumns) {
             this.tables = content.Rows.map(row => {
-                return {name: row[1], checked: false}
+                const tableName = row[1];
+                let tableRows = '';
+                if (content.TableColumns && content.TableColumns[tableName + "_TABLE_ROWS"]) {
+                    tableRows = content.TableColumns[tableName + "_TABLE_ROWS"][0]
+                }
+                let tableInfo = ''
+                if (tableRows) {
+                    tableInfo = tableRows + "行"
+                    if (tableRows !== "0") {
+                        tableInfo +=  content.TableColumns[tableName + "_TABLE_LENGTH"][0]
+                    }
+                }
+                return {
+                    name: tableName,
+                    checked: false,
+                    tableInfo: tableInfo
+                }
             })
             this.isShow = true
             $('.MainDivs').addClass('MainDivsShowTable')

@@ -27,3 +27,4 @@ dist*
 
 /ctl
 /sqlweb.toml
+/linksConfig.toml

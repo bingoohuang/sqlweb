@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/bingoohuang/gg/pkg/man"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -317,12 +318,21 @@ func ServeQuery(w http.ResponseWriter, req *http.Request) {
 			tableColumns[tableName] = columns
 		}
 
-		tComment := `select TABLE_NAME, TABLE_COMMENT from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = '` + db + `'`
+		tComment := `select TABLE_NAME, TABLE_COMMENT,TABLE_ROWS, DATA_LENGTH+INDEX_LENGTH from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = '` + db + `'`
 		_, rows, _, _, _, _ := processSql(tComment, ds, 0)
 		for _, row := range rows {
 			tblName := row[1]
 			if _, ok := tableColumns[tblName]; ok {
 				tableColumns[tblName+`_TABLE_COMMENT`] = []string{row[2]}
+				tableRows := row[3]
+				if tableRows == "(null)" {
+					tableRows = "0"
+				}
+				tableColumns[tblName+`_TABLE_ROWS`] = []string{tableRows}
+				length, _ := strconv.Atoi(row[4])
+				iBytes := man.IBytes(uint64(length))
+				iBytes = strings.TrimRightFunc(iBytes, func(r rune) bool { return r == 'B' || r == 'i' })
+				tableColumns[tblName+`_TABLE_LENGTH`] = []string{iBytes}
 			}
 		}
 
