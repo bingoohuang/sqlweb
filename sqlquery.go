@@ -119,7 +119,7 @@ func executeQuery(querySql, dataSource string, max int) (
 func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string, string, error, string) {
 	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
 
-	sqlResult := sqlx.ExecSQL(db, query, maxRows, "(null)")
+	sqlResult := sqlx.ExecSQL(db, query, sqlx.ExecOption{MaxRows: maxRows, NullReplace: "(null)"})
 	data := addRowsSeq(&sqlResult)
 
 	msg := ""

@@ -6,7 +6,6 @@ sql web based on golang, currently only MySQL supported!
 
 1. install golang 1.11+
 1. git clone git@github.com:bingoohuang/sqlweb.git & cd sqlweb
-1. `statiq -src=res`
 1. build:
     - `go build -o sqlweb`
     - `go install ./...`

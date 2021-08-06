@@ -56,17 +56,14 @@ func ServeUpdate(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 
 	resultRows := make([]UpdateResultRow, 0)
 	for _, s := range strings.Split(sqls, ";\n") {
-		sqlResult := sqlx.ExecSQL(db, s, 0, "(null)")
+		sqlResult := sqlx.ExecSQL(db, s, sqlx.ExecOption{NullReplace: "(null)"})
 		if sqlResult.Error != nil {
-			resultRows = append(resultRows,
-				UpdateResultRow{Ok: false, Message: sqlResult.Error.Error()})
+			resultRows = append(resultRows, UpdateResultRow{Ok: false, Message: sqlResult.Error.Error()})
 		} else if sqlResult.RowsAffected == 1 {
-			resultRows = append(resultRows,
-				UpdateResultRow{Ok: true, Message: "1 rows affected!"})
+			resultRows = append(resultRows, UpdateResultRow{Ok: true, Message: "1 rows affected!"})
 		} else {
 			message := strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows affected!"
-			resultRows = append(resultRows,
-				UpdateResultRow{Ok: false, Message: message})
+			resultRows = append(resultRows, UpdateResultRow{Ok: false, Message: message})
 		}
 	}
 

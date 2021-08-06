@@ -46,9 +46,9 @@ func ServeHome(w http.ResponseWriter, r *http.Request) {
 
 	html := htt.MinifyHTML(indexHtml, AppConf.DevMode)
 
-	mergeCss := htt.MergeCSS(MustAsset, FilterAssetNames(AssetNames, ".css"))
+	mergeCss := htt.MergeCSS(MustAsset, AssetNames(".css"))
 	css := htt.MinifyCSS(mergeCss, AppConf.DevMode)
-	mergeScripts := htt.MergeJs(MustAsset, FilterAssetNames(AssetNames, ".js"))
+	mergeScripts := htt.MergeJs(MustAsset, AssetNames(".js"))
 	js := htt.MinifyJs(mergeScripts, AppConf.DevMode)
 	html = strings.Replace(html, "/*.CSS*/", css, 1)
 	html = strings.Replace(html, "/*.SCRIPT*/", js, 1)
@@ -57,15 +57,4 @@ func ServeHome(w http.ResponseWriter, r *http.Request) {
 	html = strings.Replace(html, "${defaultTenant}", AppConf.DefaultDB, -1)
 
 	w.Write([]byte(html))
-}
-
-func FilterAssetNames(assetNames []string, suffix string) []string {
-	filtered := make([]string, 0)
-	for _, assetName := range assetNames {
-		if !strings.HasPrefix(assetName, "static/") && strings.HasSuffix(assetName, suffix) {
-			filtered = append(filtered, assetName)
-		}
-	}
-
-	return filtered
 }

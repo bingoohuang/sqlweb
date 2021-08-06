@@ -2,13 +2,17 @@ package sqlweb
 
 import (
 	"bytes"
+	"embed"
 	"flag"
 	"fmt"
+	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"text/template"
@@ -17,7 +21,6 @@ import (
 	"github.com/bingoohuang/gou/file"
 
 	"github.com/bingoohuang/gou/htt"
-	"github.com/bingoohuang/statiq/fs"
 	"github.com/bingoohuang/toml"
 	"github.com/gorilla/mux"
 )
@@ -39,10 +42,57 @@ func TimeNow() string {
 	return time.Now().Format("20060102150405")
 }
 
-var StaticFs *fs.StatiqFS
-var MustAsset func(name string) []byte
-var AssetInfo func(name string) (os.FileInfo, error)
-var AssetNames []string
+var (
+	//go:embed res
+	resFS  embed.FS
+	res, _ = fs.Sub(resFS, "res")
+)
+
+func MustAsset(name string) []byte {
+	f, err := res.Open(name)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	data, err := io.ReadAll(f)
+	if err != nil {
+		panic(err)
+	}
+
+	return data
+}
+
+func AssetInfo(name string) (os.FileInfo, error) {
+	f, err := res.Open(name)
+	if err != nil {
+		return nil, err
+	}
+
+	defer f.Close()
+
+	return f.Stat()
+}
+
+func AssetNames(ext string) (files []string) {
+	fs.WalkDir(res, ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil || path == "." || d.IsDir() {
+			return err
+		}
+
+		if dir := filepath.Dir(path); dir != "." {
+			return nil
+		}
+
+		if strings.HasSuffix(path, ext) {
+			files = append(files, path)
+		}
+
+		return nil
+	})
+
+	return
+}
 
 type ActionProxy struct {
 	Proxy string

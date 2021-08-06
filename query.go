@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bingoohuang/gg/pkg/man"
+	"mime"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -122,7 +123,10 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, query string) {
 
 	sqls := sqlx.SplitSqls(query, ';')
 	if len(sqls) == 1 {
-		sqlResult := sqlx.ExecSQL(db, sqls[0], 0, "(null)")
+		sqlResult := sqlx.ExecSQL(db, sqls[0], sqlx.ExecOption{
+			MaxRows:     0,
+			NullReplace: "(null)",
+		})
 		msg := ""
 		if !sqlResult.IsQuerySQL {
 			msg = strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
@@ -165,7 +169,7 @@ func executeSqlInTid(tid string, resultChan chan *QueryResult, query string) {
 	start := time.Now()
 	msg := ""
 	for _, oneSql := range sqls {
-		sqlResult := sqlx.ExecSQL(db, oneSql, 0, "(null)")
+		sqlResult := sqlx.ExecSQL(db, oneSql, sqlx.ExecOption{NullReplace: "(null)"})
 		if msg != "" {
 			msg += "\n"
 		}
@@ -248,8 +252,8 @@ func DownloadColumn(w http.ResponseWriter, req *http.Request) {
 	fmt.Println(reflect.TypeOf(values[0]))
 
 	// tell the browser the returned content should be downloaded
-	w.Header().Add("Content-Disposition", "Attachment; filename="+fileName)
-	http.ServeContent(w, req, fileName, time.Now(), bytes.NewReader([]byte(values[0])))
+	w.Header().Add("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": fileName}))
+	http.ServeContent(w, req, fileName, time.Now(), bytes.NewReader(values[0]))
 }
 
 func ServeQuery(w http.ResponseWriter, req *http.Request) {

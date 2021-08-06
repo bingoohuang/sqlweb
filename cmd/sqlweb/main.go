@@ -6,50 +6,21 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/bingoohuang/gou/htt"
 	"io"
 	"log"
 	"mime"
 	"net/http"
 	"net/http/httputil"
-	"os"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
-	"time"
-
-	"github.com/bingoohuang/gou/ran"
-	"github.com/skratchdot/open-golang/open"
-
-	"github.com/bingoohuang/gou/htt"
 
 	"github.com/bingoohuang/sqlweb"
-	"github.com/bingoohuang/statiq/fs"
 	"github.com/gorilla/mux"
-
-	_ "github.com/bingoohuang/sqlweb/statiq"
 )
 
 func init() {
-	sqlweb.StaticFs, _ = fs.New()
-	sqlweb.MustAsset = func(name string) []byte {
-		return sqlweb.StaticFs.Files["/"+name].Data
-	}
-
-	sqlweb.AssetNames = make([]string, 0, len(sqlweb.StaticFs.Files))
-	for k := range sqlweb.StaticFs.Files {
-		sqlweb.AssetNames = append(sqlweb.AssetNames, k[1:])
-	}
-
-	sqlweb.AssetInfo = func(name string) (info os.FileInfo, e error) {
-		f, err := sqlweb.StaticFs.Open("/" + name)
-		if err != nil {
-			return nil, err
-		}
-
-		return f.Stat()
-	}
-
 	sqlweb.InitConf()
 }
 
@@ -77,25 +48,9 @@ func main() {
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", sqlweb.AppConf.ListenPort)
-	OpenExplorerWithContext(sqlweb.AppConf.ContextPath, strconv.Itoa(sqlweb.AppConf.ListenPort))
-
 	if err := http.ListenAndServe(":"+strconv.Itoa(sqlweb.AppConf.ListenPort), nil); err != nil {
 		log.Fatal(err)
 	}
-}
-
-// OpenExplorerWithContext ...
-func OpenExplorerWithContext(contextPath, port string) {
-	go func() {
-		time.Sleep(100 * time.Millisecond)
-
-		switch runtime.GOOS {
-		case "windows":
-			fallthrough
-		case "darwin":
-			_ = open.Run("http://127.0.0.1:" + port + contextPath + "?" + ran.String(10))
-		}
-	}()
 }
 
 func ServeStatic(contextPath string) http.HandlerFunc {
