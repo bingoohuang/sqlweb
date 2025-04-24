@@ -105,7 +105,7 @@
             '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '</td>' +
             (multiTenants === 'true' ? '<td>Tenant:&nbsp;' + tname + '&nbsp;' + tcode + '</td><td>Db:&nbsp;' + (result.DatabaseName || '') + '</td>' : '') +
             '<td>Table:&nbsp;<span>' + (result.TableName || 'xxx') + '</span><span class="tableTools" id="tableTools' + resultId + '">...</span></td>' +
-            '<td>Rows:<span contenteditable="true" id="maxRows' + resultId + '">' + (hasRows ? result.Rows.length : '0') + '</span></td>' +
+            '<td>Rows:<span contenteditable="true" title="修改数字后 ctr/meta+回车重新查询" id="maxRows' + resultId + '">' + (hasRows ? result.Rows.length : '0') + '</span></td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
             '<td><span class="opsSpan" id="screenShot' + resultId + '">截图</span></td>' +
