@@ -156,7 +156,6 @@ table.executionSummary tr:first-child {
 .tableTools {
     cursor: pointer;
     margin-left: 10px;
-    text-decoration: underline;
 }
 
 .chk {

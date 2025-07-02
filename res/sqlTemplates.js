@@ -3,7 +3,7 @@
         var seqNum = $.convertSeqNum(resultId)
         return '<div class="executionResult" id="executionResultDiv' + resultId + '">' +
             '<table class="executionSummary"><tr>' +
-            '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '</td>' +
+            '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '✨</td>' +
             '<td>Template Processing</td>' +
             '<td><span class="opsSpan" id="screenShot' + resultId + '">截图</span></td>' +
             '<td><span class="opsSpan" id="closeResult' + resultId + '">Close</span></td>' +

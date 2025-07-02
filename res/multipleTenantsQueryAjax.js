@@ -58,9 +58,9 @@
         var seqNum = $.convertSeqNum(resultId)
         var table = '<div class="executionResult" id="executionResultDiv' + resultId + '">' +
             '<table class="executionSummary"><tr>' +
-            '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '</td>' +
+            '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '✨</td>' +
             '<td>Tenant:&nbsp;N/A</td><td>Db:&nbsp;N/A</td>' +
-            '<td>Table:&nbsp;<span class="tableTools" id="tableTools' + resultId + '">...</span></td>' +
+            '<td>Table:&nbsp;<span class="tableTools" id="tableTools' + resultId + '">✨</span></td>' +
             '<td>Rows:&nbsp;<span id="summaryRows' + resultId + '">0</span></td>' +
             '<td>Time:&nbsp;' + $.js_yyyy_mm_dd_hh_mm_ss_SSS() + '</td>' +
             '<td>Cost:&nbsp;<span id="summaryCostTime' + resultId + '">0</span></td>' +
