@@ -5,8 +5,8 @@
             '<table class="executionSummary"><tr>' +
             '<td class="resultId" id="resultId' + resultId + '">#' + seqNum + '✨</td>' +
             '<td>Template Processing</td>' +
-            '<td><span class="opsSpan" id="screenShot' + resultId + '">截图</span></td>' +
-            '<td><span class="opsSpan" id="closeResult' + resultId + '">Close</span></td>' +
+            '<td><span class="opsSpan" id="screenShot' + resultId + '">📸</span></td>' +
+            '<td><span class="opsSpan" id="closeResult' + resultId + '">X</span></td>' +
             '</tr></table>'
     }
 

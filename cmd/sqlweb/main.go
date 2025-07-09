@@ -5,8 +5,8 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
-	"github.com/bingoohuang/gou/htt"
 	"io"
 	"log"
 	"mime"
@@ -16,6 +16,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bingoohuang/gou/htt"
+
+	"github.com/bingoohuang/ngg/ss"
 	"github.com/bingoohuang/sqlweb"
 	"github.com/gorilla/mux"
 )
@@ -44,10 +47,22 @@ func main() {
 	handleFunc(r, "/searchDb", sqlweb.ServeSearchDb, false, true)
 	handleFunc(r, "/action", sqlweb.ServeAction, false, true)
 
-	http.HandleFunc(sqlweb.AppConf.ContextPath+"/static/", ServeStatic(sqlweb.AppConf.ContextPath))
+	handleFuncError(r, "/loadDapsOpptions", sqlweb.LoadDapsOpptions, true, true)
+	handleFuncError(r, "/saveDapsOpptions", sqlweb.SaveDapsOpptions, true, true)
+	handleFuncError(r, "/loadDapsConfigFile", sqlweb.LoadDapsConfigFile, true, true)
+	handleFuncError(r, "/saveDapsConfigFile", sqlweb.SaveDapsConfigFile, true, true)
+
+	contextPath := sqlweb.AppConf.ContextPath
+	if contextPath != "" && !strings.HasPrefix(contextPath, "/") {
+		contextPath = "/" + contextPath
+	}
+	http.HandleFunc(prependContextPath("/static/"), ServeStatic(contextPath))
 	http.Handle("/", r)
 
 	fmt.Println("start to listen at ", sqlweb.AppConf.ListenPort)
+	httpAddr := ":" + strconv.Itoa(sqlweb.AppConf.ListenPort) + contextPath
+	ss.OpenInBrowser(httpAddr)
+
 	if err := http.ListenAndServe(":"+strconv.Itoa(sqlweb.AppConf.ListenPort), nil); err != nil {
 		log.Fatal(err)
 	}
@@ -101,7 +116,7 @@ func GzipHandlerFunc(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func DumpRequest(fn http.HandlerFunc) http.HandlerFunc {
+func dumpRequest(fn HandlerFuncErrFn) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Save a copy of this request for debugging.
 		requestDump, err := httputil.DumpRequest(r, true)
@@ -109,7 +124,13 @@ func DumpRequest(fn http.HandlerFunc) http.HandlerFunc {
 			log.Println(err)
 		}
 		log.Println(string(requestDump))
-		fn(w, r)
+		if err := fn(w, r); err != nil {
+			_ = json.NewEncoder(w).Encode(struct {
+				OK string
+			}{
+				OK: err.Error(),
+			})
+		}
 	}
 }
 
@@ -123,8 +144,10 @@ func handleFuncNoDump(r *mux.Router, path string, f http.HandlerFunc, requiredGz
 	r.HandleFunc(sqlweb.AppConf.ContextPath+path, wrap)
 }
 
-func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
-	wrap := DumpRequest(f)
+type HandlerFuncErrFn func(http.ResponseWriter, *http.Request) error
+
+func handleFuncError(r *mux.Router, path string, f HandlerFuncErrFn, requiredGzip, requiredBasicAuth bool) {
+	wrap := dumpRequest(f)
 	if requiredBasicAuth && sqlweb.AppConf.BasicAuthRequired() {
 		wrap = BasicAuth(wrap, sqlweb.AppConf)
 	} else {
@@ -135,12 +158,24 @@ func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, re
 		wrap = GzipHandlerFunc(wrap)
 	}
 
+	p := prependContextPath(path)
+	r.HandleFunc(p, wrap)
+}
+
+func prependContextPath(path string) string {
 	p := filepath.Join(sqlweb.AppConf.ContextPath, path)
 	if p != "/" {
-		p = strings.TrimSuffix(p, "/")
+		return strings.TrimSuffix(p, "/")
 	}
 
-	r.HandleFunc(p, wrap)
+	return p
+}
+
+func handleFunc(r *mux.Router, path string, f http.HandlerFunc, requiredGzip, requiredBasicAuth bool) {
+	handleFuncError(r, path, func(w http.ResponseWriter, r *http.Request) error {
+		f(w, r)
+		return nil
+	}, requiredGzip, requiredBasicAuth)
 }
 
 func anonymousWrap(f http.HandlerFunc) http.HandlerFunc {

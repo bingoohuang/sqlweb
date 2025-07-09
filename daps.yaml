@@ -1,0 +1,18 @@
+---
+# java可执行文件的路径
+# java: /Users/bingoohuang/soft/jdk1.8.0_431.jdk/Contents/Home/bin/java
+# Classpath 路径
+classpath:
+  - /Users/bingoohuang/github/gitlab/daps6/daps6-test/libs_backup/*.jar
+
+# 连接配置
+connections:
+
+  - name: mysql
+    url: jdbc:daps:mysql://127.0.0.1:13306/mysql?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    user: root/root
+    configFile: "/Users/bingoohuang/github/gitlab/daps6/daps6/client/testdata/02.mysql/05.json"
+
+  - name: mysql2
+    url: jdbc:daps:mysql://127.0.0.1:13306/mysql?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    user: root/root

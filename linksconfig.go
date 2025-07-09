@@ -92,7 +92,7 @@ func ServeSaveLinksConfig(w http.ResponseWriter, r *http.Request) {
 	linksConfig := r.FormValue("linksConfig")
 
 	w.Header().Set("Content-Type", htt.ContentTypeJSON)
-	err := ioutil.WriteFile(linksConfigFile, []byte(linksConfig), 0644)
+	err := os.WriteFile(linksConfigFile, []byte(linksConfig), 0644)
 	if err != nil {
 		_ = json.NewEncoder(w).Encode(struct {
 			OK   string

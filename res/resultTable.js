@@ -108,9 +108,9 @@
             '<td>Rows:<span contenteditable="true" title="修改数字后 ctr/meta+回车重新查询" id="maxRows' + resultId + '">' + (hasRows ? result.Rows.length : '0') + '</span></td>' +
             '<td>Time:&nbsp;' + result.ExecutionTime + '</td>' +
             '<td>Cost:&nbsp;' + result.CostTime + '</td>' +
-            '<td><span class="opsSpan" id="screenShot' + resultId + '">截图</span></td>' +
+            '<td><span class="opsSpan" id="screenShot' + resultId + '">📸</span></td>' +
             '<td>' +
-            '<span class="opsSpan" id="closeResult' + resultId + '">Close</span>' +
+            '<span class="opsSpan" id="closeResult' + resultId + '">X</span>' +
             createMultipleTenantsExecutable(resultId, result, hasRows) +
             '</td>' +
             '<td' + (result.Error && (' class="error">' + result.Error) || ('>' + result.Msg)) + '</td>' +
@@ -121,6 +121,7 @@
         var hasRows = result.Rows && result.Rows.length > 0
         var table = createSummaryTable(classifier, tid, tcode, tname, resultId, result, hasRows)
         table += '<div id="divTranspose' + resultId + '" class="hide"></div>'
+        table += '<div id="dapsLog' + resultId + '" class="hide">' + result.DapsLog + ' </div>'
         table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
         table += '<input title="Search in the rows" id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'

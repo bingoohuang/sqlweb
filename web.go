@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -19,10 +18,10 @@ import (
 	"time"
 
 	"github.com/bingoohuang/gou/file"
-
 	"github.com/bingoohuang/gou/htt"
 	"github.com/bingoohuang/toml"
 	"github.com/gorilla/mux"
+	"github.com/mitchellh/go-homedir"
 )
 
 func ServeFont(prefix string) http.HandlerFunc {
@@ -145,11 +144,14 @@ func (c AppConfig) GetDSN(index int) string {
 
 var AppConf AppConfig
 
+//go:embed sqlweb.toml
+var sqlwebToml []byte
+
 func InitConf() {
 	configFile := ""
 
 	ctlFlag := flag.Bool("i", false, "create sample ctl/sqlweb.toml file")
-	flag.StringVar(&configFile, "c", "sqlweb.toml", "config file paths")
+	flag.StringVar(&configFile, "c", "", "config file paths")
 	flag.Parse()
 
 	if *ctlFlag {
@@ -157,6 +159,23 @@ func InitConf() {
 			fmt.Println(err)
 		}
 		os.Exit(0)
+	}
+
+	if configFile == "" {
+		configFile = "~/.sqlweb.toml"
+	}
+
+	configFile, err := homedir.Expand(configFile)
+	if err != nil {
+		panic(err)
+	}
+
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		// 配置文件不存在，创建一个默认的配置文件
+		if err := os.WriteFile(configFile, sqlwebToml, 0644); err != nil {
+			log.Panic("创建配置文件失败:", err.Error())
+		}
+		fmt.Printf("配置文件 %s 不存在，已创建默认配置文件\n", configFile)
 	}
 
 	if _, err := toml.DecodeFile(configFile, &AppConf); err != nil {
@@ -173,7 +192,7 @@ func InitConf() {
 		AppConf.ContextPath = "/" + AppConf.ContextPath
 	}
 
-	if AppConf.DefaultDB == "" && len(AppConf.DSNS) == 0 {
+	if AppConf.DSN != "" && AppConf.DefaultDB == "" && len(AppConf.DSNS) == 0 {
 		AppConf.DefaultDB, _ = FindDbName(AppConf.DSN)
 	}
 }
@@ -199,7 +218,7 @@ func InitCfgFile(configTplFileName, configFileName string) error {
 
 	conf := MustAsset(configTplFileName)
 	// 0644->即用户具有读写权限，组用户和其它用户具有只读权限；
-	if err := ioutil.WriteFile(configFileName, conf, 0644); err != nil {
+	if err := os.WriteFile(configFileName, conf, 0644); err != nil {
 		return err
 	}
 
@@ -232,7 +251,7 @@ func InitCtl(ctlTplName, ctlFilename string) error {
 	}
 
 	// 0755->即用户具有读/写/执行权限，组用户和其它用户具有读写权限；
-	if err = ioutil.WriteFile(ctlFilename, content.Bytes(), 0755); err != nil {
+	if err = os.WriteFile(ctlFilename, content.Bytes(), 0755); err != nil {
 		return err
 	}
 

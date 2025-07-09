@@ -4,6 +4,7 @@ var activeMerchantCode = null
 var activeHomeArea = null
 var activeMerchantName = null
 var activeClassifier = null
+
 ;
 
 (function () {

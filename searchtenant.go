@@ -69,50 +69,64 @@ func ServeSearchDb(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	searchSql := ""
-	if byTenant == "true" {
-		searchSql = "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
-			"FROM sqlweb WHERE MERCHANT_ID = '" + searchKey + "' OR MERCHANT_CODE = '" + searchKey + "'"
-	} else {
-		searchSql = "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
-			"FROM sqlweb WHERE MERCHANT_ID = '" + searchKey +
-			"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
-	}
-	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DSN, 0)
-	if err != nil {
-		if ignorable := Contains(err.Error(), "doesn't exist", "Unknown table", "No database selected"); !ignorable {
-			http.Error(w, err.Error(), 405)
+	var searchResult []Merchant
+
+	if AppConf.DSN != "" {
+		searchSql := ""
+		if byTenant == "true" {
+			searchSql = "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
+				"FROM sqlweb WHERE MERCHANT_ID = '" + searchKey + "' OR MERCHANT_CODE = '" + searchKey + "'"
+		} else {
+			searchSql = "SELECT MERCHANT_NAME, MERCHANT_ID, MERCHANT_CODE, HOME_AREA, CLASSIFIER " +
+				"FROM sqlweb WHERE MERCHANT_ID = '" + searchKey +
+				"' OR MERCHANT_CODE = '" + searchKey + "' OR MERCHANT_NAME LIKE '%" + searchKey + "%'"
+		}
+
+		_, data, _, _, _, err := executeQuery(searchSql, AppConf.DSN, 0)
+		if err != nil {
+			if ignorable := Contains(err.Error(), "doesn't exist", "Unknown table", "No database selected"); !ignorable {
+				http.Error(w, err.Error(), 405)
+				return
+			}
+		}
+
+		if len(data) == 0 && err == nil && AppConf.OnlyShowSqlWebDatabases {
+			searchResult = append(searchResult,
+				Merchant{MerchantName: "trr", MerchantId: "trr", MerchantCode: "trr", HomeArea: "BJ", Classifier: "trr"})
+			json.NewEncoder(w).Encode(searchResult)
 			return
+		}
+
+		for _, v := range data {
+			tid := v[2]
+			if tid != "trr" {
+				searchResult = append(searchResult,
+					Merchant{MerchantName: v[1], MerchantId: tid, MerchantCode: v[3], HomeArea: v[4], Classifier: v[5]})
+			}
+		}
+
+		// 添加库列表
+		if !AppConf.OnlyShowSqlWebDatabases {
+			_, data, _, _, _, _ = executeQuery("show databases", AppConf.DSN, 0)
+			for _, v := range data {
+				tid := v[1]
+				searchResult = append(searchResult,
+					Merchant{MerchantName: tid, MerchantId: "sdb-" + tid,
+						MerchantCode: "sdb-" + tid, HomeArea: "sdb-" + tid, Classifier: "sdb-" + tid})
+			}
 		}
 	}
 
-	searchResult := make([]Merchant, 0, len(data)+1)
-
-	if len(data) == 0 && err == nil && AppConf.OnlyShowSqlWebDatabases {
-		searchResult = append(searchResult,
-			Merchant{MerchantName: "trr", MerchantId: "trr", MerchantCode: "trr", HomeArea: "BJ", Classifier: "trr"})
-		json.NewEncoder(w).Encode(searchResult)
+	daps, err := LoadDaps("~/.sqlweb.daps.yaml")
+	if err != nil {
+		http.Error(w, err.Error(), 405)
 		return
 	}
 
-	for _, v := range data {
-		tid := v[2]
-		if tid != "trr" {
-			searchResult = append(searchResult,
-				Merchant{MerchantName: v[1], MerchantId: tid, MerchantCode: v[3], HomeArea: v[4], Classifier: v[5]})
-		}
-	}
-
-	// 添加库列表
-	if !AppConf.OnlyShowSqlWebDatabases {
-		_, data, _, _, _, _ = executeQuery("show databases", AppConf.DSN, 0)
-
-		for _, v := range data {
-			tid := v[1]
-			searchResult = append(searchResult,
-				Merchant{MerchantName: tid, MerchantId: "sdb-" + tid,
-					MerchantCode: "sdb-" + tid, HomeArea: "sdb-" + tid, Classifier: "sdb-" + tid})
-		}
+	for _, c := range daps.Connections {
+		searchResult = append(searchResult,
+			Merchant{MerchantName: "daps-" + c.Name, MerchantId: "daps-" + c.Name,
+				MerchantCode: "daps-" + c.Name, HomeArea: "daps-" + c.Name, Classifier: "daps-" + c.Name})
 	}
 
 	json.NewEncoder(w).Encode(searchResult)
@@ -145,7 +159,7 @@ func searchMerchantDb(tid string, ds string) (*MerchantDb, error) {
 	sql := "SELECT MERCHANT_ID, DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
 		"FROM sqlweb WHERE MERCHANT_ID = '" + tid + "'"
 
-	_, data, _, _, err, _ := executeQuery(sql, ds, 1)
+	_, data, _, _, _, err := executeQuery(sql, ds, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +220,7 @@ func searchMerchantByTcode(tcode string) (*Merchant, error) {
 }
 
 func searchMerchantBySql(searchSql string, maxRows int) (*Merchant, error) {
-	_, data, _, _, err, _ := executeQuery(searchSql, AppConf.DSN, maxRows)
+	_, data, _, _, _, err := executeQuery(searchSql, AppConf.DSN, maxRows)
 	if err != nil {
 		return nil, err
 	}

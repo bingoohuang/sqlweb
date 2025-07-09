@@ -14,7 +14,8 @@ curl -LO ${cdn_provider}/codemirror/5.42.2/codemirror.min.js
 curl -LO ${cdn_provider}/codemirror/5.42.2/mode/sql/sql.min.js
 curl -LO ${cdn_provider}/codemirror/5.42.2/addon/hint/sql-hint.min.js
 curl -LO ${cdn_provider}/codemirror/5.42.2/addon/hint/show-hint.min.js
-curl -LO ${cdn_provider}/codemirror/5.42.2/mode/toml/toml.min.js
+curl -LO ${cdn_provider}/codemirror/5.42.2/mode/yaml/yaml.min.js
+curl -LO ${cdn_provider}/codemirror/5.42.2/mode/javascript/javascript.min.js
 curl -LO ${cdn_provider}/codemirror/5.42.2/addon/display/placeholder.min.js
 curl -LO ${cdn_provider}/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js
 curl -LO ${cdn_provider}/jquery-contextmenu/2.7.1/jquery.ui.position.min.js

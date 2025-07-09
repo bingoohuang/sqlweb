@@ -101,6 +101,11 @@ input.batchSize {
     margin-top: 10px;
 }
 
+.Close {
+    position: absolute;
+    right: 10px;
+}
+
 #CloseConfig, #tidtcodeSpan {
     position: absolute;
     right: 10px;
@@ -254,6 +259,21 @@ table.executionSummary tr:first-child {
 .sqlTd:focus {
     white-space: pre-wrap;
     overflow: auto;
+}
+
+#yamlEditorDiv {
+    display: none;
+    overflow: auto;
+}
+
+#yamlEditorDiv .CodeMirror {
+    height: auto;
+    min-height: 600px;
+}
+
+#yamlEditorDiv .CodeMirror-scroll {
+    height: auto;
+    min-height: 600px;
 }
 
 #linksConfigDiv {

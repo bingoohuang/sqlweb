@@ -1,6 +1,11 @@
 (function () {
     function executeMultiSqls(sql, callback) {
-        const sqls = $.splitSqls(sql, ';');
+        let sqls = []
+        if (activeMerchantId.startsWith('daps-')) {
+            sqls.push(sql);
+        } else {
+            sqls = $.splitSqls(sql, ';');
+        }
         const executeResultContext = [];
         $.executeQueryAjaxOptions({
             classifier: activeClassifier,

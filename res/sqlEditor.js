@@ -89,4 +89,89 @@
             }
         })
     })
+
+    // refer : https://codemirror.net/mode/toml/index.html
+    var yamlCodeMirror = CodeMirror.fromTextArea(document.getElementById("yamlEditor"), {
+        mode: 'text/yaml', lineNumbers: true
+    })
+
+    var currentSparkItem = null
+
+    $('#yamlEditorDiv .Save').click(function () {
+        var url = contextPath + "/saveDapsOpptions"
+        var data = {data: yamlCodeMirror.getValue()}
+        if (currentSparkItem === 'EditDapsConfig') {
+            url = contextPath + "/saveDapsConfigFile"
+            data.connName = activeMerchantId.substring(5)
+        }
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            success: function (content) {
+                if (content.OK === "OK") {
+                    $('#yamlEditorDiv').toggle()
+                    $('#sqlwebDiv').toggle()
+                } else {
+                    $.alertMe(content.OK)
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+            }
+        })
+    })
+
+    $('#yamlEditorDiv .Close').click(function () {
+        $('#yamlEditorDiv').toggle()
+        $('#sqlwebDiv').toggle()
+        currentSparkItem = null
+    })
+
+    $.contextMenu({
+        zIndex: 10,
+        selector: '#multiTenantsDivSpark',
+        trigger: 'left',
+        callback: function (key, options) {
+            currentSparkItem = key
+            if (key === 'EditDapsConfig') {
+                if (!activeMerchantId || !activeMerchantId.startsWith("daps-")) {
+                    $.alertMe("当前不是 daps 连接")
+                    return
+                }
+                connName = activeMerchantId.substring(5)
+                $.ajax({
+                    type: 'POST',
+                    url: contextPath + "/loadDapsConfigFile",
+                    data: {connName: connName},
+                    success: function (content) {
+                        $('#yamlEditorDiv').toggle()
+                        $('#sqlwebDiv').toggle()
+                        yamlCodeMirror.setValue(content.Data)
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                    }
+                })
+
+            } else if (key === 'EditDapsOptions') {
+                $.ajax({
+                    type: 'POST',
+                    url: contextPath + "/loadDapsOpptions",
+                    success: function (content) {
+                        $('#yamlEditorDiv').toggle()
+                        $('#sqlwebDiv').toggle()
+                        yamlCodeMirror.setValue(content.Data)
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $.alertMe(jqXHR.responseText + "\nStatus: " + textStatus + "\nError: " + errorThrown)
+                    }
+                })
+            }
+        },
+        items: {
+            EditDapsOptions: {name: "编辑 DAPS 配置", icon: "columns"},
+            EditDapsConfig: {name: "编辑 DAPS 策略", icon: "columns"},
+        }
+    })
 })()

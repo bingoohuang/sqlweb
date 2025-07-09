@@ -148,6 +148,7 @@
 
     var showHideColumns = function (resultId) {
         var queryResultId = '#queryResult' + resultId
+        var dapsLogId = '#dapsLog' + resultId
 
         $.contextMenu({
             zIndex: 10,
@@ -171,6 +172,9 @@
                     dragtable.makeDraggable($resultTable[0])
                 } else if (key === 'FilterAndOrderHighlightedColumn') {
                     FilterAndOrderHighlightedColumn($resultTable)
+                } else if (key === 'ShowDapsLog') {
+                    console.log($(dapsLogId).text())
+                    $.alertMe("请在 Console 中查看 DAPS 执行日志")
                 }
             },
             items: {
@@ -183,7 +187,8 @@
                 FilterAndOrderHighlightedColumn: {
                     name: "Filter And Order Highlighted Column By Specified Values",
                     icon: "columns"
-                }
+                },
+                ShowDapsLog: {name: "查看 DAPS 执行日志", icon: "columns"},
             }
         })
     }

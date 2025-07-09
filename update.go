@@ -43,9 +43,14 @@ func ServeUpdate(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	sqls := strings.TrimSpace(r.FormValue("sqls"))
 	tid := strings.TrimSpace(r.FormValue("tid"))
 
-	dataSource, _, err := selectDb(r, tid, false)
+	dataSource, _, err := selectDb(r, tid)
 	if err != nil {
 		return nil, err
+	}
+
+	if strings.HasPrefix(dataSource, "daps-") {
+		connName := strings.TrimPrefix(dataSource, "daps-")
+		return DapsUpdate(connName, sqls)
 	}
 
 	db, err := sql.Open("mysql", dataSource)

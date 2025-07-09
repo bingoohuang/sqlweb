@@ -46,7 +46,7 @@ func customMysqlDump(tn *Merchant, r *http.Request, w http.ResponseWriter, tid s
 	fileName := tn.MerchantCode + "." + TimeNow() + ".sql"
 	w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
 	log.Println("use custom mysqldump to export database")
-	tenantDataSource, _, err := selectDb(r, tid, false)
+	tenantDataSource, _, err := selectDb(r, tid)
 	if err != nil {
 		return err
 	}

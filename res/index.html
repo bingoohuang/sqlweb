@@ -18,15 +18,24 @@
     <div id="multiTenantsDiv" class="hide">
         <select class="searchResult"></select>
         <!-- <input placeholder="Find tenants by tid/tcode/name" class="searchKey"> -->
-        </span><span id="tidtcodeSpan"></span>
+        <span id="multiTenantsDivSpark">✨</span>
+        <span id="tidtcodeSpan"></span>
+    </div>
+
+    <div id="yamlEditorDiv">
+        <textarea id="yamlEditor"></textarea>
+        <div>
+            <button class="Save">💾</button>
+            <button class="Close">X</button>
+        </div>
     </div>
 
     <div id="linksConfigDiv">
         <textarea id="tomlEditor"></textarea>
 
         <div id="linksConfigButtonsDiv">
-            <button id="SaveConfig">Save Config</button>
-            <button id="CloseConfig">Close</button>
+            <button id="SaveConfig">💾</button>
+            <button id="CloseConfig">X</button>
         </div>
 
         <div id="tablesWithSpecifiedColumn">
@@ -114,7 +123,8 @@
 <script src="${contextPath}/static/sql.min.js"></script>
 <script src="${contextPath}/static/sql-hint.min.js"></script>
 <script src="${contextPath}/static/show-hint.min.js"></script>
-<script src="${contextPath}/static/toml.min.js"></script>
+<script src="${contextPath}/static/yaml.min.js"></script>
+<script src="${contextPath}/static/javascript.min.js"></script>
 <script src="${contextPath}/static/placeholder.min.js"></script>
 <script src="${contextPath}/static/jquery.contextMenu.min.js"></script>
 <script src="${contextPath}/static/jquery.ui.position.min.js"></script>

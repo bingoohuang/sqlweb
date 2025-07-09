@@ -16,7 +16,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func selectDb(r *http.Request, tid string, databaseNameRequired bool) (string, string, error) {
+func selectDb(r *http.Request, tid string) (dsn, dbName string, err error) {
+	if strings.HasPrefix(tid, "daps-") {
+		return tid, "daps", nil
+	}
+
 	cookieValue := r.Context().Value(LoginUserKey)
 	var user *LoginUser
 	if cookieValue != nil {
@@ -74,7 +78,7 @@ func FindDbName(dsn string) (string, error) {
 		return dsnConfig.DBName, nil
 	}
 
-	_, rows, _, _, err, _ := executeQuery("SELECT DATABASE()", dsn, 0)
+	_, rows, _, _, _, err := executeQuery("SELECT DATABASE()", dsn, 0)
 	if err != nil {
 		return "", err
 	}
@@ -85,7 +89,7 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 	queryDbSql := "SELECT DB_USERNAME, DB_PASSWORD, PROXY_IP, PROXY_PORT, DB_NAME " +
 		"FROM sqlweb WHERE MERCHANT_ID = '" + tid + "'"
 
-	_, data, _, _, err, _ := executeQuery(queryDbSql, ds, 1)
+	_, data, _, _, _, err := executeQuery(queryDbSql, ds, 1)
 	if err != nil {
 		return "", "", err
 	}
@@ -104,30 +108,42 @@ func selectDbByTid(tid string, ds string) (string, string, error) {
 		"?charset=utf8mb4,utf8&timeout=30s", row[5], nil
 }
 
-func executeQuery(querySql, dataSource string, max int) (
-	[]string /*header*/, [][]string, /*data*/
-	string /*executionTime*/, string /*costTime*/, error, string /* msg */) {
+func executeQuery(querySql, dataSource string, max int) (headers []string, data [][]string, executionTimestamp, costTime, msg string, err error) {
+	headers, data, executionTimestamp, costTime, msg, _, err = executeQuery2(querySql, dataSource, max)
+	if err != nil {
+		return nil, nil, "", "", "", err
+	}
+
+	return headers, data, executionTimestamp, costTime, msg, nil
+}
+
+func executeQuery2(querySql, dataSource string, max int) (headers []string, data [][]string, executionTimestamp, costTime, msg string, result *Result, err error) {
+	if strings.HasPrefix(dataSource, "daps-") {
+		connName := strings.TrimPrefix(dataSource, "daps-")
+		return DapsQuery(connName, querySql)
+	}
+
 	db, err := sql.Open("mysql", dataSource)
 	if err != nil {
-		return nil, nil, "", "", err, ""
+		return nil, nil, "", "", "", nil, err
 	}
 	defer db.Close()
 
-	return query(db, querySql, max)
+	headers, data, executionTimestamp, costTime, msg, err = query(db, querySql, max)
+	return
 }
 
-func query(db *sql.DB, query string, maxRows int) ([]string, [][]string, string, string, error, string) {
+func query(db *sql.DB, query string, maxRows int) (headers []string, data [][]string, executionTimestamp, costTime, msg string, err error) {
 	executionTime := time.Now().Format("2006-01-02 15:04:05.000")
 
 	sqlResult := sqlx.ExecSQL(db, query, sqlx.ExecOption{MaxRows: maxRows, NullReplace: "(null)"})
-	data := addRowsSeq(&sqlResult)
+	data = addRowsSeq(&sqlResult)
 
-	msg := ""
 	if !sqlResult.IsQuerySQL {
 		msg = strconv.FormatInt(sqlResult.RowsAffected, 10) + " rows were affected"
 	}
 
-	return sqlResult.Headers, data, executionTime, sqlResult.CostTime.String(), sqlResult.Error, msg
+	return sqlResult.Headers, data, executionTime, sqlResult.CostTime.String(), msg, sqlResult.Error
 }
 
 func addRowsSeq(sqlResult *sqlx.ExecResult) [][]string {
