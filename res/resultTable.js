@@ -122,6 +122,7 @@
         var table = createSummaryTable(classifier, tid, tcode, tname, resultId, result, hasRows)
         table += '<div id="divTranspose' + resultId + '" class="hide"></div>'
         table += '<div id="dapsLog' + resultId + '" class="hide">' + result.DapsLog + ' </div>'
+        table += '<div id="dapsOptionJSON' + resultId + '" class="hide"/>'
         table += '<div id="divResult' + resultId + '" class="divResult">'
         table += '<div class="operateAreaDiv">'
         table += '<input title="Search in the rows" id="searchTable' + resultId + '" class="searchTable" placeholder="Type to search">'
@@ -138,7 +139,7 @@
                 + '</span>'
         }
 
-        table += '<span title="Click to rerun sql" class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">Re Run:</span>'
+        table += '<span title="重新执行SQL" class="opsSpan reRunSql" id="reExecuteSql' + resultId + '" tid="' + tid + '" tcode="' + tcode + '" tname="' + tname + '" classifier="' + classifier + '">▶️</span>'
         table += '<span title="Show/Change sql here" class="sqlTd" id="sqlDiv' + resultId + '" contenteditable="true">' + sql + '</span>'
         table += '</div>'
 

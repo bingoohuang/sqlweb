@@ -65,6 +65,8 @@
 
         var reExecuteSql = '#reExecuteSql' + resultId
         var maxRowsId = '#maxRows' + resultId
+        const dapsOptionJSON = '#dapsOptionJSON' + resultId
+
         $(reExecuteSql).click(function () {
             var $this = $(this);
             var classifier = $this.attr('classifier')
@@ -73,6 +75,16 @@
             var tname = $this.attr('tname')
             var maxRows = parseInt($(maxRowsId).text())
             var sql = $(divId).find('.sqlTd').text()
+            var dapsOption = {};
+            try {
+                dapsOption = JSON.parse($(dapsOptionJSON).text());
+            } catch (e) {
+                // 忽略异常，静默处理
+            }
+            if (dapsOption.DapsRaw) {
+                sql += "\n-- raw: 1"
+            }
+
             $.executeQueryAjax(classifier, tid, tcode, tname, sql, resultId, null, null, null, null, maxRows)
         })
 

@@ -148,7 +148,8 @@
 
     var showHideColumns = function (resultId) {
         var queryResultId = '#queryResult' + resultId
-        var dapsLogId = '#dapsLog' + resultId
+        const dapsLogId = '#dapsLog' + resultId
+        const dapsOptionJSON = '#dapsOptionJSON' + resultId
 
         $.contextMenu({
             zIndex: 10,
@@ -172,9 +173,36 @@
                     dragtable.makeDraggable($resultTable[0])
                 } else if (key === 'FilterAndOrderHighlightedColumn') {
                     FilterAndOrderHighlightedColumn($resultTable)
+                } else if (key === 'DapsRaw') {
                 } else if (key === 'ShowDapsLog') {
-                    console.log($(dapsLogId).text())
-                    $.alertMe("请在 Console 中查看 DAPS 执行日志")
+                    const content = $(dapsLogId).text()
+                    console.log(content)
+                    $.confirmMe("请在 Console 中查看 DAPS 执行日志", "是否同时需要下载？", function () {
+                        // 获取当前时间并格式化为yyyyMMddHHmmss
+                        const now = new Date();
+                        const pad = n => n.toString().padStart(2, '0');
+                        const yyyy = now.getFullYear();
+                        const MM = pad(now.getMonth() + 1);
+                        const dd = pad(now.getDate());
+                        const HH = pad(now.getHours());
+                        const mi = pad(now.getMinutes());
+                        const SS = pad(now.getSeconds());
+                        const timeStr = `${yyyy}${MM}${dd}${HH}${mi}${SS}`;
+                        const fileName = dapsLogId.substring(1) + "_" + timeStr + ".log";
+                        // 1. 创建Blob对象
+                        const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+                        // 2. 创建下载URL
+                        const url = URL.createObjectURL(blob);
+                        // 3. 创建临时链接并触发下载
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        // 4. 清理资源
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    })
                 }
             },
             items: {
@@ -189,6 +217,34 @@
                     icon: "columns"
                 },
                 ShowDapsLog: {name: "查看 DAPS 执行日志", icon: "columns"},
+                // <input type="checkbox">
+                DapsRaw: {
+                    name: "原始驱动执行SQL(不经过DAPS)",
+                    type: 'checkbox',
+                    selected: false
+                },
+            },
+            // contextMenu 帮助: https://swisnl.github.io/jQuery-contextMenu/demo/input.html
+            events: {
+                show: function(opt) {
+                    // this is the trigger element
+                    var $this = this;
+                    // import states from data store
+                    $.contextMenu.setInputValues(opt, $this.data());
+                    // this basically fills the input commands from an object
+                    // like {name: "foo", yesno: true, radio: "3", &hellip;}
+                },
+                hide: function(opt) {
+                    // this is the trigger element
+                    var $this = this;
+                    // export states to data store
+                    var data = $.contextMenu.getInputValues(opt, $this.data());
+                    $(dapsOptionJSON).text(JSON.stringify({
+                        DapsRaw: data.DapsRaw
+                    }))
+                    // this basically dumps the input commands' values to an object
+                    // like {name: "foo", yesno: true, radio: "3", &hellip;}
+                }
             }
         })
     }

@@ -92,7 +92,7 @@ func (r *Result) IndexedRows() [][]string {
 			} else {
 				columnType := r.ColumnTypes[header]
 				switch strings.ToUpper(columnType) {
-				case "TIMESTAMP":
+				case "TIMESTAMP", "DATETIME":
 					row = append(row, convertToTimestamp(cell))
 				default:
 					row = append(row, fmt.Sprintf("%v", cell))
@@ -256,9 +256,19 @@ func DapsQuery(connName, querySql string) (headers []string, data [][]string, ex
 		return
 	}
 
+	if result.Error != "" {
+		err = errors.New(result.Error)
+		return
+	}
+
 	costTime = time.Duration(result.CostNano).String()
 	if !result.Query {
-		msg = fmt.Sprintf("更新%d行", result.Effected)
+		effected := result.Effected
+		for _, timesResult := range result.TimesResult {
+			effected += timesResult.Effected
+		}
+		msg = fmt.Sprintf("更新%d行", effected)
+		return
 	}
 
 	return result.Headers(), result.IndexedRows(), executionTimestamp, costTime, msg, result, nil
